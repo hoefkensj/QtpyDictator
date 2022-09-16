@@ -27,10 +27,10 @@ def Wgt(n=None, t='h'):
 	# 	nwgt.app = nwgt.lay.addItem
 	# 	nwgt.width= nwgt.wgt.width
 	# 	return nwgt
-	
-	
-	
-	
+
+
+
+
 def make_icon(n=None, set='Fluent'):
 	icon = QtGui.QIcon()
 	lset = f'/home/hoefkens/.local/share/icons/{set}/symbolic/actions/{n}.svg'
@@ -78,7 +78,7 @@ def lbl(n):
 		nlbl.getWidth=  lbl.width
 		nlbl.setwidth= lbl.width
 		return nlbl
-	
+
 	return sns()
 
 def make_ledit(ro=False):
@@ -93,7 +93,7 @@ def wgtEditProp(n):
 	txt = make_ledit(ro=True)
 	btnSet = pBtn('Set')
 	tBtn =iBtn('edit-symbolic', bi=True)
-	wgt,lay = Wgt(t='h')
+  wgt,lay = Wgt(t='h')
 	lay.addWidget(lbln.lbl)
 	lay.addWidget(txt)
 	lay.addWidget(btnSet)
@@ -105,7 +105,7 @@ def make_wgtSearch():
 	btnSearch = iBtn('search-symbolic')
 	btnNext = iBtn('carousel-arrow-next-symbolic', w=12)
 	btnPrev = iBtn('carousel-arrow-previous-symbolic', w=12)
-	wgt,lay = Wgt(t='h')
+  wgt,lay = Wgt(t='h')
 	txt = make_ledit()
 	hWgt_lay.addWidget(txt)
 	hWgt_lay.addWidget(btnPrev)
@@ -114,15 +114,15 @@ def make_wgtSearch():
 	return wgt,lay
 
 def spacer_ex(w=1, h=1):
-	spacerItem = QtWidgets.QSpacerItem(w, h, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-	return spacerItem
+spacerItem = QtWidgets.QSpacerItem(w, h, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+return spacerItem
 
 def spacer_fix(w=1, h=1):
 	spacerItem = QtWidgets.QSpacerItem(w, h, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
 	return spacerItem
 
 def make_wgtPath():
-	hWgt_wgt,hWgt_lay = Wgt(t='h')
+  hWgt_wgt,hWgt_lay = Wgt(t='h')
 	hWgt_wgt.setContentsMargins(0, 0, 0, 5)
 	lblPath = lbl('Path:')
 	txt = make_ledit(ro=True)
@@ -135,22 +135,22 @@ def make_wgtPath():
 def make_wgtCtrl():
 	btnExp = iBtn('value-increase-symbolic')
 	btnColl = iBtn('value-decrease-symbolic')
-	wgt,lay = Wgt(t='h')
+  wgt,lay = Wgt(t='h')
 	lay.addWidget(btnExp)
 	lay.addWidget(btnColl)
 	return  wgt,lay
 
 def make_Tinterface():
-	wgt,lay = Wgt(t='h')
+  wgt,lay = Wgt(t='h')
 	wgt.setContentsMargins(0, 0, 0, 2)
-	wgtCtrl,layCtrl = make_wgtCtrl()
-	wgtSearch,laySearch = make_wgtSearch()
+  wgtCtrl,layCtrl = make_wgtCtrl()
+  wgtSearch,laySearch = make_wgtSearch()
 	lay.addWidget(wgtCtrl)
 	lay.addWidget(wgtSearch)
 	return wgt,lay
 
 def make_wgtTree():
-	hWgt_wgt,hWgt_lay = Wgt(t='h')
+  hWgt_wgt,hWgt_lay = Wgt(t='h')
 	wgtTree = QtWidgets.QTreeWidget()
 	wgtTree.setObjectName("treeWidget")
 	wgtTree.headerItem().setText(0, "1")
@@ -162,35 +162,35 @@ def wgtMainCtl():
 	def fileCtl():
 		btnPrint = pBtn('Print')
 		btnSave = pBtn('Save As')
-	  hWgt_wgt,hWgt_lay = Wgt(t='h')
+    hWgt_wgt,hWgt_lay = Wgt(t='h')
 		hWgt_lay.addWidget(btnPrint)
 		hWgt_lay.addWidget(btnSave)
 		return hWgt_wgt,hWgt_lay
-		
+
 	def appCtl():
 		btnExit = pBtn('Exit')
-		hWgt_wgt,hWgt_lay = Wgt(t='h')
+    hWgt_wgt,hWgt_lay = Wgt(t='h')
 		hWgt_lay.additem(spacerItem)
 		hWgt_lay.addWidget(btnExit)
 		return hWgt_wgt,hWgt_lay
 
-	filectl_wgt, filectl_lay=fileCtl()
-	appctl_wgt, appctl_lay=appCtl()
-	hWgt_wgt,hWgt_lay = Wgt(t='h')
+  filectl_wgt, filectl_lay=fileCtl()
+  appctl_wgt, appctl_lay=appCtl()
+  hWgt_wgt,hWgt_lay = Wgt(t='h')
 	hWgt_lay.addWidget(filectl_wgt)
 	hWgt_lay.addWidget(appctl_wgt)
 	return hWgt_wgt,hWgt_lay
 
 def make_wgtEditKV():
-	wgtEditKey,layEditKey = wgtEditProp('Key')
-	wgtEditVal,layEditVal = wgtEditProp('Val')
-	wgtEditKV,layEditKV = Wgt(n='Edit',t='v')
+  wgtEditKey,layEditKey = wgtEditProp('Key')
+  wgtEditVal,layEditVal = wgtEditProp('Val')
+  wgtEditKV,layEditKV = Wgt(n='Edit',t='v')
 	wgtEditKV.setContentsMargins(5, 0, 0, 2)
 	layEditKV.addWidget(wgtEditKey)
 	layEditKV.addWidget(wgtEditVal)
 def make_wgtEditKV():
 
-	wgt, lay = Wgt(t='h')
+wgt, lay = Wgt(t='h')
 	spc = spacer_fix(w=25)
 	wgtEditWrap.lay.addItem(spc)
 	wgtEditWrap.addWidget(wgtEdit.wgt)
@@ -199,19 +199,19 @@ def make_wgtEditKV():
 
 class Ui_Form(object):
 	def setupUi(self,Form):
-		
-	  self.wgtTreeDisp		,	self.layTreeDisp	= Wgt(t='v')
-	  self.wgtData				,	self.layData		 	= Wgt(t='v')
+
+    self.wgtTreeDisp		,	self.layTreeDisp	= Wgt(t='v')
+    self.wgtData				,	self.layData		 	= Wgt(t='v')
 
 
 
-	  self.wgtTree				,	self.layTree				=	make_wgtTree()
-	  self.wgtTInterface	,	self.layTInterface	= make_Tinterface()
-	  self.wgtEditKV			, self.layEditKV			= make_wgtEditKV()
-	  self.wgtPath				,	self.layPath				= make_wgtPath()
+    self.wgtTree				,	self.layTree				=	make_wgtTree()
+    self.wgtTInterface	,	self.layTInterface	= make_Tinterface()
+    self.wgtEditKV			, self.layEditKV			= make_wgtEditKV()
+    self.wgtPath				,	self.layPath				= make_wgtPath()
 
 
-		
+
 		self.layTreeDisp.addWidget(self.wgtTree)
 		self.layTreeDisp.addWidget(self.wgtTInterface)
 		self.layData.addWidget(self.wgtEditKV)
@@ -220,17 +220,17 @@ class Ui_Form(object):
 		# self.mainLay = QtWidgets.QVBoxLayout(Form.wgt)
 		# self.widget_16 = QtWidgets.QWidget(Form)
 		# self.widget_1 = makeWgt(1)
-		
-		
-		
+
+
+
 		# wgtTree = make_wgtTree()
 		# wgtTInterface = make_Tinterface()
 		# wgtTreeDisp = Wgt(t='v')
 		# wgtTreeDisp.addWidget(wgtTree.wgt)
 		# wgtTreeDisp.addWidget(wgtTInterface.wgt)
-		
+
 		# wgtEditKV = make_wgtEditKV()
-		
+
 		# wgtPath = make_wgtPath()
 		# wgtData = Wgt(t='v')
 		# wgtData.addWidget(wgtEditKV.wgt)
@@ -243,10 +243,10 @@ class Ui_Form(object):
 		self.btnPrint = pBtn('Print')
 		self.btnSave 	= pBtn('Save As')
 
-		wgtTools_wgt,hWgt_lay =Wgt(t='v')
+    wgtTools_wgt,hWgt_lay =Wgt(t='v')
 		# wgtTools.addWidget(wgtSearch.wgt)
 		wgtTools.addWidget(self.Disp.wgtData.wgt)
-		wgtTreeMain_wgt,hWgt_lay =Wgt(t='v')
+    wgtTreeMain_wgt,hWgt_lay =Wgt(t='v')
 		wgtTreeMain.addWidget(self.Disp.wgtTreeDisp.wgt)
 		wgtTreeMain.addWidget(wgtTools.wgt)
 		wgtFile = make_wgtFile()
@@ -264,11 +264,11 @@ class Ui_Form(object):
 		# wgt7.addWidget(self.pushButton_8)
 		Form.addWidget(wgtTreeMain.wgt)
 		Form.addWidget(wgtFile.wgt)
-		
+
 		self.retranslateUi(Form.wgt)
 		QtCore.QMetaObject.connectSlotsByName(Form.wgt)
 		return Form
-		
+
 	def retranslateUi(self, Form):
 		_translate = QtCore.QCoreApplication.translate
 		Form.setWindowTitle(_translate("Form", "Form"))
@@ -291,12 +291,12 @@ class Ui_Form(object):
 
 if __name__ == "__main__":
 	import sys
-	
+
 
 	app = QtWidgets.QApplication(sys.argv)
 	Qt5Gui=types.SimpleNamespace()
-	
-	Form_wgt,hWgt_lay = Wgt('Form', 'v')
+
+  Form_wgt,hWgt_lay = Wgt('Form', 'v')
 	Qt5Gui.wgt=Form_wgt
 	Qt5Gui.lay=hWgt_lay
 
