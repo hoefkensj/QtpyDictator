@@ -2,26 +2,29 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os, types ,sys
 
-def Wgt(n=None, t='h'):
-	wgt=None
-	lay=None
-	def create(wgt,lay):
+def Wgt(n=None, t=None ):
+	Name=n
+	layout=t
+	def make():
+		def makelay():
+			lays={
+				'H'	:	QtWidgets.QHBoxLayout,
+				'V'	: QtWidgets.QVBoxLayout,
+				'G'	:	QtWidgets.QGridLayout,
+				'F'	:	QtWidgets.QFormLayout,
+			}
+			makelay = lays[t.upper()]
+			lay	= makelay(wgt)
+			lay.setObjectName(f'lay{n}')
+			lay.setContentsMargins(0, 0, 0, 0)
+			lay.setSpacing(0)
+			return lay
 		wgt = QtWidgets.QWidget()
-		if t == 'h':
-			lay = QtWidgets.QHBoxLayout(wgt)
-		elif t == 'v':
-			lay = QtWidgets.QVBoxLayout(wgt)
-		return wgt,lay
-	def init(wgt,lay):
 		wgt.setObjectName(f'wgt{n}')
-		lay.setObjectName(f'lay{n}')
 		wgt.setContentsMargins(0, 0, 0, 0)
-		lay.setContentsMargins(0, 0, 0, 0)
-		lay.setSpacing(0)
+		lay=makelay() if layout else None
 		return wgt,lay
-	wgt, lay = create(wgt,lay)
-	wgt, lay = init(wgt, lay)
-	return wgt,lay
+	return make()
 
 def make_icon(n=None, set='Fluent'):
 	icon = QtGui.QIcon()
@@ -42,7 +45,7 @@ def make_SizePol(wgt,hpol=None,vpol=None):
 	wgt.setSizePolicy(sizePolicy)
 	return wgt
 
-def make_exspacer(w=1, h=1):
+def SpcEx(w=1, h=1):
 	wgt,lay = Wgt(t='h')
 	polEx=QtWidgets.QSizePolicy.Expanding
 	polMin=QtWidgets.QSizePolicy.Minimum
@@ -67,62 +70,167 @@ def tBtn(n, bi=False):
 	btn.setText(n)
 	btn.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
 	btn.setCheckable(bi)
+	btn.setMaximumHeight(20)
 	return btn
 
 def lbl(n):
 	lbl = QtWidgets.QLabel()
 	lbl.setObjectName(f'lbl{n}')
 	lbl.setText(f'{n}')
-	lbl.setContentsMargins(5, 0, 5, 0)
+	lbl.setContentsMargins(0, 0, 5, 0)
 	lbl=make_SizePol(lbl,hpol='P',vpol='P')
 	return lbl
 
-def trDict():
-	trDict = QtWidgets.QTreeWidget()
-	trDict = make_SizePol(trDict, hpol='E',vpol='E')
-	trDict.setAutoFillBackground(True)
-	trDict.setFrameShape(QtWidgets.QFrame.NoFrame)
-	trDict.setFrameShadow(QtWidgets.QFrame.Plain)
-	trDict.setLineWidth(0)
-	trDict.setMidLineWidth(0)
-	trDict.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-	trDict.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-	trDict.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
-	trDict.setAutoScroll(False)
-	trDict.setAutoScrollMargin(16)
-	trDict.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked | QtWidgets.QAbstractItemView.SelectedClicked)
-	trDict.setProperty("showDropIndicator", False)
-	trDict.setAlternatingRowColors(True)
-	trDict.setUniformRowHeights(True)
-	trDict.setAnimated(True)
-	trDict.setAllColumnsShowFocus(True)
-	trDict.setWordWrap(True)
-	trDict.setObjectName("trDict")
-	trDict.header().setMinimumSectionSize(100)
-	trDict.header().setStretchLastSection(True)
-	return trDict
+def ledit(n,ro=False):
+	txt = QtWidgets.QLineEdit()
+	txt.setObjectName(f'txt{n}')
+	txt.setReadOnly(ro)
+	txt=make_SizePol(txt,hpol='E',vpol='P')
+	return txt
 
-class QtGui(object):
+def wgtTrDict():
+	wgt,lay 		=Wgt(t='h')
+	wgt.wgtTree = QtWidgets.QTreeWidget()
+	wgt.wgtTree = make_SizePol(wgt.wgtTree, hpol='E',vpol='E')
+	# wgt.trDict.setAutoFillBackground(True)
+	# wgt.trDict.setFrameShape(QtWidgets.QFrame.NoFrame)
+	# wgt.trDict.setFrameShadow(QtWidgets.QFrame.Plain)
+	# wgt.trDict.setLineWidth(0)
+	# wgt.trDict.setMidLineWidth(0)
+	# wgt.trDict.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+	# wgt.trDict.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+	# wgt.trDict.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
+	# wgt.trDict.setAutoScroll(False)
+	# wgt.trDict.setAutoScrollMargin(16)
+	# wgt.trDict.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked | QtWidgets.QAbstractItemView.SelectedClicked)
+	# wgt.trDict.setProperty("showDropIndicator", True)
+	# wgt.trDict.setAlternatingRowColors(True)
+	# wgt.trDict.setUniformRowHeights(True)
+	# wgt.trDict.setAnimated(True)
+	# wgt.trDict.setAllColumnsShowFocus(True)
+	# wgt.trDict.setWordWrap(True)
+	wgt.wgtTree.setObjectName("wgtTree")
+	# wgt.trDict.header().setMinimumSectionSize(100)
+	# wgt.trDict.header().setStretchLastSection(True)
+	lay.addWidget(wgt.wgtTree)
+	return wgt
+
+def wgtEditProp(n):
+	wgt,lay 		=Wgt(t='h')
+	wgt.lbl 		= lbl(f'{n}:')
+	wgt.txt 		= ledit(n,ro=True)
+	wgt.btnSet = tBtn('Set')
+	wgt.btnEdit 		=	iBtn('edit-symbolic', bi=True)
+	lay.addWidget(wgt.lbl)
+	lay.addWidget(wgt.txt)
+	lay.addWidget(wgt.btnSet)
+	lay.addWidget(wgt.btnEdit)
+	return wgt
+
+def wgtPath():
+	wgt,lay = Wgt(t='h')
+	wgt.lbl = lbl('Path:')
+	wgt.txt = ledit(n='Path',ro=True)
+	wgt.btnCopy = tBtn('Copy')
+	lay.addWidget(wgt.lbl)
+	lay.addWidget(wgt.txt)
+	lay.addWidget(wgt.btnCopy)
+	return wgt
+
+def wgtSearch():
+	wgt,lay = Wgt(t='h')
+	wgt.txt = ledit('Search')
+	wgt.btnSearch = iBtn('search-symbolic')
+	wgt.btnNext = iBtn('carousel-arrow-next-symbolic', w=12)
+	wgt.btnPrev = iBtn('carousel-arrow-previous-symbolic', w=12)
+	lay.addWidget(wgt.txt)
+	lay.addWidget(wgt.btnPrev)
+	lay.addWidget(wgt.btnNext)
+	lay.addWidget(wgt.btnSearch)
+	return wgt
+
+def wgtTreeCtl():
+	wgt,lay = Wgt(t='h')
+	wgt.btnExp = iBtn('value-increase-symbolic',h=15,w=15)
+	wgt.btnCol = iBtn('value-decrease-symbolic',h=15,w=15)
+	lay.addWidget(wgt.btnExp)
+	lay.addWidget(wgt.btnCol)
+	return  wgt
+
+def makesiblings(parent=None,**k):
+	t=k['t']
+	wgt,lay=Wgt(t=t)
+	for child in  a:
+		wgt.child
+
+def SpcEx(w=1, h=1):
+	wgt,lay=Wgt(t='h')
+	wgt.SpcEx = QtWidgets.QSpacerItem(w, h, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+	lay.addItem(wgt.SpcEx)
+	return wgt
+def SpcFix(w=1, h=1):
+	wgt,lay=Wgt(t='h')
+	wgt.SpcFix = QtWidgets.QSpacerItem(w, h, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+	lay.addItem(wgt.SpcFix)
+	return wgt
+
+
+def siblings(wgt1,wgt2,t,margin=[0,0,0,0]):
+	wgt,lay=Wgt(t=t)
+	wgt.setContentsMargins(*margin)
+	lay.addWidget(wgt1)
+	lay.addWidget(wgt2)
+	return wgt
+def center(child,w=None):
+	lSpcFix=SpcFix(w=w)
+	rSpcFix=SpcFix(w=w)
+	wgt,lay=Wgt(t='h')
+	lay.addWidget(lSpcFix)
+	lay.addWidget(child)
+	lay.addWidget(rSpcFix)
+	return wgt
+
+class Qt5Gui(object):
 	def CreateUi(self,Ui):
-		self.tbtnExit=tBtn('Exit')
-		self.tbtnSave=tBtn('Save As')
-		self.tbtnPrint=tBtn('Print')
-		self.exSpacerAppCtl=make_exspacer()
 
-		self.wgtFileCtl,self.layFileCtl = Wgt(t='h')
-		self.layFileCtl.addWidget(self.tbtnPrint)
-		self.layFileCtl.addWidget(self.tbtnSave)
-		self.wgtAppCtl,self.layAppCtl = Wgt(t='h')
-		self.layAppCtl.addWidget(self.exSpacerAppCtl)
-		self.layAppCtl.addWidget(self.tbtnExit)
-		self.wgtCtl,self.layCtl=Wgt(t='h')
-		self.layCtl.addWidget(self.wgtFileCtl)
-		self.layCtl.addWidget(self.wgtAppCtl)
 
-		self.trDict=trDict()
+		self.SpcExAppCtl=SpcEx()
+		self.btnExit=tBtn('Exit')
+		self.btnSave=tBtn('Save As')
+		self.btnPrint=tBtn('Print')
 
+
+		self.wgtTrDict	= wgtTrDict()
+		self.wgtSearch	=	wgtSearch()
+
+		self.wgtEditKey	= wgtEditProp('Key')
+		self.wgtEditVal = wgtEditProp('Val')
+		self.wgtPath=wgtPath()
+
+		self.wgtTrTools		=	center(self.wgtSearch,w=5)
+		self.wgtTreeDisp	= siblings(self.wgtTrDict,self.wgtTrTools,'v',margin=[0,0,0,5])
+		self.wgtFileCtl 	= siblings(self.btnPrint,self.btnSave,'h')
+		self.wgtAppCtl		= siblings(self.SpcExAppCtl,self.btnExit,'h')
+		self.wgtCtl				=	siblings(self.wgtFileCtl,self.wgtAppCtl,'h')
+		self.wgtEdit			=	siblings(self.wgtEditKey,self.wgtEditVal,'v',margin=[0,0,0,5])
+
+		self.wgtWrpEdit	=	center(self.wgtEdit,w=25)
+
+
+		self.wgtWrpPath=center(self.wgtPath,w=20)
+		self.wgtTreeDisp.wgtTrCtl		=	wgtTreeCtl()
+
+
+		self.wgtTools,self.layTools=Wgt(t='v')
+		self.layTools.addWidget(self.wgtWrpEdit)
+		self.layTools.addWidget(self.wgtWrpPath)
+		self.wgtTreeDisp
+
+
+		Ui.addWidget(self.wgtTreeDisp)
+		Ui.addWidget(self.wgtTools)
 		Ui.addWidget(self.wgtCtl)
-		Ui.addWidget(self.trDict)
+
 
 def make_tree(gui, branches=[], **k):
 	def make_branch(root, dct, path):
@@ -136,7 +244,7 @@ def make_tree(gui, branches=[], **k):
 				make_branch(branch, data, dictpath)
 			else:
 				data = str(data)
-				w = gui.trDict.columnWidth(1)
+				w = gui.wgtTrDict.wgtTree.columnWidth(1)
 				data = repr(data) if callable(data) else data
 				dispdata = f'{data[0:w - 4]}...' if len(data) > w - 4 else data
 				branch.setText(1, dispdata)
@@ -156,43 +264,52 @@ def construct_Qt5Ui():
 		app.QtWin = QtWidgets.QApplication(sys.argv)
 		app.QtClip = app.QtWin.clipboard()
 		return app
+
 	def disp(gui):
 		frm = [gui.hide, '', gui.show]
 		def showhide(state):
 			frm[state]()
 		return showhide
+
 	def select(gui):
-		txtBox = [gui.txtKey, gui.txtVal, gui.txtPath, ]
+		txtBox = [gui.wgtEditKey.txt, gui.wgtEditVal.txt, gui.wgtPath.txt, ]
 		def fill():
-			data = gui.trDict.selectedItems()
+			data = gui.wgtTrDict.wgtTree.selectedItems()
 			for idx, txtbox in zip([0, 3, 2], txtBox):
 				txtbox.setText(data[0].text(idx))
 		return fill
-	def fitt(gui):
-		gui.trDict.expandAll()
-		gui.trDict.resizeColumnToContents(0)
-		w = gui.trDict.columnWidth(0)
-		gui.trDict.setColumnWidth(0, w + 20)
 
-		gui.trDict.resizeColumnToContents(1)
-		w = gui.trDict.columnWidth(1)
-		gui.trDict.setColumnWidth(1, w + 20)
-		gui.trDict.collapseAll()
+	def fitt(gui):
+		gui.wgtTrDict.wgtTree.expandAll()
+		gui.wgtTrDict.wgtTree.resizeColumnToContents(0)
+		w = gui.wgtTrDict.wgtTree.columnWidth(0)
+		gui.wgtTrDict.wgtTree.setColumnWidth(0, w + 20)
+
+		gui.wgtTrDict.wgtTree.resizeColumnToContents(1)
+		w = gui.wgtTrDict.wgtTree.columnWidth(1)
+		gui.wgtTrDict.wgtTree.setColumnWidth(1, w + 20)
+		gui.wgtTrDict.wgtTree.collapseAll()
 
 	def copytoclip(txt):
 		def toclip():
 			App.QtClip.setText(txt.text())
 		return toclip
+
 	def editkey(gui):
 		def edit(state):
-			gui.btnEditKey.setChecked(state)
-			gui.txtKey.setReadOnly(not state)
+			gui.wgtEditKey.btnEdit.setChecked(state)
+			gui.wgtEditKey.txt.setReadOnly(not state)
+			gui.wgtEditKey.btnSet.setHidden(not state)
+
 		return edit
+
 	def editval(gui):
 		def edit(state):
-			gui.btnEditVal.setChecked(state)
-			gui.txtVal.setReadOnly(not state)
+			gui.wgtEditVal.btnEdit.setChecked(state)
+			gui.wgtEditVal.txt.setReadOnly(not state)
+			gui.wgtEditVal.btnSet.setHidden(not state)
 		return edit
+
 	def search(gui):
 		def find():
 			found=gui.trDict.findChild(str, gui.txtSearch.text(), QtCore.Qt.MatchFlag.MatchRecursive)
@@ -202,36 +319,40 @@ def construct_Qt5Ui():
 
 	def create(wgt):
 		def init():
-			gui.trDict.expandAll()
-			gui.trDict.resizeColumnToContents(0)
-			gui.trDict.resizeColumnToContents(1)
-			gui.trDict.collapseAll()
-			gui.trDict.expandItem(gui.trDict.topLevelItem(0))
-			gui.trDict.setColumnCount(4)
-			gui.trDict.hideColumn(2)
-			gui.trDict.hideColumn(3)
-			gui.frmData.hide()
-			# gui.chkSearch.hide()
-			gui.frmSearch.hide()
-			gui.btnEditKey.setCheckable(True)
-			gui.btnEditKey.setChecked(False)
+			gui.wgtTrDict.wgtTree.expandAll()
+			gui.wgtTrDict.wgtTree.resizeColumnToContents(0)
+			gui.wgtTrDict.wgtTree.resizeColumnToContents(1)
+			gui.wgtTrDict.wgtTree.collapseAll()
+			gui.wgtTrDict.wgtTree.expandItem(gui.wgtTrDict.wgtTree.topLevelItem(0))
+			gui.wgtTrDict.wgtTree.setColumnCount(4)
+			gui.wgtTrDict.wgtTree.hideColumn(2)
+			gui.wgtTrDict.wgtTree.hideColumn(3)
+
+			gui.wgtEditKey.btnEdit.setChecked(False)
+			gui.wgtEditVal.btnEdit.setChecked(False)
+
+			gui.wgtSearch.btnNext.hide()
+			gui.wgtSearch.btnPrev.hide()
+			gui.wgtEditKey.btnSet.setHidden(True)
+			gui.wgtEditVal.btnSet.setHidden(True)
+
+
 		def connect():
 
-			# gui.chkSearch.stateChanged.connect(disp(gui.frmSearch))
-			gui.chkData.stateChanged.connect(disp(gui.frmData))
-			gui.trDict.itemClicked.connect(select(gui))
-			gui.btnExp.clicked.connect(gui.trDict.expandAll)
-			gui.btnCollapse.clicked.connect(gui.trDict.collapseAll)
-			gui.btnCopy.clicked.connect(copytoclip(gui.txtPath))
+			gui.wgtTrDict.wgtTree.itemClicked.connect(select(gui))
+			gui.wgtTreeDisp.wgtTrCtl.btnExp.clicked.connect(gui.wgtTrDict.wgtTree.expandAll)
+			gui.wgtTreeDisp.wgtTrCtl.btnCol.clicked.connect(gui.wgtTrDict.wgtTree.collapseAll)
+			# gui.btnCopy.clicked.connect(copytoclip(gui.txtPath))
 			# gui.btnSearch.clicked.connect(search(gui))
 			# gui.btnAbout.clicked.connect(copytoclip)
-			gui.btnEditKey.clicked.connect(editkey(gui))
-			gui.btnEditVal.clicked.connect(print)
+			gui.wgtEditKey.btnEdit.clicked.connect(editkey(gui))
+			gui.wgtEditVal.btnEdit.clicked.connect(editval(gui))
 			gui.btnExit.clicked.connect(sys.exit)
-		gui = QtGui()
+		gui = Qt5Gui()
 		gui.CreateUi(wgt)
-		# init()
-		# connect()
+
+		init()
+		connect()
 		return gui
 	App = QtApp()
 	App.wgtQt5,App.layQt5 = Wgt(n='Qt5',t='v')
@@ -278,8 +399,8 @@ def browse(**k):
 	QtApp = construct_Qt5Ui()
 	kv = k.popitem()
 	trunk = make_tree(QtApp.Ui, name=kv[0], data=kv[1])
-	QtApp.Ui.trDict
-	QtApp.Ui.trDict.addTopLevelItem(trunk)
+	QtApp.Ui.wgtTrDict.wgtTree
+	QtApp.Ui.wgtTrDict.wgtTree.addTopLevelItem(trunk)
 	QtApp.Fitt(QtApp.Ui)
 	QtApp.wgtQt5.show()
 	sys.exit(QtApp.QtWin.exec())
