@@ -26,10 +26,38 @@ category = "main"
 optional = false
 python-versions = ">=3.7"
 
+[[package]]
+name = "pyqt6"
+version = "6.3.1"
+description = "Python bindings for the Qt cross platform application toolkit"
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+
+[package.dependencies]
+PyQt6-Qt6 = ">=6.3.0"
+PyQt6-sip = ">=13.4,<14"
+
+[[package]]
+name = "pyqt6-qt6"
+version = "6.3.2"
+description = "The subset of a Qt installation needed by PyQt6."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "pyqt6-sip"
+version = "13.4.0"
+description = "The sip module support for PyQt6"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "ce4feb2a6a42610a01d5e986a40980aaf9f73c3fdc2368f55ec75e70f39c70cf"
+content-hash = "294b4c690442d0b5edb9b502fb4c5ce4a683f2db8192df1441bc6d9f140449de"
 
 [metadata.files]
 pyqt5 = []
@@ -40,3 +68,11 @@ pyqt5-qt5 = [
     {file = "PyQt5_Qt5-5.15.2-py3-none-win_amd64.whl", hash = "sha256:750b78e4dba6bdf1607febedc08738e318ea09e9b10aea9ff0d73073f11f6962"},
 ]
 pyqt5-sip = []
+pyqt6 = []
+pyqt6-qt6 = [
+    {file = "PyQt6_Qt6-6.3.2-py3-none-macosx_10_14_x86_64.whl", hash = "sha256:68ba0587b5e6e5e1d8c6884958e26376a1551ed0969d24d623afbfa0ef1615aa"},
+    {file = "PyQt6_Qt6-6.3.2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:d8c6196b52a02fdf0bf3152d72a62edf6bd7698bb078fba8079860e6a6589028"},
+    {file = "PyQt6_Qt6-6.3.2-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:37c7e4c777ec2088165ca57bfb31bfe306dcaad9f4d9d8fcf3987c98a2d076e5"},
+    {file = "PyQt6_Qt6-6.3.2-py3-none-win_amd64.whl", hash = "sha256:f62566614ada105af4833f259847bfb6ad05b8f15757e421781c5a57181ed4bd"},
+]
+pyqt6-sip = []

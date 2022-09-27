@@ -1,416 +1,745 @@
 #!/usr/bin/env python
 from PyQt5 import QtCore, QtGui, QtWidgets
-import os, types ,sys
+import types ,sys
+import base64,io
 
-def Wgt(n=None, t=None ):
-	Name=n
-	layout=t
-	def make():
-		def makelay():
-			lays={
-				'H'	:	QtWidgets.QHBoxLayout,
-				'V'	: QtWidgets.QVBoxLayout,
-				'G'	:	QtWidgets.QGridLayout,
-				'F'	:	QtWidgets.QFormLayout,
-			}
-			makelay = lays[t.upper()]
-			lay	= makelay(wgt)
-			lay.setObjectName(f'lay{n}')
-			lay.setContentsMargins(0, 0, 0, 0)
-			lay.setSpacing(0)
-			return lay
-		wgt = QtWidgets.QWidget()
-		wgt.setObjectName(f'wgt{n}')
-		wgt.setContentsMargins(0, 0, 0, 0)
-		lay=makelay() if layout else None
-		return wgt,lay
-	return make()
-
-def make_icon(n=None, set='Fluent'):
-	icon = QtGui.QIcon()
-	lset = f'/home/hoefkens/.local/share/icons/{set}/symbolic/actions/{n}.svg'
-	dset = f'/home/hoefkens/.local/share/icons/{set}-dark/symbolic/actions/{n}.svg'
-	icon.addPixmap(QtGui.QPixmap(dset), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-	icon.addPixmap(QtGui.QPixmap(lset), QtGui.QIcon.Normal, QtGui.QIcon.On)
-	return icon
-
-def make_SizePol(wgt,hpol=None,vpol=None):
-	Policy={
-	'P':QtWidgets.QSizePolicy.Preferred,
-	'M':QtWidgets.QSizePolicy.Maximum,
-	'm':QtWidgets.QSizePolicy.Minimum,
-	'E':QtWidgets.QSizePolicy.Expanding,
+sPols = 	{
+	'P' : QtWidgets.QSizePolicy.Preferred,
+	'M' : QtWidgets.QSizePolicy.Maximum,
+	'm' : QtWidgets.QSizePolicy.Minimum,
+	'E'	:	QtWidgets.QSizePolicy.Expanding,
+	'mE':	QtWidgets.QSizePolicy.MinimumExpanding,
+	'F'	:	QtWidgets.QSizePolicy.Fixed,
 	}
-	sizePolicy = QtWidgets.QSizePolicy(Policy[hpol], Policy[vpol])
-	wgt.setSizePolicy(sizePolicy)
-	return wgt
+ico		=		{
+	'Search'  : [ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02LjUgMWMzLjAzNzYgMCA1LjUgMi40NjI0IDUuNSA1LjUgMCAxLjMzODgtMC40NzgzIDIuNTY1OS0xLjI3MzQgMy41MTk2bDQuMTI3IDQuMTI2OGMwLjE5NTIgMC4xOTUzIDAuMTk1MiAwLjUxMTkgMCAwLjcwNzItMC4xNzM2IDAuMTczNS0wLjQ0MyAwLjE5MjgtMC42Mzc5IDAuMDU3OGwtMC4wNjkzLTAuMDU3OC00LjEyNjgtNC4xMjdjLTAuOTUzNyAwLjc5NTEtMi4xODA4IDEuMjczNC0zLjUxOTYgMS4yNzM0LTMuMDM3NiAwLTUuNS0yLjQ2MjQtNS41LTUuNSAwLTMuMDM3NiAyLjQ2MjQtNS41IDUuNS01LjV6bTAgMWMtMi40ODUzIDAtNC41IDIuMDE0Ny00LjUgNC41IDAgMi40ODUzIDIuMDE0NyA0LjUgNC41IDQuNSAyLjQ4NTMgMCA0LjUtMi4wMTQ3IDQuNS00LjUgMC0yLjQ4NTMtMi4wMTQ3LTQuNS00LjUtNC41eiIgZmlsbD0iIzM2MzYzNiIvPgo8L3N2Zz4K' ,
+								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02LjUgMWMzLjAzNzYgMCA1LjUgMi40NjI0IDUuNSA1LjUgMCAxLjMzODgtMC40NzgzIDIuNTY1OS0xLjI3MzQgMy41MTk2bDQuMTI3IDQuMTI2OGMwLjE5NTIgMC4xOTUzIDAuMTk1MiAwLjUxMTkgMCAwLjcwNzItMC4xNzM2IDAuMTczNS0wLjQ0MyAwLjE5MjgtMC42Mzc5IDAuMDU3OGwtMC4wNjkzLTAuMDU3OC00LjEyNjgtNC4xMjdjLTAuOTUzNyAwLjc5NTEtMi4xODA4IDEuMjczNC0zLjUxOTYgMS4yNzM0LTMuMDM3NiAwLTUuNS0yLjQ2MjQtNS41LTUuNSAwLTMuMDM3NiAyLjQ2MjQtNS41IDUuNS01LjV6bTAgMWMtMi40ODUzIDAtNC41IDIuMDE0Ny00LjUgNC41IDAgMi40ODUzIDIuMDE0NyA0LjUgNC41IDQuNSAyLjQ4NTMgMCA0LjUtMi4wMTQ3IDQuNS00LjUgMC0yLjQ4NTMtMi4wMTQ3LTQuNS00LjUtNC41eiIgZmlsbD0iI2RlZGVkZSIvPgo8L3N2Zz4K'] ,
+	'Next'    :	[ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSI+CiA8ZGVmcz4KICA8c3R5bGUgaWQ9ImN1cnJlbnQtY29sb3Itc2NoZW1lIiB0eXBlPSJ0ZXh0L2NzcyI+LkNvbG9yU2NoZW1lLVRleHQgeyBjb2xvcjojMzYzNjM2OyB9PC9zdHlsZT4KIDwvZGVmcz4KIDxwYXRoIGNsYXNzPSJDb2xvclNjaGVtZS1UZXh0IiBkPSJNIDQuNjM2NywxLjYzNjcgMTEsOCA0LjYzNjcsMTQuMzYzMyAzLjkyOTY3LDEzLjY1NjI3IDkuNTg1ODcsOC4wMDAwNyAzLjkyOTY3LDIuMzQzODcgNC42MzY3LDEuNjM2ODQgWiIgZmlsbD0iY3VycmVudENvbG9yIi8+Cjwvc3ZnPgo=' ,
+								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSI+CiA8ZGVmcz4KICA8c3R5bGUgaWQ9ImN1cnJlbnQtY29sb3Itc2NoZW1lIiB0eXBlPSJ0ZXh0L2NzcyI+LkNvbG9yU2NoZW1lLVRleHQgeyBjb2xvcjojZGVkZWRlOyB9PC9zdHlsZT4KIDwvZGVmcz4KIDxwYXRoIGNsYXNzPSJDb2xvclNjaGVtZS1UZXh0IiBkPSJNIDQuNjM2NywxLjYzNjcgMTEsOCA0LjYzNjcsMTQuMzYzMyAzLjkyOTY3LDEzLjY1NjI3IDkuNTg1ODcsOC4wMDAwNyAzLjkyOTY3LDIuMzQzODcgNC42MzY3LDEuNjM2ODQgWiIgZmlsbD0iY3VycmVudENvbG9yIi8+Cjwvc3ZnPgo='],
+	'Prev'    :	[ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSI+CiA8ZGVmcz4KICA8c3R5bGUgaWQ9ImN1cnJlbnQtY29sb3Itc2NoZW1lIiB0eXBlPSJ0ZXh0L2NzcyI+LkNvbG9yU2NoZW1lLVRleHQgeyBjb2xvcjojMzYzNjM2OyB9PC9zdHlsZT4KIDwvZGVmcz4KIDxwYXRoIGQ9Im0xMC4zNjMgMS42MzY3LTYuMzYzMyA2LjM2MzMgNi4zNjMzIDYuMzYzMyAwLjcwNzAzLTAuNzA3MDMtNS42NTYyLTUuNjU2MiA1LjY1NjItNS42NTYyLTAuNzA3MDMtMC43MDcwM3oiIGNsYXNzPSJDb2xvclNjaGVtZS1UZXh0IiBzdHlsZT0iZmlsbDpjdXJyZW50Q29sb3IiLz4KPC9zdmc+Cg==',
+								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSI+CiA8ZGVmcz4KICA8c3R5bGUgaWQ9ImN1cnJlbnQtY29sb3Itc2NoZW1lIiB0eXBlPSJ0ZXh0L2NzcyI+LkNvbG9yU2NoZW1lLVRleHQgeyBjb2xvcjojZGVkZWRlOyB9PC9zdHlsZT4KIDwvZGVmcz4KIDxwYXRoIGQ9Im0xMC4zNjMgMS42MzY3LTYuMzYzMyA2LjM2MzMgNi4zNjMzIDYuMzYzMyAwLjcwNzAzLTAuNzA3MDMtNS42NTYyLTUuNjU2MiA1LjY1NjItNS42NTYyLTAuNzA3MDMtMC43MDcwM3oiIGNsYXNzPSJDb2xvclNjaGVtZS1UZXh0IiBzdHlsZT0iZmlsbDpjdXJyZW50Q29sb3IiLz4KPC9zdmc+Cg=='],
+	'Inc'     : [ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxyZWN0IHg9IjIiIHk9IjciIHdpZHRoPSIxMSIgaGVpZ2h0PSIxIiBmaWxsPSIjMzYzNjM2Ii8+Cjwvc3ZnPgo=',
+								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxyZWN0IHg9IjIiIHk9IjciIHdpZHRoPSIxMSIgaGVpZ2h0PSIxIiBmaWxsPSIjZGVkZWRlIi8+CiA8cmVjdCB0cmFuc2Zvcm09InJvdGF0ZSg5MCkiIHg9IjIiIHk9Ii04IiB3aWR0aD0iMTEiIGhlaWdodD0iMSIgZmlsbD0iI2RlZGVkZSIvPgo8L3N2Zz4K'],
+	'Dec'     :	[ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im0zIDhoMTB2MWgtMTB6IiBjb2xvcj0iIzM2MzYzNiIgZmlsbD0iIzM2MzYzNiIgb3ZlcmZsb3c9InZpc2libGUiIHN0cm9rZS13aWR0aD0iLjcwNzExIi8+Cjwvc3ZnPgo=',
+								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im0zIDhoMTB2MWgtMTB6IiBjb2xvcj0iI2RlZGVkZSIgZmlsbD0iI2RlZGVkZSIgb3ZlcmZsb3c9InZpc2libGUiIHN0cm9rZS13aWR0aD0iLjcwNzExIi8+Cjwvc3ZnPgo='],
+	'Edit'    :	[ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im0xMi4yMzggMS0wLjM1MyAwLjM2LTguOTY5IDkuMDk1LTAuMDMgMC4wNDVjLTAuMDYxIDAuMDk5LTAuMjcgMC40NS0wLjU4MyAxLjA4OC0wLjMxNCAwLjYzOC0wLjcgMS41MS0xLjAxMiAyLjQ5MmwtMC4yOTEgMC45MiAwLjkyLTAuMjkxYTE4LjE2MyAxOC4xNjMgMCAwIDAgMi40OTItMS4wMTJjMC42MzgtMC4zMTQgMC45ODctMC41MiAxLjA4OC0wLjU4NGwwLjA0NS0wLjAyOSA5LjQ1NS05LjMyMnptLTguMzQ3IDkuODkgMS4yMTggMS4yMi0wLjE3NyAwLjE3NWM3ZS0zIC01ZS0zIC0wLjM3OSAwLjIyNy0wLjk2MSAwLjUxNC0wLjIxNCAwLjEwNS0wLjUzNiAwLjIyMi0wLjgzNCAwLjMzOGwtMC4yNzQtMC4yNzRjMC4xMTYtMC4yOTggMC4yMzMtMC42MiAwLjMzOC0wLjgzNCAwLjI4Ny0wLjU4MiAwLjUxOC0wLjk2NiAwLjUxNC0wLjk2eiIgZmlsbD0iIzM2MzYzNiIgZm9udC1zaXplPSIxNSIgbGV0dGVyLXNwYWNpbmc9IjAiIHdvcmQtc3BhY2luZz0iMCIvPgo8L3N2Zz4K',
+								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im0xMi4yMzggMS0wLjM1MyAwLjM2LTguOTY5IDkuMDk1LTAuMDMgMC4wNDVjLTAuMDYxIDAuMDk5LTAuMjcgMC40NS0wLjU4MyAxLjA4OC0wLjMxNCAwLjYzOC0wLjcgMS41MS0xLjAxMiAyLjQ5MmwtMC4yOTEgMC45MiAwLjkyLTAuMjkxYTE4LjE2MyAxOC4xNjMgMCAwIDAgMi40OTItMS4wMTJjMC42MzgtMC4zMTQgMC45ODctMC41MiAxLjA4OC0wLjU4NGwwLjA0NS0wLjAyOSA5LjQ1NS05LjMyMnptLTguMzQ3IDkuODkgMS4yMTggMS4yMi0wLjE3NyAwLjE3NWM3ZS0zIC01ZS0zIC0wLjM3OSAwLjIyNy0wLjk2MSAwLjUxNC0wLjIxNCAwLjEwNS0wLjUzNiAwLjIyMi0wLjgzNCAwLjMzOGwtMC4yNzQtMC4yNzRjMC4xMTYtMC4yOTggMC4yMzMtMC42MiAwLjMzOC0wLjgzNCAwLjI4Ny0wLjU4MiAwLjUxOC0wLjk2NiAwLjUxNC0wLjk2eiIgZmlsbD0iI2RlZGVkZSIgZm9udC1zaXplPSIxNSIgbGV0dGVyLXNwYWNpbmc9IjAiIHdvcmQtc3BhY2luZz0iMCIvPgo8L3N2Zz4K'],
+	'Copy'    : [ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiMzNjM2MzYiLz4KPC9zdmc+Cg==',
+								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiNkZWRlZGUiLz4KPC9zdmc+Cg=='],
+}
 
-def SpcEx(w=1, h=1):
-	wgt,lay = Wgt(t='h')
-	polEx=QtWidgets.QSizePolicy.Expanding
-	polMin=QtWidgets.QSizePolicy.Minimum
-	spacer = QtWidgets.QSpacerItem(w, h,polEx , polMin )
-	lay.addItem(spacer)
-	return wgt
+def construct_Qt5Ui(data):
+	def Elements():
+		def Layouts():
+			def sPol(wgt, h=None, v=None):
+				Pol = QtWidgets.QSizePolicy(sPols[h], sPols[v])
+				wgt.setSizePolicy(Pol)
+				return wgt
+			def siblings(wgts, t, margin=[0,0,0,0]):
+				wgt,lay=Wgt(t=t)
+				wgt.setContentsMargins(*margin)
+				for item in wgts:
+					lay.addWidget(item)
+				return wgt
+			def center(child,	**k):
+				w = k.get('w') or 0
+				mrg = k.get('mrg') or [0,0,0,0]
+				lSpcFix=SpcFix(w=w)
+				rSpcFix=SpcFix(w=w)
+				wgt,lay=Wgt(t='h')
+				lay.addWidget(lSpcFix)
+				lay.addWidget(child)
+				lay.addWidget(rSpcFix)
+				wgt.setContentsMargins(*mrg)
+				return wgt
+			Lay = types.SimpleNamespace()
+			Lay.sPol = sPol
+			Lay.siblings = siblings
+			Lay.center	= center
+			return Lay
+		def Wgt(n=None, t=None ):
+			Name=n
+			layout=t
+			def makelay():
+					lays={
+						'H' :	QtWidgets.QHBoxLayout,
+						'V' : QtWidgets.QVBoxLayout,
+						'G' :	QtWidgets.QGridLayout,
+						'F' :	QtWidgets.QFormLayout,
+					}
+					makelay = lays[t.upper()]
+					lay	= makelay(wgt)
+					lay.setObjectName(f'lay{n}')
+					lay.setContentsMargins(0, 0, 0, 0)
+					lay.setSpacing(0)
+					return lay
+			wgt = QtWidgets.QWidget()
+			wgt.setObjectName(f'wgt{Name}')
+			wgt.setContentsMargins(0, 0, 0, 0)
+			lay=makelay() if layout else None
+			return wgt,lay
+		def SpcEx(w=0, h=0):
+			wgt,lay=Wgt(t='h')
+			wgt.SpcEx = QtWidgets.QSpacerItem(w, h, sPols['E'], sPols['m'])
+			lay.addItem(wgt.SpcEx)
+			wgt=Elmt.Lay.sPol(wgt,h='E',v='m')
+			return wgt
+		def SpcFix(w=1, h=1):
+			wgt,lay=Wgt(t='h')
+			wgt.SpcFix = QtWidgets.QSpacerItem(w, h, sPols['F'], sPols['m'])
+			lay.addItem(wgt.SpcFix)
+			return wgt
+		def iBtn(n,bi=False, h=20, w=20):
+			def make_icon(n=None):
+				with open('iconl.svg','wb') as l:
+					l.write(base64.b64decode(ico[n][0]))
+				with open('icond.svg','wb') as d:
+					d.write(base64.b64decode(ico[n][1]))
 
-def iBtn(n, bi=False, h=20, w=20):
-	icon = make_icon(n)
-	btn = QtWidgets.QToolButton()
-	btn.setObjectName(f'iBtn{n}')
-	btn.setIcon(icon)
-	btn.setIconSize(QtCore.QSize(32, 32))
-	btn.setMaximumSize(QtCore.QSize(w, h))
-	btn.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-	btn.setCheckable(bi)
-	return btn
+				icon = QtGui.QIcon()
+				icon.addPixmap(QtGui.QPixmap('iconl.svg'), QtGui.QIcon.Normal, QtGui.QIcon.On)
+				icon.addPixmap(QtGui.QPixmap('icond.svg'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+				return icon
+			btn = QtWidgets.QToolButton()
+			btn.setObjectName(f'iBtn{n}')
+			btn.setIcon(make_icon(n))
+			btn.setIconSize(QtCore.QSize(32, 32))
+			btn.setMaximumSize(QtCore.QSize(w, h))
+			btn.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
+			btn.setCheckable(bi)
+			return btn
+		def tBtn(n, bi=False):
+			btn = QtWidgets.QToolButton()
+			btn.setObjectName(f'tBtn{n}')
+			btn.setText(n)
+			btn.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
+			btn.setCheckable(bi)
+			btn.setMaximumHeight(20)
+			return btn
+		def lbl(n):
+			lbl = QtWidgets.QLabel()
+			lbl.setObjectName(f'lbl{n}')
+			lbl.setText(f'{n}')
+			lbl.setContentsMargins(0, 0, 5, 0)
+			lbl=Elmt.Lay.sPol(lbl, h='P', v='P')
+			return lbl
+		def ledit(n,ro=False):
+			txt = QtWidgets.QLineEdit()
+			txt.setObjectName(f'txt{n}')
+			txt.setReadOnly(ro)
+			txt=Elmt.Lay.sPol(txt, h='E', v='P')
+			return txt
+		def Tree():
+			def Tree(**k):
+				def create():
+					wgt	=	QtWidgets.QTreeWidget()
+					wgt.setObjectName("Tree")
 
-def tBtn(n, bi=False):
-	btn = QtWidgets.QToolButton()
-	btn.setObjectName(f'tBtn{n}')
-	btn.setText(n)
-	btn.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
-	btn.setCheckable(bi)
-	btn.setMaximumHeight(20)
-	return btn
+					return wgt
+				def init(wgt):
+					wgt = Elmt.Lay.sPol(wgt, h='E', v='m')
+					wgt.setFrameShape(QtWidgets.QFrame.NoFrame)
+					wgt.setAlternatingRowColors(True)
+					wgt.setAnimated(True)
+					wgt.setHeaderHidden(True)
+					wgt.setColumnCount(5)
+					wgt.hideColumn(2)
+					wgt.hideColumn(3)
+					wgt.hideColumn(4)
+					wgt.setMinimumHeight(10)
+					wgt.setAllColumnsShowFocus(True)
+					wgt.setMinimumHeight(50)
+					wgt.setContentsMargins(*margins)
+					return wgt
 
-def lbl(n):
-	lbl = QtWidgets.QLabel()
-	lbl.setObjectName(f'lbl{n}')
-	lbl.setText(f'{n}')
-	lbl.setContentsMargins(0, 0, 5, 0)
-	lbl=make_SizePol(lbl,hpol='P',vpol='P')
-	return lbl
+				name=k.get('n') or 'Tree'
+				margins=k.get('mrg') or [0,0,0,0]
+				wgt	= create()
+				wgt	= init(wgt)
+				return wgt
+			return Tree
+		Elmt = types.SimpleNamespace()
+		Elmt.Lay			=	Layouts()
+		Elmt.Wgt			= Wgt
+		Elmt.SpcEx		=	SpcEx
+		Elmt.SpcFix		=	SpcFix
+		Elmt.iBtn			=	iBtn
+		Elmt.tBtn			=	tBtn
+		Elmt.lbl			=	lbl
+		Elmt.ledit		=	ledit
+		Elmt.Tree			= Tree()
+		return Elmt
 
-def ledit(n,ro=False):
-	txt = QtWidgets.QLineEdit()
-	txt.setObjectName(f'txt{n}')
-	txt.setReadOnly(ro)
-	txt=make_SizePol(txt,hpol='E',vpol='P')
-	return txt
+	def Widgets():
+		def Tree(*a,**k):
+			def create(wgt):
+				wgt.Tree 		= Elmt.Tree(n='Tree',mrg=margin)
+				return wgt
+			def layout(wgt):
+				wgt.Tree.setContentsMargins(*margin)
+				wgt.setContentsMargins(*margin)
+				return wgt
+			def add(wgt,lay):
+				lay.addWidget(wgt.Tree)
+				return lay
+			def fnx(wgt):
+				def resizeCols(wgt):
+					def resizeCols():
+						wgt.Tree.expandAll()
+						wgt.Tree.resizeColumnToContents(0)
+						wgt.Tree.resizeColumnToContents(1)
+						wgt.Tree.collapseAll()
+					return resizeCols
+				def colWidth(wgt):
+					def colWidth():
+						w1 = wgt.Tree.columnWidth(0)
+						w2 = wgt.Tree.columnWidth(1)
+						return [w1,w2]
+					return colWidth
+				def setColWidth(wgt):
+					def setColWidth(col,rel=None,tot=None):
+						if rel:
+							w=wgt.Tree.columnWidth(col)
+							w =	w + rel
+						else:
+							w	=	tot
+						wgt.Tree.setColumnWidth(col,w)
+					return setColWidth
+				wgt.fittCols 		= resizeCols(wgt)
+				wgt.colWidth		=	colWidth(wgt)
+				wgt.setColWidth = setColWidth(wgt)
+				return wgt
+			def conn(wgt):
+				wgt.Selected=wgt.Tree.itemClicked.connect
+				return wgt
+			Elmt=Elements()
+			name=k.get('n') or 'wgtTree'
+			margin=k.get('mrg') or  [0,0,0,0]
+			wgt,lay =	Elmt.Wgt(n=name,t='h')
+			wgt=create(wgt)
+			wgt=layout(wgt)
+			lay=add(wgt,lay)
+			wgt=fnx(wgt)
+			wgt=conn(wgt)
 
-def wgtTrDict():
-	wgt,lay 		=Wgt(t='h')
-	wgt.wgtTree = QtWidgets.QTreeWidget()
-	wgt.wgtTree = make_SizePol(wgt.wgtTree, hpol='E',vpol='E')
-	# wgt.trDict.setAutoFillBackground(True)
-	# wgt.trDict.setFrameShape(QtWidgets.QFrame.NoFrame)
-	# wgt.trDict.setFrameShadow(QtWidgets.QFrame.Plain)
-	# wgt.trDict.setLineWidth(0)
-	# wgt.trDict.setMidLineWidth(0)
-	# wgt.trDict.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-	# wgt.trDict.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-	# wgt.trDict.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
-	# wgt.trDict.setAutoScroll(False)
-	# wgt.trDict.setAutoScrollMargin(16)
-	# wgt.trDict.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked | QtWidgets.QAbstractItemView.SelectedClicked)
-	# wgt.trDict.setProperty("showDropIndicator", True)
-	# wgt.trDict.setAlternatingRowColors(True)
-	# wgt.trDict.setUniformRowHeights(True)
-	# wgt.trDict.setAnimated(True)
-	# wgt.trDict.setAllColumnsShowFocus(True)
-	# wgt.trDict.setWordWrap(True)
-	wgt.wgtTree.setObjectName("wgtTree")
-	# wgt.trDict.header().setMinimumSectionSize(100)
-	# wgt.trDict.header().setStretchLastSection(True)
-	lay.addWidget(wgt.wgtTree)
-	return wgt
+			return wgt
+		def IncDec(**k):
+			def createElements(wgt):
+				wgt.btnExp 		= QtElmt.iBtn('Inc',h=15,w=15)
+				wgt.btnCol 		= QtElmt.iBtn('Dec',h=15,w=15)
+				return wgt
+			def addElements(wgt,lay):
+				lay.addWidget(wgt.btnExp)
+				lay.addWidget(wgt.btnCol)
+				return lay
+			def conn(wgt):
+				wgt.fnI=wgt.btnExp.clicked.connect
+				wgt.fnD=wgt.btnCol.clicked.connect
+				return wgt
+			QtElmt=Elements()
+			margin=k.get('mrg') or [5,0,5,0]
+			wgt,lay =	QtElmt.Wgt(n='wgtIncDec',t='h')
+			wgt=createElements(wgt)
+			lay=addElements(wgt,lay)
+			wgt=conn(wgt)
+			wgt.setContentsMargins(*margin)
+			return wgt
+		def Search():
+			def createElements(wgt):
+				wgt.btnNext 			= Elmt.iBtn('Next', w=12)
+				wgt.btnPrev 			= Elmt.iBtn('Prev', w=12)
+				wgt.btnSearch 		= Elmt.iBtn('Search')
+				wgt.txt 					=	Elmt.ledit('Search')
+				wgt.wgtPN 				= Elmt.Lay.siblings([wgt.btnPrev,wgt.btnNext],t='h',margin=[0,0,0,0])
+				wgt.wgtCtl			 	= Elmt.Lay.siblings([wgt.wgtPN,wgt.btnSearch],t='h',margin=[0,0,0,0])
+				wgt.wgtSearch			= Elmt.Lay.siblings([wgt.txt,wgt.wgtCtl],t='h',margin=[0,0,0,0])
+				return wgt
+			def addElements(wgt,lay):
+				lay.addWidget(wgt.wgtSearch)
+			def init(wgt):
+				wgt.btnPrev.setHidden(True)
+				wgt.btnNext.setHidden(True)
+				wgt	= Elmt.Lay.sPol(wgt, h='E', v='F')
+				return wgt
+			def fnx(wgt):
+				def dispPN(wgt):
+					def dispPN(show):
+						wgt.btnPrev.setHidden(not show)
+						wgt.btnNext.setHidden(not show)
+					return dispPN
+				def selNext(Tree):
+					def sel():
+						item=wgt.Found.pop(0)
+						Tree.setCurrentItem(wgt.Found[0])
+						wgt.Found.append(item)
+					return sel
+				def selPrev(Tree):
+					def sel():
+						item=wgt.Found.pop(-1)
+						Tree.setCurrentItem(item)
+						wgt.Found=[item,*wgt.Found]
+					return sel
 
-def wgtEditProp(n):
-	wgt,lay 		=Wgt(t='h')
-	wgt.lbl 		= lbl(f'{n}:')
-	wgt.txt 		= ledit(n,ro=True)
-	wgt.btnSet = tBtn('Set')
-	wgt.btnEdit 		=	iBtn('edit-symbolic', bi=True)
-	lay.addWidget(wgt.lbl)
-	lay.addWidget(wgt.txt)
-	lay.addWidget(wgt.btnSet)
-	lay.addWidget(wgt.btnEdit)
-	return wgt
+				wgt.showPN 	= dispPN(wgt)
+				wgt.Next		=	selNext
+				wgt.Prev		=	selPrev
+				return wgt
+			def conn(wgt):
+				wgt.Find		=	wgt.btnSearch.clicked.connect
+				return wgt
+			Elmt=Elements()
+			wgt,lay = Elmt.Wgt(n='Search',t='h')
+			wgt = createElements(wgt)
+			lay = addElements(wgt,lay)
+			wgt = init(wgt)
+			wgt =	fnx(wgt)
+			wgt	= conn(wgt)
+			return wgt
+		def Path():
+			def create(wgt):
+				wgt.txt 		= Elmt.ledit(n='Path',ro=True)
+				wgt.btnCopy = Elmt.iBtn('Copy')
+				return wgt
+			def add(wgt,lay):
+				lay.addWidget(wgt.txt)
+				lay.addWidget(wgt.btnCopy)
+				return lay
+			def conn(wgt):
+				wgt.Copy=wgt.btnCopy.clicked.connect
+				return wgt
+			Elmt = Elements()
+			wgt,lay = Elmt.Wgt(n='Path',t='h')
+			wgt = create(wgt)
+			lay = add(wgt,lay)
+			wgt = conn(wgt)
+			return wgt
+		def EditProp(n,fnSet):
+			def createElements(wgt):
+				wgt.lbl 		= QtElmt.lbl(f'{n}:')
+				wgt.txt 		= QtElmt.ledit(n,ro=True)
+				wgt.txtdup	= QtElmt.ledit(n,ro=True)
+				wgt.btnSet 	= QtElmt.tBtn('Set')
+				wgt.btnEdit =	QtElmt.iBtn('Edit', bi=True)
+				return wgt
+			def addElements(wgt,lay):
+				lay.addWidget(wgt.lbl)
+				lay.addWidget(wgt.txt)
+				lay.addWidget(wgt.txtdup)
+				lay.addWidget(wgt.btnSet)
+				lay.addWidget(wgt.btnEdit)
+				return lay
+			def init(wgt):
+				wgt.btnSet.setHidden(True)
+				wgt.txt.setReadOnly(True)
+				wgt.txtdup.setHidden(True)
+				wgt	= QtElmt.Lay.sPol(wgt, h='E', v='F')
+				return wgt
+			def fnx(wgt):
+				def txtText(wgt):
+					def txtText(text):
+						wgt.txt.setText(text)
+						wgt.txtdup.setText(text)
+					return txtText
+				def setText(wgt):
+					def setText():
+						nText=  wgt.txt.text()
+						wgt.txtdup.setText(nText)
+						wgt.btnEdit.setChecked(False)
+						wgt.btnSet.setHidden(True)
+						fnSet(nText)
+					return setText
+				def edit(wgt):
+					def edit(state):
+						wgt.btnEdit.setChecked(state)
+						wgt.txt.setReadOnly(not state)
+						wgt.btnSet.setHidden(not state)
+						if not state:
+							wgt.txt.setText(wgt.txtdup.text())
+					return edit
+				wgt.Edit 		= edit(wgt)
+				wgt.txtText = txtText(wgt)
+				wgt.setText	= setText(wgt)
+				return wgt
+			def conn(wgt):
+				wgt.btnEdit.clicked.connect(wgt.Edit)
+				wgt.btnSet.clicked.connect(wgt.setText)
+				wgt.txt.returnPressed.connect(wgt.setText)
+				return wgt
+			QtElmt=Elements()
+			wgt,lay =	QtElmt.Wgt(n=n,t='h')
+			wgt 		= createElements(wgt)
+			lay 		= addElements(wgt,lay)
+			wgt			=	init(wgt)
+			wgt 		= fnx(wgt)
+			wgt			=	conn(wgt)
+			return wgt
+		def AppCtl(**k):
+			def createElements(wgt):
+				wgt.hSpc			=	QtElmt.SpcEx()
+				wgt.btnExit		=	QtElmt.tBtn('Exit')
+				wgt.btnSave		=	QtElmt.tBtn('Save As')
+				wgt.btnPrint	=	QtElmt.tBtn('Print')
+				return wgt
+			def addElements(wgt,lay):
+				lay.addWidget(wgt.btnPrint)
+				lay.addWidget(wgt.btnSave)
+				lay.addWidget(wgt.hSpc)
+				lay.addWidget(wgt.btnExit)
+				return lay
+			def init(wgt):
+				wgt.setContentsMargins(*wgt.mrg)
+				wgt=QtElmt.Lay.sPol(wgt,h='E',v='P')
+				return wgt
+			def fnx(wgt):
+				wgt.mrg=k.get('mrg') or [0,0,0,0]
+				return wgt
+			def conn(wgt):
+				wgt.fnPrint=wgt.btnPrint.clicked.connect
+				wgt.fnSave=wgt.btnSave.clicked.connect
+				return wgt
+			QtElmt = Elements()
+			wgt,lay = QtElmt.Wgt(n='wgtAppCtl',t='h')
+			wgt=createElements(wgt)
+			lay=addElements(wgt,lay)
+			wgt=fnx(wgt)
+			wgt=init(wgt)
+			wgt=conn(wgt)
+			return wgt
+		QtWgt = types.SimpleNamespace()
+		QtWgt.Tree			=	Tree
+		QtWgt.Search		= Search
+		QtWgt.Path			=	Path
+		QtWgt.IncDec		=	IncDec
+		QtWgt.EditProp	= EditProp
+		QtWgt.AppCtl		=	AppCtl
+		return QtWgt
 
-def wgtPath():
-	wgt,lay = Wgt(t='h')
-	wgt.lbl = lbl('Path:')
-	wgt.txt = ledit(n='Path',ro=True)
-	wgt.btnCopy = tBtn('Copy')
-	lay.addWidget(wgt.lbl)
-	lay.addWidget(wgt.txt)
-	lay.addWidget(wgt.btnCopy)
-	return wgt
-
-def wgtSearch():
-	wgt,lay = Wgt(t='h')
-	wgt.txt = ledit('Search')
-	wgt.btnSearch = iBtn('search-symbolic')
-	wgt.btnNext = iBtn('carousel-arrow-next-symbolic', w=12)
-	wgt.btnPrev = iBtn('carousel-arrow-previous-symbolic', w=12)
-	lay.addWidget(wgt.txt)
-	lay.addWidget(wgt.btnPrev)
-	lay.addWidget(wgt.btnNext)
-	lay.addWidget(wgt.btnSearch)
-	return wgt
-
-def wgtTreeCtl():
-	wgt,lay = Wgt(t='h')
-	wgt.btnExp = iBtn('value-increase-symbolic',h=15,w=15)
-	wgt.btnCol = iBtn('value-decrease-symbolic',h=15,w=15)
-	lay.addWidget(wgt.btnExp)
-	lay.addWidget(wgt.btnCol)
-	return  wgt
-
-def makesiblings(parent=None,**k):
-	t=k['t']
-	wgt,lay=Wgt(t=t)
-	for child in  a:
-		wgt.child
-
-def SpcEx(w=1, h=1):
-	wgt,lay=Wgt(t='h')
-	wgt.SpcEx = QtWidgets.QSpacerItem(w, h, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-	lay.addItem(wgt.SpcEx)
-	return wgt
-def SpcFix(w=1, h=1):
-	wgt,lay=Wgt(t='h')
-	wgt.SpcFix = QtWidgets.QSpacerItem(w, h, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
-	lay.addItem(wgt.SpcFix)
-	return wgt
-
-
-def siblings(wgt1,wgt2,t,margin=[0,0,0,0]):
-	wgt,lay=Wgt(t=t)
-	wgt.setContentsMargins(*margin)
-	lay.addWidget(wgt1)
-	lay.addWidget(wgt2)
-	return wgt
-def center(child,w=None):
-	lSpcFix=SpcFix(w=w)
-	rSpcFix=SpcFix(w=w)
-	wgt,lay=Wgt(t='h')
-	lay.addWidget(lSpcFix)
-	lay.addWidget(child)
-	lay.addWidget(rSpcFix)
-	return wgt
-
-class Qt5Gui(object):
-	def CreateUi(self,Ui):
-
-
-		self.SpcExAppCtl=SpcEx()
-		self.btnExit=tBtn('Exit')
-		self.btnSave=tBtn('Save As')
-		self.btnPrint=tBtn('Print')
-
-
-		self.wgtTrDict	= wgtTrDict()
-		self.wgtSearch	=	wgtSearch()
-
-		self.wgtEditKey	= wgtEditProp('Key')
-		self.wgtEditVal = wgtEditProp('Val')
-		self.wgtPath=wgtPath()
-
-		self.wgtTrTools		=	center(self.wgtSearch,w=5)
-		self.wgtTreeDisp	= siblings(self.wgtTrDict,self.wgtTrTools,'v',margin=[0,0,0,5])
-		self.wgtFileCtl 	= siblings(self.btnPrint,self.btnSave,'h')
-		self.wgtAppCtl		= siblings(self.SpcExAppCtl,self.btnExit,'h')
-		self.wgtCtl				=	siblings(self.wgtFileCtl,self.wgtAppCtl,'h')
-		self.wgtEdit			=	siblings(self.wgtEditKey,self.wgtEditVal,'v',margin=[0,0,0,5])
-
-		self.wgtWrpEdit	=	center(self.wgtEdit,w=25)
-
-
-		self.wgtWrpPath=center(self.wgtPath,w=20)
-		self.wgtTreeDisp.wgtTrCtl		=	wgtTreeCtl()
-
-
-		self.wgtTools,self.layTools=Wgt(t='v')
-		self.layTools.addWidget(self.wgtWrpEdit)
-		self.layTools.addWidget(self.wgtWrpPath)
-		self.wgtTreeDisp
-
-
-		Ui.addWidget(self.wgtTreeDisp)
-		Ui.addWidget(self.wgtTools)
-		Ui.addWidget(self.wgtCtl)
-
-
-def make_tree(gui, branches=[], **k):
-	def make_branch(root, dct, path):
-		for key in dct.keys():
-			data = dct[key]
-			dictpath = f"{path}['{key}']"
-			branch = QtWidgets.QTreeWidgetItem()
-			branch.setText(0, str(key))
-			branch.setText(2, dictpath)
-			if isinstance(data, dict):
-				make_branch(branch, data, dictpath)
-			else:
-				data = str(data)
-				w = gui.wgtTrDict.wgtTree.columnWidth(1)
-				data = repr(data) if callable(data) else data
-				dispdata = f'{data[0:w - 4]}...' if len(data) > w - 4 else data
-				branch.setText(1, dispdata)
-				branch.setText(3, data)
-			root.addChild(branch)
-	name = k['name']
-	data = k['data']
-	root = QtWidgets.QTreeWidgetItem()
-	root.setText(0, name)
-	root.setText(2, name)
-	make_branch(root, data, name)
-	return root
-
-def construct_Qt5Ui():
 	def QtApp():
 		app = types.SimpleNamespace()
 		app.QtWin = QtWidgets.QApplication(sys.argv)
-		app.QtClip = app.QtWin.clipboard()
 		return app
 
-	def disp(gui):
-		frm = [gui.hide, '', gui.show]
-		def showhide(state):
-			frm[state]()
-		return showhide
+	def Fnx():
+		def search(App):
+			# def find():
+			# 	found=App.Main.Tree.Tree.findChild(str, App.Main.Search.txt.text(), QtCore.Qt.MatchFlag.MatchRecursive)
+			# 	found2=App.Main.Tree.Tree.findChild(str , App.Main.Search.txt.text(), QtCore.Qt.MatchFlag.MatchContains)
+			# 	print(App.Main.Search.txt.text(),found,found2)
+			# return find
+			def  searchTree():
+				searchStr= App.Main.Search.txt.text()
+				find=App.Main.Tree.Tree.findItems(searchStr,(QtCore.Qt.MatchRecursive|QtCore.Qt.MatchRegExp|QtCore.Qt.CaseInsensitive), 0)
+				if len(find) > 1 :
+					App.Main.Search.showPN(True)
+					App.Main.Tree.Tree.setCurrentItem(find[0])
+				elif len(find) == 1 :
+					App.Main.Search.showPN(False)
+					App.Main.Tree.Tree.setCurrentItem(find[0])
+				else:
+					App.Main.Search.showPN(False)
+				App.Main.Search.Found=find
+			return searchTree
+		def searchSel(App):
+			def searchSel():
+				App.Main.Tree.Tree.currentItemChanged.connect(App.Fnx.OnSelect)
+			return searchSel
 
-	def select(gui):
-		txtBox = [gui.wgtEditKey.txt, gui.wgtEditVal.txt, gui.wgtPath.txt, ]
-		def fill():
-			data = gui.wgtTrDict.wgtTree.selectedItems()
-			for idx, txtbox in zip([0, 3, 2], txtBox):
-				txtbox.setText(data[0].text(idx))
-		return fill
+		def select(*a,**k):
+			Key=k.get('Key')
+			Val=k.get('Val')
+			Path=k.get('Path')
+			txtBox = [Key.txt, Val.txt, Path.txt ]
+			def select(data):
+				# data = gui.Tree.Tree.selectedItems()
+				for idx, txtbox in zip([0, 3, 2], txtBox):
+					txtbox.setText(data.text(idx))
+			return select
 
-	def fitt(gui):
-		gui.wgtTrDict.wgtTree.expandAll()
-		gui.wgtTrDict.wgtTree.resizeColumnToContents(0)
-		w = gui.wgtTrDict.wgtTree.columnWidth(0)
-		gui.wgtTrDict.wgtTree.setColumnWidth(0, w + 20)
+		def copytoclip(txt):
+			def toclip():
+				App.Clip.setText(txt.text())
+			return toclip
 
-		gui.wgtTrDict.wgtTree.resizeColumnToContents(1)
-		w = gui.wgtTrDict.wgtTree.columnWidth(1)
-		gui.wgtTrDict.wgtTree.setColumnWidth(1, w + 20)
-		gui.wgtTrDict.wgtTree.collapseAll()
+		def allign(gui):
+			maxwidth=max(gui.Main.Key.lbl.width(),gui.Main.Val.lbl.width())
+			gui.Main.Key.lbl.setMinimumWidth(maxwidth)
+			gui.Main.Val.lbl.setMinimumWidth(maxwidth)
+			App.Allign 	=	allign
+			App.Select 	=	select
+			return App
 
-	def copytoclip(txt):
-		def toclip():
-			App.QtClip.setText(txt.text())
-		return toclip
+		def updateVal(gui,data):
+			update=changeVal(data)
+			nVal=gui.Val.txt.text()
+			path=gui.Path.txt.text()
+			return update(path,nVal)
 
-	def editkey(gui):
-		def edit(state):
-			gui.wgtEditKey.btnEdit.setChecked(state)
-			gui.wgtEditKey.txt.setReadOnly(not state)
-			gui.wgtEditKey.btnSet.setHidden(not state)
+		def make_tree(App, branches=[], **k):
+			keylist=[]
+			def make_branch(root, dct, path ,keylist=keylist):
+				for key in dct:
+					data = dct[key]
+					keylist+=[key]
+					dictpath = f"{path}['{key}']"
+					branch = QtWidgets.QTreeWidgetItem()
+					branch.setText(0, str(key))
+					branch.setText(2, dictpath)
+					keystr=''.join([f"['{key}']" for key in keylist])
+					branch.setText(4,keystr)
+					if isinstance(data, dict):
+						make_branch(branch, data, dictpath,keylist=keylist)
+					else:
 
-		return edit
+						data = str(data)
+						w = App.Main.Tree.Tree.columnWidth(1)
+						data = repr(data) if callable(data) else data
+						dispdata = f'{data[0:w - 4]}...' if len(data) > w - 4 else data
+						branch.setText(1, dispdata)
+						branch.setText(3, data)
+					keylist.pop(-1)
 
-	def editval(gui):
-		def edit(state):
-			gui.wgtEditVal.btnEdit.setChecked(state)
-			gui.wgtEditVal.txt.setReadOnly(not state)
-			gui.wgtEditVal.btnSet.setHidden(not state)
-		return edit
+					root.addChild(branch)
+			name = k['name']
+			data = k['data']
+			root = QtWidgets.QTreeWidgetItem()
+			root.setText(0, name)
+			root.setText(2, name)
+			make_branch(root, data, name)
+			return root
 
-	def search(gui):
-		def find():
-			found=gui.trDict.findChild(str, gui.txtSearch.text(), QtCore.Qt.MatchFlag.MatchRecursive)
-			found2=gui.trDict.findChild(str , gui.txtSearch.text(), QtCore.Qt.MatchFlag.MatchContains)
-			print(gui.txtSearch.text(),found,found2)
-		return find
+		def stdf(base,**k):
+			def Dct(*a,**k):
+				with open(file , 'a') as f:
+					dct = k.get('dct') or base
+					ident = k.get('ident') or 3
+					def testkey(content, ident):
+						if isinstance(dct[key], dict):
+							tabs = ident * '\t'
+							f.write(tabs)
 
-	def create(wgt):
-		def init():
-			gui.wgtTrDict.wgtTree.expandAll()
-			gui.wgtTrDict.wgtTree.resizeColumnToContents(0)
-			gui.wgtTrDict.wgtTree.resizeColumnToContents(1)
-			gui.wgtTrDict.wgtTree.collapseAll()
-			gui.wgtTrDict.wgtTree.expandItem(gui.wgtTrDict.wgtTree.topLevelItem(0))
-			gui.wgtTrDict.wgtTree.setColumnCount(4)
-			gui.wgtTrDict.wgtTree.hideColumn(2)
-			gui.wgtTrDict.wgtTree.hideColumn(3)
+							f.write(f"'{key}'\t:\t")
+							f.write('{\n')
+							f.flush()
+							ident += 2
+							Dct(dct=dct[key], ident=ident)
+						else:
+							# ident -= 1
+							tabs = ident * '\t'
+							f.write(tabs)
+							f.write(f"\t'{key}'")
+							f.write('\t:\t')
+							f.write(f"'{dct[key]}'\t,")
+							f.write('\n')
+							f.flush()
+					for key in dct:
+						testkey(dct[key], ident)
+					tabs = ident * '\t'
+					f.write(tabs)
+					f.write('}\n')
 
-			gui.wgtEditKey.btnEdit.setChecked(False)
-			gui.wgtEditVal.btnEdit.setChecked(False)
+			file=k.get('file')
+			with open(file , 'w') as f:
+				f.write(f'{k.get("name")}\t=\t')
+				f.write('{\n')
 
-			gui.wgtSearch.btnNext.hide()
-			gui.wgtSearch.btnPrev.hide()
-			gui.wgtEditKey.btnSet.setHidden(True)
-			gui.wgtEditVal.btnSet.setHidden(True)
+			return Dct
 
+		def stdw(base,**k):
+			def Tree(*a,**k):
+				d = k.get('d') or base
+				indent = k.get('indent') or 0
+				for key in d:
+					if isinstance(d[key], dict):
+						sys.stdout.write('  ┃  ' * (indent) + '  ┣━━ ' + '\x1b[1;32m' + str(key) + ':' + '\x1b[0m\n')
+						Tree(d=d[key],indent=indent + 1)
+					else:
+						sys.stdout.write('  ┃  ' * (indent) + '  ┣━━ ' + str(key) + '\t:\t' + str(d[key]) + '\n')
+			return Tree
 
-		def connect():
+		fnx= types.SimpleNamespace()
+		fnx.select 			= select
+		fnx.copytoclip  =	copytoclip
+		fnx.allign      =	allign
+		fnx.updateVal   =	updateVal
+		fnx.makeTree		=	make_tree
+		fnx.stdf				=	stdf
+		fnx.stdw				= stdw
+		fnx.OnSelect		= select(Key=App.Main.Key,Val=App.Main.Val,Path=App.Main.Path)
+		fnx.PathToClip	=	copytoclip(App.Main.Path.txt)
+		fnx.Searched		=	search(App)
+		fnx.Found				=	searchSel(App)
+		fnx.stdf 				=	stdf(dct,file='test.txt',name='Test')
+		fnx.stdo				=	stdw(dct,name='Test')
+		return fnx
 
-			gui.wgtTrDict.wgtTree.itemClicked.connect(select(gui))
-			gui.wgtTreeDisp.wgtTrCtl.btnExp.clicked.connect(gui.wgtTrDict.wgtTree.expandAll)
-			gui.wgtTreeDisp.wgtTrCtl.btnCol.clicked.connect(gui.wgtTrDict.wgtTree.collapseAll)
-			# gui.btnCopy.clicked.connect(copytoclip(gui.txtPath))
-			# gui.btnSearch.clicked.connect(search(gui))
-			# gui.btnAbout.clicked.connect(copytoclip)
-			gui.wgtEditKey.btnEdit.clicked.connect(editkey(gui))
-			gui.wgtEditVal.btnEdit.clicked.connect(editval(gui))
-			gui.btnExit.clicked.connect(sys.exit)
-		gui = Qt5Gui()
-		gui.CreateUi(wgt)
+	def create(App):
+		def MainWgt(App):
+			wgt,lay = App.Elements.Wgt(n='Qt5',t='v')
+			App.Main=wgt
+			App.Main.lay=lay
+			return App
+		def Elements(App):
+			App.Main.Tree			=	App.Widgets.Tree()
+			App.Main.Search		= App.Widgets.Search()
+			App.Main.ExpCol		=	App.Widgets.IncDec()
+			App.Main.Path 		= App.Widgets.Path()
+			App.Main.Key 			= App.Widgets.EditProp('Key',print)
+			App.Main.Val 			= App.Widgets.EditProp('Val',print)
+			App.Main.AppCtl		=	App.Widgets.AppCtl()
+			return App
+		def blocks(App):
+			App.Main.wgtCtl		=	App.Elements.Lay.siblings([App.Main.ExpCol,App.Main.Search],t='h')
+			App.Main.WrpPath	=	App.Elements.Lay.center(App.Main.Path,w=5,margin=[0,0,0,5])
+			App.Main.Edit			=	App.Elements.Lay.siblings([App.Main.Key,App.Main.Val],'v',margin=[0,0,0,5])
+			App.Main.wrpEdit		=	App.Elements.Lay.center(App.Main.Edit,w=25)
+			App.Main.TrDisp		=	App.Elements.Lay.siblings([App.Main.Tree,App.Main.wgtCtl],t='v')
+			App.Main.Tools			=	App.Elements.Lay.siblings([App.Main.WrpPath,App.Main.wrpEdit],'v',margin=[0,0,0,5])
+			return App
+		def add(App):
+			App.Main.lay.addWidget(App.Main.TrDisp)
+			App.Main.lay.addWidget(App.Main.Tools)
+			App.Main.lay.addWidget(App.Main.AppCtl)
+			return App
+		App=MainWgt(App)
+		App=Elements(App)
+		App=blocks(App)
+		App=add(App)
+		return App.Main
 
-		init()
-		connect()
-		return gui
+	def conn(App):
+		App.Main.ExpCol.fnI(App.Main.Tree.Tree.expandAll)
+		App.Main.ExpCol.fnD(App.Main.Tree.Tree.collapseAll)
+		App.Main.Tree.Selected(App.Fnx.OnSelect)
+		App.Main.AppCtl.fnSave(App.Fnx.stdf)
+		App.Main.AppCtl.fnPrint(App.Fnx.stdo)
+		App.Main.Path.Copy(App.Fnx.PathToClip)
+		App.Main.Search.Find(App.Fnx.Searched)
+		return App
+
 	App = QtApp()
-	App.wgtQt5,App.layQt5 = Wgt(n='Qt5',t='v')
-	App.Ui = create(App.layQt5)
-	App.Disp = disp
-	App.Search = search
-	App.Select = select
-	App.Fitt = fitt
-	App.Create = create
+	App.Elements = Elements()
+	App.Widgets = Widgets()
+	App.Main		= create(App)
+
+	App.Fnx			= Fnx()
+	App.Conn		=	conn(App)
+	App.Clip = App.QtWin.clipboard()
 	return App
 
-def print_dicttree(dct, ident):
-	def testkey(content, ident):
-		if isinstance(dct[key], dict):
-			tabs = ident * '\t'
-			sys.stdout.write(tabs)
-			sys.stdout.write(str(key))
-			sys.stdout.write('\n')
-			sys.stdout.flush()
+def update():
+	def update(data,keylist,val):
+		dict=data
+		for key in keylist:
+			dict=dict[key]
+		dict=val
+		return dict
+	return update
+def changeKey(data,path):
+	val=eval(path)
+def changeVal(data):
+	fullDct=data
+	def changeval(path,newVal):
+		exec(f'fullDct{path}={newVal}')
+	return changeval
 
-			ident += 1
-			print_dicttree(dct[key], ident)
 
-		else:
-			tabs = ident * '\t'
-			sys.stdout.write(tabs)
-			sys.stdout.write(key)
-			sys.stdout.write('\t:\t')
-			sys.stdout.write(str(dct[key]))
-			sys.stdout.write('\n')
-			sys.stdout.flush()
-	for key in dct.keys():
-		testkey(dct[key], ident)
-
-def stdw_dct(d, indent=0):
-	for key in d.keys():
-		if isinstance(d[key], dict):
-			sys.stdout.write('  ┃  ' * (indent) + '  ┣━━ ' + '\x1b[1;32m' + str(key) + ':' + '\x1b[0m\n')
-			stdw_dct(d[key], indent + 1)
-		else:
-			sys.stdout.write('  ┃  ' * (indent) + '  ┣━━ ' + str(key) + '\t:\t' + str(d[key]) + '\n')
 
 def browse(**k):
-	QtApp = construct_Qt5Ui()
 	kv = k.popitem()
-	trunk = make_tree(QtApp.Ui, name=kv[0], data=kv[1])
-	QtApp.Ui.wgtTrDict.wgtTree
-	QtApp.Ui.wgtTrDict.wgtTree.addTopLevelItem(trunk)
-	QtApp.Fitt(QtApp.Ui)
-	QtApp.wgtQt5.show()
+	QtApp = construct_Qt5Ui(kv[1])
+	trunk = QtApp.Fnx.makeTree(QtApp, name=kv[0], data=kv[1])
+	QtApp.Main.Tree.Tree.addTopLevelItem(trunk)
+	QtApp.Main.show()
+	QtApp.Fnx.allign(QtApp)
+	QtApp.Main.Tree.fittCols()
 	sys.exit(QtApp.QtWin.exec())
+
 if __name__ == '__main__' :
 	dct = {
 		'a' : {
 						'aa' : 'aa',
 						'ab'  : 'ab'
+
 		},
 		'b'  : { 'ba' : 'ba',
-              'bb': 'bb'
+	            'bb':  {  'bba' : ['bba', 'ccc'],
+	                      'bbb' :	'ffff',}
 		}}
 	browse(test=dct)
+
+
+
+		# def connect():
+			# gui.Tree.itemClicked.connect(select(gui))
+			# gui.Search.btnSearch.clicked.connect(searchSel())
+
+			# # gui.btnCopy.clicked.connect(copytoclip(gui.txtPath))
+			# # gui.btnSearch.clicked.connect(search(gui))
+			# # gui.btnAbout.clicked.connect(copytoclip)
+			# # gui.wgtEditKey.btnEdit.clicked.connect(edit(gui.wgtEditKey))
+			# # gui.wgtEditVal.btnEdit.clicked.connect(edit(gui.wgtEditVal))
+			# gui.btnExit.clicked.connect(sys.exit)
+
+
+
+
+
+# def wgtTreeDisp(Tree,Search,mrg=[0,0,0,0]):
+# 	def createElements(wgt,tree):
+# 		wgt.IncDec		= QtWgt.IncDec(fnI=Tree.expandAll,fnD=Tree.collapseAll)
+# 		wgt.Search 		= Search
+# 		wgt.trCtl			=	QtElmt.QtLay.siblings([wgt.IncDec,wgt.Search],t='h',margin=[0,1,5,0])
+# 		wgt.TrDisp		= QtElmt.QtLay.siblings([Tree,wgt.trCtl],t='v',margin=[0,0,0,1])
+# 		return wgt
+# 	def addElements(wgt,lay,):
+# 		lay.addWidget(wgt.TrDisp)
+# 		return lay
+# 	def init(wgt):
+# 		wgt	= sPol(wgt, h='E', v='mE')
+# 		wgt.TrDisp	= sPol(wgt.TrDisp, h='E', v='mE')
+# 		wgt.setContentsMargins(*mrg)
+# 		return wgt
+# 	def addFnx(wgt,Tree,Search):
+# 		def selNext(Tree):
+# 			def sel():
+# 				item=wgt.Found.pop(0)
+# 				Tree.setCurrentItem(wgt.Found[0])
+# 				wgt.Found.append(item)
+# 			return sel
+# 		def selPrev(Tree):
+# 			def sel():
+# 				item=wgt.Found.pop(-1)
+# 				Tree.setCurrentItem(item)
+# 				wgt.Found=[item,*wgt.Found]
+# 			return sel
+# 		def dispPN(wgt):
+# 			def dispPN():
+# 				wgt.btnPrev.setHidden(False)
+# 				wgt.btnNext.setHidden(False)
+# 			return dispPN
+# 		def searchTree(Tree,Search):
+# 			def  searchTree():
+# 				searchStr= Search.txt.text()
+# 				find=Tree.findItems(searchStr,(QtCore.Qt.MatchRecursive|QtCore.Qt.MatchRegExp|QtCore.Qt.CaseInsensitive), 0)
+# 				if len(find) > 1 :
+# 					wgt.dispPN()
+# 					Tree.setCurrentItem(find[0])
+# 				wgt.Found=find
+# 			return searchTree
+# 		wgt.Search = searchTree(Tree,Search)
+# 		wgt.dispPN	= dispPN(Search)
+# 		wgt.Next   = selNext(Tree)
+# 		wgt.Prev   = selPrev(Tree)
+# 		return wgt
+# 	def conn(wgt,Tree):
+# 		Search.btnSearch.clicked.connect(wgt.Search)
+# 		Search.btnNext.clicked.connect(wgt.Next)
+# 		Search.btnPrev.clicked.connect(wgt.Prev)
+# 		return wgt
+# 	wgt,lay 		=	Wgt(n='wgtTreeDisp',t='v')
+# 	wgt=createElements(wgt,Tree)
+# 	lay=addElements(wgt,lay)
+# 	wgt=init(wgt)
+# 	wgt=addFnx(wgt,Tree,Search)
+# 	wgt=conn(wgt,Tree)
+# 	return wgt
