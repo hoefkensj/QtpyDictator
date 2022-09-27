@@ -129,35 +129,32 @@ def construct_Qt5Ui(data):
 			txt.setReadOnly(ro)
 			txt=Elmt.Lay.sPol(txt, h='E', v='P')
 			return txt
-		def Tree():
-			def Tree(**k):
-				def create():
-					wgt	=	QtWidgets.QTreeWidget()
-					wgt.setObjectName("Tree")
-
-					return wgt
-				def init(wgt):
-					wgt = Elmt.Lay.sPol(wgt, h='E', v='m')
-					wgt.setFrameShape(QtWidgets.QFrame.NoFrame)
-					wgt.setAlternatingRowColors(True)
-					wgt.setAnimated(True)
-					wgt.setHeaderHidden(True)
-					wgt.setColumnCount(5)
-					wgt.hideColumn(2)
-					wgt.hideColumn(3)
-					wgt.hideColumn(4)
-					wgt.setMinimumHeight(10)
-					wgt.setAllColumnsShowFocus(True)
-					wgt.setMinimumHeight(50)
-					wgt.setContentsMargins(*margins)
-					return wgt
-
-				name=k.get('n') or 'Tree'
-				margins=k.get('mrg') or [0,0,0,0]
-				wgt	= create()
-				wgt	= init(wgt)
+		def Tree(**k):
+			def create():
+				wgt	=	QtWidgets.QTreeWidget()
+				wgt.setObjectName(name)
 				return wgt
-			return Tree
+			def init(wgt):
+				wgt = Elmt.Lay.sPol(wgt, h='E', v='m')
+				# wgt.setFrameShape(QtWidgets.QFrame.NoFrame)
+				wgt.setAlternatingRowColors(True)
+				wgt.setAnimated(True)
+				wgt.setHeaderHidden(True)
+				wgt.setColumnCount(5)
+				wgt.hideColumn(2)
+				wgt.hideColumn(3)
+				wgt.hideColumn(4)
+				wgt.setMinimumHeight(10)
+				wgt.setAllColumnsShowFocus(True)
+				wgt.setMinimumHeight(50)
+				wgt.setContentsMargins(*margins)
+				return wgt
+			name=k.get('n') or 'Tree'
+			margins=k.get('mrg') or [0,0,0,0]
+			wgt	= create()
+			wgt	= init(wgt)
+			return wgt
+
 		Elmt = types.SimpleNamespace()
 		Elmt.Lay			=	Layouts()
 		Elmt.Wgt			= Wgt
@@ -167,7 +164,7 @@ def construct_Qt5Ui(data):
 		Elmt.tBtn			=	tBtn
 		Elmt.lbl			=	lbl
 		Elmt.ledit		=	ledit
-		Elmt.Tree			= Tree()
+		Elmt.Tree			= Tree
 		return Elmt
 
 	def Widgets():
@@ -211,6 +208,7 @@ def construct_Qt5Ui(data):
 				return wgt
 			def conn(wgt):
 				wgt.Selected=wgt.Tree.itemClicked.connect
+				wgt.FoundSel	=	wgt.Tree.itemSelectionChanged.connect
 				return wgt
 			Elmt=Elements()
 			name=k.get('n') or 'wgtTree'
@@ -221,14 +219,13 @@ def construct_Qt5Ui(data):
 			lay=add(wgt,lay)
 			wgt=fnx(wgt)
 			wgt=conn(wgt)
-
 			return wgt
 		def IncDec(**k):
-			def createElements(wgt):
+			def create(wgt):
 				wgt.btnExp 		= QtElmt.iBtn('Inc',h=15,w=15)
 				wgt.btnCol 		= QtElmt.iBtn('Dec',h=15,w=15)
 				return wgt
-			def addElements(wgt,lay):
+			def add(wgt,lay):
 				lay.addWidget(wgt.btnExp)
 				lay.addWidget(wgt.btnCol)
 				return lay
@@ -239,8 +236,8 @@ def construct_Qt5Ui(data):
 			QtElmt=Elements()
 			margin=k.get('mrg') or [5,0,5,0]
 			wgt,lay =	QtElmt.Wgt(n='wgtIncDec',t='h')
-			wgt=createElements(wgt)
-			lay=addElements(wgt,lay)
+			wgt=create(wgt)
+			lay=add(wgt,lay)
 			wgt=conn(wgt)
 			wgt.setContentsMargins(*margin)
 			return wgt
@@ -252,7 +249,7 @@ def construct_Qt5Ui(data):
 				wgt.txt 					=	Elmt.ledit('Search')
 				wgt.wgtPN 				= Elmt.Lay.siblings([wgt.btnPrev,wgt.btnNext],t='h',margin=[0,0,0,0])
 				wgt.wgtCtl			 	= Elmt.Lay.siblings([wgt.wgtPN,wgt.btnSearch],t='h',margin=[0,0,0,0])
-				wgt.wgtSearch			= Elmt.Lay.siblings([wgt.txt,wgt.wgtCtl],t='h',margin=[0,0,0,0])
+				wgt.wgtSearch			= Elmt.Lay.siblings([wgt.txt,wgt.wgtCtl],t='h',margin=[0,0,5,0])
 				return wgt
 			def addElements(wgt,lay):
 				lay.addWidget(wgt.wgtSearch)
@@ -260,6 +257,7 @@ def construct_Qt5Ui(data):
 				wgt.btnPrev.setHidden(True)
 				wgt.btnNext.setHidden(True)
 				wgt	= Elmt.Lay.sPol(wgt, h='E', v='F')
+				wgt.Found = None
 				return wgt
 			def fnx(wgt):
 				def dispPN(wgt):
@@ -281,11 +279,13 @@ def construct_Qt5Ui(data):
 					return sel
 
 				wgt.showPN 	= dispPN(wgt)
-				wgt.Next		=	selNext
-				wgt.Prev		=	selPrev
+				wgt.selNext		=	selNext
+				wgt.selPrev		=	selPrev
 				return wgt
 			def conn(wgt):
 				wgt.Find		=	wgt.btnSearch.clicked.connect
+				wgt.Next		= wgt.btnNext.clicked.connect
+				wgt.Prev		=	wgt.btnPrev.clicked.connect
 				return wgt
 			Elmt=Elements()
 			wgt,lay = Elmt.Wgt(n='Search',t='h')
@@ -419,7 +419,7 @@ def construct_Qt5Ui(data):
 		app.QtWin = QtWidgets.QApplication(sys.argv)
 		return app
 
-	def Fnx():
+	def Fnx(App):
 		def search(App):
 			# def find():
 			# 	found=App.Main.Tree.Tree.findChild(str, App.Main.Search.txt.text(), QtCore.Qt.MatchFlag.MatchRecursive)
@@ -428,7 +428,10 @@ def construct_Qt5Ui(data):
 			# return find
 			def  searchTree():
 				searchStr= App.Main.Search.txt.text()
-				find=App.Main.Tree.Tree.findItems(searchStr,(QtCore.Qt.MatchRecursive|QtCore.Qt.MatchRegExp|QtCore.Qt.CaseInsensitive), 0)
+				Opts =  (QtCore.Qt.MatchRecursive|QtCore.Qt.MatchRegExp|QtCore.Qt.CaseInsensitive)
+				findkeys	=	App.Main.Tree.Tree.findItems(searchStr,Opts, 0)
+				findvals	=	App.Main.Tree.Tree.findItems(searchStr,Opts, 1)
+				find			=	[*findkeys,*findvals]
 				if len(find) > 1 :
 					App.Main.Search.showPN(True)
 					App.Main.Tree.Tree.setCurrentItem(find[0])
@@ -439,6 +442,7 @@ def construct_Qt5Ui(data):
 					App.Main.Search.showPN(False)
 				App.Main.Search.Found=find
 			return searchTree
+
 		def searchSel(App):
 			def searchSel():
 				App.Main.Tree.Tree.currentItemChanged.connect(App.Fnx.OnSelect)
@@ -450,7 +454,6 @@ def construct_Qt5Ui(data):
 			Path=k.get('Path')
 			txtBox = [Key.txt, Val.txt, Path.txt ]
 			def select(data):
-				# data = gui.Tree.Tree.selectedItems()
 				for idx, txtbox in zip([0, 3, 2], txtBox):
 					txtbox.setText(data.text(idx))
 			return select
@@ -467,12 +470,6 @@ def construct_Qt5Ui(data):
 			App.Allign 	=	allign
 			App.Select 	=	select
 			return App
-
-		def updateVal(gui,data):
-			update=changeVal(data)
-			nVal=gui.Val.txt.text()
-			path=gui.Path.txt.text()
-			return update(path,nVal)
 
 		def make_tree(App, branches=[], **k):
 			keylist=[]
@@ -560,7 +557,6 @@ def construct_Qt5Ui(data):
 		fnx.select 			= select
 		fnx.copytoclip  =	copytoclip
 		fnx.allign      =	allign
-		fnx.updateVal   =	updateVal
 		fnx.makeTree		=	make_tree
 		fnx.stdf				=	stdf
 		fnx.stdw				= stdw
@@ -570,6 +566,8 @@ def construct_Qt5Ui(data):
 		fnx.Found				=	searchSel(App)
 		fnx.stdf 				=	stdf(dct,file='test.txt',name='Test')
 		fnx.stdo				=	stdw(dct,name='Test')
+		fnx.selNext			= App.Main.Search.selNext(App.Main.Tree.Tree)
+		fnx.selPrev			= App.Main.Search.selPrev(App.Main.Tree.Tree)
 		return fnx
 
 	def create(App):
@@ -610,40 +608,23 @@ def construct_Qt5Ui(data):
 		App.Main.ExpCol.fnI(App.Main.Tree.Tree.expandAll)
 		App.Main.ExpCol.fnD(App.Main.Tree.Tree.collapseAll)
 		App.Main.Tree.Selected(App.Fnx.OnSelect)
+		App.Main.Tree.FoundSel(App.Fnx.Found)
 		App.Main.AppCtl.fnSave(App.Fnx.stdf)
 		App.Main.AppCtl.fnPrint(App.Fnx.stdo)
 		App.Main.Path.Copy(App.Fnx.PathToClip)
 		App.Main.Search.Find(App.Fnx.Searched)
+		App.Main.Search.Next(App.Fnx.selNext)
+		App.Main.Search.Prev(App.Fnx.selPrev)
 		return App
 
 	App = QtApp()
-	App.Elements = Elements()
-	App.Widgets = Widgets()
-	App.Main		= create(App)
-
-	App.Fnx			= Fnx()
-	App.Conn		=	conn(App)
-	App.Clip = App.QtWin.clipboard()
+	App.Elements	= Elements()
+	App.Widgets 	= Widgets()
+	App.Main			= create(App)
+	App.Fnx				= Fnx(App)
+	App.Conn			=	conn(App)
+	App.Clip			= App.QtWin.clipboard()
 	return App
-
-def update():
-	def update(data,keylist,val):
-		dict=data
-		for key in keylist:
-			dict=dict[key]
-		dict=val
-		return dict
-	return update
-def changeKey(data,path):
-	val=eval(path)
-def changeVal(data):
-	fullDct=data
-	def changeval(path,newVal):
-		exec(f'fullDct{path}={newVal}')
-	return changeval
-
-
-
 def browse(**k):
 	kv = k.popitem()
 	QtApp = construct_Qt5Ui(kv[1])
@@ -667,79 +648,3 @@ if __name__ == '__main__' :
 		}}
 	browse(test=dct)
 
-
-
-		# def connect():
-			# gui.Tree.itemClicked.connect(select(gui))
-			# gui.Search.btnSearch.clicked.connect(searchSel())
-
-			# # gui.btnCopy.clicked.connect(copytoclip(gui.txtPath))
-			# # gui.btnSearch.clicked.connect(search(gui))
-			# # gui.btnAbout.clicked.connect(copytoclip)
-			# # gui.wgtEditKey.btnEdit.clicked.connect(edit(gui.wgtEditKey))
-			# # gui.wgtEditVal.btnEdit.clicked.connect(edit(gui.wgtEditVal))
-			# gui.btnExit.clicked.connect(sys.exit)
-
-
-
-
-
-# def wgtTreeDisp(Tree,Search,mrg=[0,0,0,0]):
-# 	def createElements(wgt,tree):
-# 		wgt.IncDec		= QtWgt.IncDec(fnI=Tree.expandAll,fnD=Tree.collapseAll)
-# 		wgt.Search 		= Search
-# 		wgt.trCtl			=	QtElmt.QtLay.siblings([wgt.IncDec,wgt.Search],t='h',margin=[0,1,5,0])
-# 		wgt.TrDisp		= QtElmt.QtLay.siblings([Tree,wgt.trCtl],t='v',margin=[0,0,0,1])
-# 		return wgt
-# 	def addElements(wgt,lay,):
-# 		lay.addWidget(wgt.TrDisp)
-# 		return lay
-# 	def init(wgt):
-# 		wgt	= sPol(wgt, h='E', v='mE')
-# 		wgt.TrDisp	= sPol(wgt.TrDisp, h='E', v='mE')
-# 		wgt.setContentsMargins(*mrg)
-# 		return wgt
-# 	def addFnx(wgt,Tree,Search):
-# 		def selNext(Tree):
-# 			def sel():
-# 				item=wgt.Found.pop(0)
-# 				Tree.setCurrentItem(wgt.Found[0])
-# 				wgt.Found.append(item)
-# 			return sel
-# 		def selPrev(Tree):
-# 			def sel():
-# 				item=wgt.Found.pop(-1)
-# 				Tree.setCurrentItem(item)
-# 				wgt.Found=[item,*wgt.Found]
-# 			return sel
-# 		def dispPN(wgt):
-# 			def dispPN():
-# 				wgt.btnPrev.setHidden(False)
-# 				wgt.btnNext.setHidden(False)
-# 			return dispPN
-# 		def searchTree(Tree,Search):
-# 			def  searchTree():
-# 				searchStr= Search.txt.text()
-# 				find=Tree.findItems(searchStr,(QtCore.Qt.MatchRecursive|QtCore.Qt.MatchRegExp|QtCore.Qt.CaseInsensitive), 0)
-# 				if len(find) > 1 :
-# 					wgt.dispPN()
-# 					Tree.setCurrentItem(find[0])
-# 				wgt.Found=find
-# 			return searchTree
-# 		wgt.Search = searchTree(Tree,Search)
-# 		wgt.dispPN	= dispPN(Search)
-# 		wgt.Next   = selNext(Tree)
-# 		wgt.Prev   = selPrev(Tree)
-# 		return wgt
-# 	def conn(wgt,Tree):
-# 		Search.btnSearch.clicked.connect(wgt.Search)
-# 		Search.btnNext.clicked.connect(wgt.Next)
-# 		Search.btnPrev.clicked.connect(wgt.Prev)
-# 		return wgt
-# 	wgt,lay 		=	Wgt(n='wgtTreeDisp',t='v')
-# 	wgt=createElements(wgt,Tree)
-# 	lay=addElements(wgt,lay)
-# 	wgt=init(wgt)
-# 	wgt=addFnx(wgt,Tree,Search)
-# 	wgt=conn(wgt,Tree)
-# 	return wgt
