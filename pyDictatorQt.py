@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from PyQt5 import QtCore, QtGui, QtWidgets
 import types ,sys
-import base64,io
+import base64
+
 
 sPols = 	{
 	'P' : QtWidgets.QSizePolicy.Preferred,
@@ -27,62 +28,38 @@ ico		=		{
 	'Copy'    : [ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiMzNjM2MzYiLz4KPC9zdmc+Cg==',
 								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiNkZWRlZGUiLz4KPC9zdmc+Cg=='],
 }
-
-def construct_Qt5Ui(data):
-	def Elements():
-		def Layouts():
-			def sPol(wgt, h=None, v=None):
-				Pol = QtWidgets.QSizePolicy(sPols[h], sPols[v])
-				wgt.setSizePolicy(Pol)
-				return wgt
-			def siblings(wgts, t, margin=[0,0,0,0]):
-				wgt,lay=Wgt(t=t)
-				wgt.setContentsMargins(*margin)
-				for item in wgts:
-					lay.addWidget(item)
-				return wgt
-			def center(child,	**k):
-				w = k.get('w') or 0
-				mrg = k.get('mrg') or [0,0,0,0]
-				lSpcFix=SpcFix(w=w)
-				rSpcFix=SpcFix(w=w)
-				wgt,lay=Wgt(t='h')
-				lay.addWidget(lSpcFix)
-				lay.addWidget(child)
-				lay.addWidget(rSpcFix)
-				wgt.setContentsMargins(*mrg)
-				return wgt
-			Lay = types.SimpleNamespace()
-			Lay.sPol = sPol
-			Lay.siblings = siblings
-			Lay.center	= center
-			return Lay
-		def Wgt(n=None, t=None ):
-			Name=n
-			layout=t
-			def makelay():
-					lays={
+lays	=		{
 						'H' :	QtWidgets.QHBoxLayout,
 						'V' : QtWidgets.QVBoxLayout,
 						'G' :	QtWidgets.QGridLayout,
 						'F' :	QtWidgets.QFormLayout,
 					}
-					makelay = lays[t.upper()]
-					lay	= makelay(wgt)
-					lay.setObjectName(f'lay{n}')
-					lay.setContentsMargins(0, 0, 0, 0)
-					lay.setSpacing(0)
-					return lay
-			wgt = QtWidgets.QWidget()
-			wgt.setObjectName(f'wgt{Name}')
-			wgt.setContentsMargins(0, 0, 0, 0)
-			lay=makelay() if layout else None
+def QtBlocks():
+	def Elements():
+		def Wgt(**k):
+			def widget():
+				wgt = QtWidgets.QWidget()
+				wgt.setObjectName(f'wgt{Name}')
+				wgt.setContentsMargins(*margin)
+				return wgt
+			def layout():
+				makelay = lays.get(Layout.upper())
+				lay	= makelay(wgt)
+				lay.setObjectName(f'lay{Name}')
+				lay.setContentsMargins(*margin)
+				lay.setSpacing(0)
+				return lay
+			Name		=	k.get('n')
+			Layout	=	k.get('t')
+			margin	=	k.get('mrg') or [0,0,0,0]
+			wgt			=	widget()
+			lay			=	layout() if Layout else None
 			return wgt,lay
 		def SpcEx(w=0, h=0):
 			wgt,lay=Wgt(t='h')
 			wgt.SpcEx = QtWidgets.QSpacerItem(w, h, sPols['E'], sPols['m'])
 			lay.addItem(wgt.SpcEx)
-			wgt=Elmt.Lay.sPol(wgt,h='E',v='m')
+			wgt= blk.Layouts.sPol(wgt,h='E',v='m')
 			return wgt
 		def SpcFix(w=1, h=1):
 			wgt,lay=Wgt(t='h')
@@ -121,13 +98,13 @@ def construct_Qt5Ui(data):
 			lbl.setObjectName(f'lbl{n}')
 			lbl.setText(f'{n}')
 			lbl.setContentsMargins(0, 0, 5, 0)
-			lbl=Elmt.Lay.sPol(lbl, h='P', v='P')
+			lbl=  blk.Layouts.sPol(lbl, h='P', v='P')
 			return lbl
 		def ledit(n,ro=False):
 			txt = QtWidgets.QLineEdit()
 			txt.setObjectName(f'txt{n}')
 			txt.setReadOnly(ro)
-			txt=Elmt.Lay.sPol(txt, h='E', v='P')
+			txt=blk.Layouts.sPol(txt, h='E', v='P')
 			return txt
 		def Tree(**k):
 			def create():
@@ -135,7 +112,7 @@ def construct_Qt5Ui(data):
 				wgt.setObjectName(name)
 				return wgt
 			def init(wgt):
-				wgt = Elmt.Lay.sPol(wgt, h='E', v='m')
+				wgt = blk.Layouts.sPol(wgt, h='E', v='mE')
 				# wgt.setFrameShape(QtWidgets.QFrame.NoFrame)
 				wgt.setAlternatingRowColors(True)
 				wgt.setAnimated(True)
@@ -156,7 +133,6 @@ def construct_Qt5Ui(data):
 			return wgt
 
 		Elmt = types.SimpleNamespace()
-		Elmt.Lay			=	Layouts()
 		Elmt.Wgt			= Wgt
 		Elmt.SpcEx		=	SpcEx
 		Elmt.SpcFix		=	SpcFix
@@ -166,13 +142,40 @@ def construct_Qt5Ui(data):
 		Elmt.ledit		=	ledit
 		Elmt.Tree			= Tree
 		return Elmt
-
+	def Layouts():
+		def sPol(wgt, h=None, v=None):
+			Pol = QtWidgets.QSizePolicy(sPols[h], sPols[v])
+			wgt.setSizePolicy(Pol)
+			return wgt
+		def siblings(wgts, t, margin=[0,0,0,0]):
+			wgt,lay=	 blk.Elements.Wgt(t=t)
+			wgt.setContentsMargins(*margin)
+			for item in wgts:
+				lay.addWidget(item)
+			return wgt
+		def center(child,	**k):
+			w = k.get('w') or 0
+			mrg = k.get('mrg') or [w,0,w,0]
+			lSpcFix= blk.Elements.SpcFix(w=w)
+			rSpcFix= blk.Elements.SpcFix(w=w)
+			wgt,lay= blk.Elements.Wgt(t='h')
+			lay.addWidget(lSpcFix)
+			lay.addWidget(child)
+			lay.addWidget(rSpcFix)
+			wgt.setContentsMargins(*mrg)
+			return wgt
+		Lay 					= types.SimpleNamespace()
+		Lay.sPol 			= sPol
+		Lay.siblings 	= siblings
+		Lay.center		= center
+		return Lay
 	def Widgets():
 		def Tree(*a,**k):
 			def create(wgt):
 				wgt.Tree 		= Elmt.Tree(n='Tree',mrg=margin)
 				return wgt
 			def layout(wgt):
+				wgt =blk.Layouts.sPol(wgt, h='E', v='mE')
 				wgt.Tree.setContentsMargins(*margin)
 				wgt.setContentsMargins(*margin)
 				return wgt
@@ -222,8 +225,12 @@ def construct_Qt5Ui(data):
 			return wgt
 		def IncDec(**k):
 			def create(wgt):
-				wgt.btnExp 		= QtElmt.iBtn('Inc',h=15,w=15)
-				wgt.btnCol 		= QtElmt.iBtn('Dec',h=15,w=15)
+				wgt.btnExp 		= blk.Elements.iBtn('Inc',h=15,w=15)
+				wgt.btnCol 		= blk.Elements.iBtn('Dec',h=15,w=15)
+				return wgt
+			def layout(wgt):
+				wgt = blk.Layouts.sPol(wgt, h='P', v='P')
+				wgt.setContentsMargins(*margin)
 				return wgt
 			def add(wgt,lay):
 				lay.addWidget(wgt.btnExp)
@@ -233,11 +240,12 @@ def construct_Qt5Ui(data):
 				wgt.fnI=wgt.btnExp.clicked.connect
 				wgt.fnD=wgt.btnCol.clicked.connect
 				return wgt
-			QtElmt=Elements()
+
 			margin=k.get('mrg') or [5,0,5,0]
-			wgt,lay =	QtElmt.Wgt(n='wgtIncDec',t='h')
+			wgt,lay =	 blk.Elements.Wgt(n='wgtIncDec',t='h')
 			wgt=create(wgt)
 			lay=add(wgt,lay)
+			wgt=layout(wgt)
 			wgt=conn(wgt)
 			wgt.setContentsMargins(*margin)
 			return wgt
@@ -247,16 +255,16 @@ def construct_Qt5Ui(data):
 				wgt.btnPrev 			= Elmt.iBtn('Prev', w=12)
 				wgt.btnSearch 		= Elmt.iBtn('Search')
 				wgt.txt 					=	Elmt.ledit('Search')
-				wgt.wgtPN 				= Elmt.Lay.siblings([wgt.btnPrev,wgt.btnNext],t='h',margin=[0,0,0,0])
-				wgt.wgtCtl			 	= Elmt.Lay.siblings([wgt.wgtPN,wgt.btnSearch],t='h',margin=[0,0,0,0])
-				wgt.wgtSearch			= Elmt.Lay.siblings([wgt.txt,wgt.wgtCtl],t='h',margin=[0,0,5,0])
+				wgt.wgtPN 				= blk.Layouts.siblings([wgt.btnPrev,wgt.btnNext],t='h',margin=[0,0,0,0])
+				wgt.wgtCtl			 	= blk.Layouts.siblings([wgt.wgtPN,wgt.btnSearch],t='h',margin=[0,0,0,0])
+				wgt.wgtSearch			= blk.Layouts.siblings([wgt.txt,wgt.wgtCtl],t='h',margin=[0,0,5,0])
 				return wgt
 			def addElements(wgt,lay):
 				lay.addWidget(wgt.wgtSearch)
 			def init(wgt):
 				wgt.btnPrev.setHidden(True)
 				wgt.btnNext.setHidden(True)
-				wgt	= Elmt.Lay.sPol(wgt, h='E', v='F')
+				wgt	= blk.Layouts.sPol(wgt, h='E', v='F')
 				wgt.Found = None
 				return wgt
 			def fnx(wgt):
@@ -332,7 +340,7 @@ def construct_Qt5Ui(data):
 				wgt.btnSet.setHidden(True)
 				wgt.txt.setReadOnly(True)
 				wgt.txtdup.setHidden(True)
-				wgt	= QtElmt.Lay.sPol(wgt, h='E', v='F')
+				wgt	= blk.Layouts.sPol(wgt, h='E', v='F')
 				return wgt
 			def fnx(wgt):
 				def txtText(wgt):
@@ -388,7 +396,7 @@ def construct_Qt5Ui(data):
 				return lay
 			def init(wgt):
 				wgt.setContentsMargins(*wgt.mrg)
-				wgt=QtElmt.Lay.sPol(wgt,h='E',v='P')
+				wgt= blk.Layouts.sPol(wgt,h='E',v='P')
 				return wgt
 			def fnx(wgt):
 				wgt.mrg=k.get('mrg') or [0,0,0,0]
@@ -405,18 +413,27 @@ def construct_Qt5Ui(data):
 			wgt=init(wgt)
 			wgt=conn(wgt)
 			return wgt
-		QtWgt = types.SimpleNamespace()
-		QtWgt.Tree			=	Tree
-		QtWgt.Search		= Search
-		QtWgt.Path			=	Path
-		QtWgt.IncDec		=	IncDec
-		QtWgt.EditProp	= EditProp
-		QtWgt.AppCtl		=	AppCtl
-		return QtWgt
+		Wgt = types.SimpleNamespace()
+		Wgt.Tree			=	Tree
+		Wgt.Search		= Search
+		Wgt.Path			=	Path
+		Wgt.IncDec		=	IncDec
+		Wgt.EditProp	= EditProp
+		Wgt.AppCtl		=	AppCtl
+		return Wgt
+	blk = types.SimpleNamespace()
+	blk.Elements	=	Elements()
+	blk.Layouts		=	Layouts()
+	blk.Widgets		=	Widgets()
+	return blk
+
+
+def construct_Qt5Ui(data):
 
 	def QtApp():
-		app = types.SimpleNamespace()
-		app.QtWin = QtWidgets.QApplication(sys.argv)
+		app 				= types.SimpleNamespace()
+		app.QtWin 	= QtWidgets.QApplication(sys.argv)
+		app.Blocks		= QtBlocks()
 		return app
 
 	def Fnx(App):
@@ -571,36 +588,42 @@ def construct_Qt5Ui(data):
 		return fnx
 
 	def create(App):
-		def MainWgt(App):
-			wgt,lay = App.Elements.Wgt(n='Qt5',t='v')
-			App.Main=wgt
-			App.Main.lay=lay
+		def MainWgt():
+			wgt,lay = App.Blocks.Elements.Wgt(n='Qt5',t='v')
+			Main=wgt
+			Main.lay=lay
+			return Main
+
+		def Elements():
+			Element				= types.SimpleNamespace()
+			Element.Tree			=	App.Blocks.Widgets.Tree()
+			Element.Search		= App.Blocks.Widgets.Search()
+			Element.ExpCol		=	App.Blocks.Widgets.IncDec()
+			Element.Path 			= App.Blocks.Widgets.Path()
+			Element.Key 			= App.Blocks.Widgets.EditProp('Key',print)
+			Element.Val 			= App.Blocks.Widgets.EditProp('Val',print)
+			Element.AppCtl		=	App.Blocks.Widgets.AppCtl()
+			return Element
+
+		def Modules():
+			Module					= types.SimpleNamespace()
+			Module.wgtCtl		=	App.Blocks.Layouts.siblings([App.Main.Element.ExpCol,App.Main.Element.Search],t='h')
+
+			Module.WrpPath	=	App.Blocks.Layouts.center(App.Main.Element.Path,w=5,margin=[0,0,0,5])
+			Module.Edit			=	App.Blocks.Layouts.siblings([App.Main.Element.Key,App.Main.Element.Val],'v',margin=[25,0,25,5])
+			# Module.wrpEdit	=	App.Blocks.Layouts.center(App.Main.Edit,w=25)
+			Module.TrDisp		=	App.Blocks.Layouts.siblings([App.Main.Element.Tree,Module.wgtCtl],t='v')
+			Module.Tools		=	App.Blocks.Layouts.siblings([Module.WrpPath,Module.Edit],'v',margin=[0,0,0,5])
+			return Module
+
+		def add():
+			Main.lay.addWidget(Main.Element.TrDisp)
+			Main.lay.addWidget(Main.Element.Tools)
+			Main.lay.addWidget(Main.Element..AppCtl)
 			return App
-		def Elements(App):
-			App.Main.Tree			=	App.Widgets.Tree()
-			App.Main.Search		= App.Widgets.Search()
-			App.Main.ExpCol		=	App.Widgets.IncDec()
-			App.Main.Path 		= App.Widgets.Path()
-			App.Main.Key 			= App.Widgets.EditProp('Key',print)
-			App.Main.Val 			= App.Widgets.EditProp('Val',print)
-			App.Main.AppCtl		=	App.Widgets.AppCtl()
-			return App
-		def blocks(App):
-			App.Main.wgtCtl		=	App.Elements.Lay.siblings([App.Main.ExpCol,App.Main.Search],t='h')
-			App.Main.WrpPath	=	App.Elements.Lay.center(App.Main.Path,w=5,margin=[0,0,0,5])
-			App.Main.Edit			=	App.Elements.Lay.siblings([App.Main.Key,App.Main.Val],'v',margin=[0,0,0,5])
-			App.Main.wrpEdit		=	App.Elements.Lay.center(App.Main.Edit,w=25)
-			App.Main.TrDisp		=	App.Elements.Lay.siblings([App.Main.Tree,App.Main.wgtCtl],t='v')
-			App.Main.Tools			=	App.Elements.Lay.siblings([App.Main.WrpPath,App.Main.wrpEdit],'v',margin=[0,0,0,5])
-			return App
-		def add(App):
-			App.Main.lay.addWidget(App.Main.TrDisp)
-			App.Main.lay.addWidget(App.Main.Tools)
-			App.Main.lay.addWidget(App.Main.AppCtl)
-			return App
-		App=MainWgt(App)
-		App=Elements(App)
-		App=blocks(App)
+		Main=MainWgt()
+		Main.Element	=	Elements()
+		Main.Module 	=	Modules()
 		App=add(App)
 		return App.Main
 
@@ -618,8 +641,6 @@ def construct_Qt5Ui(data):
 		return App
 
 	App = QtApp()
-	App.Elements	= Elements()
-	App.Widgets 	= Widgets()
 	App.Main			= create(App)
 	App.Fnx				= Fnx(App)
 	App.Conn			=	conn(App)
@@ -635,6 +656,12 @@ def browse(**k):
 	QtApp.Main.Tree.fittCols()
 	sys.exit(QtApp.QtWin.exec())
 
+
+
+
+
+
+
 if __name__ == '__main__' :
 	dct = {
 		'a' : {
@@ -647,4 +674,14 @@ if __name__ == '__main__' :
 	                      'bbb' :	'ffff',}
 		}}
 	browse(test=dct)
+
+
+
+
+
+Path, Type =QtWidgets.QFileDialog.getSaveFileName(QtWidgets.QWidget(),"Save As","","All Files (*)")
+
+
+
+
 
