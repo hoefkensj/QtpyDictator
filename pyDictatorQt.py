@@ -4,15 +4,15 @@ import types ,sys
 import base64
 
 
-sPols = 	{
-	'P' : QtWidgets.QSizePolicy.Preferred,
-	'M' : QtWidgets.QSizePolicy.Maximum,
-	'm' : QtWidgets.QSizePolicy.Minimum,
-	'E'	:	QtWidgets.QSizePolicy.Expanding,
-	'mE':	QtWidgets.QSizePolicy.MinimumExpanding,
-	'F'	:	QtWidgets.QSizePolicy.Fixed,
+sPols 			= 	{
+	'P' 			: QtWidgets.QSizePolicy.Preferred,
+	'M' 			: QtWidgets.QSizePolicy.Maximum,
+	'm' 			: QtWidgets.QSizePolicy.Minimum,
+	'E'				:	QtWidgets.QSizePolicy.Expanding,
+	'mE'			:	QtWidgets.QSizePolicy.MinimumExpanding,
+	'F'				:	QtWidgets.QSizePolicy.Fixed,
 	}
-ico		=		{
+ico					=		{
 	'Search'  : [ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02LjUgMWMzLjAzNzYgMCA1LjUgMi40NjI0IDUuNSA1LjUgMCAxLjMzODgtMC40NzgzIDIuNTY1OS0xLjI3MzQgMy41MTk2bDQuMTI3IDQuMTI2OGMwLjE5NTIgMC4xOTUzIDAuMTk1MiAwLjUxMTkgMCAwLjcwNzItMC4xNzM2IDAuMTczNS0wLjQ0MyAwLjE5MjgtMC42Mzc5IDAuMDU3OGwtMC4wNjkzLTAuMDU3OC00LjEyNjgtNC4xMjdjLTAuOTUzNyAwLjc5NTEtMi4xODA4IDEuMjczNC0zLjUxOTYgMS4yNzM0LTMuMDM3NiAwLTUuNS0yLjQ2MjQtNS41LTUuNSAwLTMuMDM3NiAyLjQ2MjQtNS41IDUuNS01LjV6bTAgMWMtMi40ODUzIDAtNC41IDIuMDE0Ny00LjUgNC41IDAgMi40ODUzIDIuMDE0NyA0LjUgNC41IDQuNSAyLjQ4NTMgMCA0LjUtMi4wMTQ3IDQuNS00LjUgMC0yLjQ4NTMtMi4wMTQ3LTQuNS00LjUtNC41eiIgZmlsbD0iIzM2MzYzNiIvPgo8L3N2Zz4K' ,
 								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02LjUgMWMzLjAzNzYgMCA1LjUgMi40NjI0IDUuNSA1LjUgMCAxLjMzODgtMC40NzgzIDIuNTY1OS0xLjI3MzQgMy41MTk2bDQuMTI3IDQuMTI2OGMwLjE5NTIgMC4xOTUzIDAuMTk1MiAwLjUxMTkgMCAwLjcwNzItMC4xNzM2IDAuMTczNS0wLjQ0MyAwLjE5MjgtMC42Mzc5IDAuMDU3OGwtMC4wNjkzLTAuMDU3OC00LjEyNjgtNC4xMjdjLTAuOTUzNyAwLjc5NTEtMi4xODA4IDEuMjczNC0zLjUxOTYgMS4yNzM0LTMuMDM3NiAwLTUuNS0yLjQ2MjQtNS41LTUuNSAwLTMuMDM3NiAyLjQ2MjQtNS41IDUuNS01LjV6bTAgMWMtMi40ODUzIDAtNC41IDIuMDE0Ny00LjUgNC41IDAgMi40ODUzIDIuMDE0NyA0LjUgNC41IDQuNSAyLjQ4NTMgMCA0LjUtMi4wMTQ3IDQuNS00LjUgMC0yLjQ4NTMtMi4wMTQ3LTQuNS00LjUtNC41eiIgZmlsbD0iI2RlZGVkZSIvPgo8L3N2Zz4K'] ,
 	'Next'    :	[ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSI+CiA8ZGVmcz4KICA8c3R5bGUgaWQ9ImN1cnJlbnQtY29sb3Itc2NoZW1lIiB0eXBlPSJ0ZXh0L2NzcyI+LkNvbG9yU2NoZW1lLVRleHQgeyBjb2xvcjojMzYzNjM2OyB9PC9zdHlsZT4KIDwvZGVmcz4KIDxwYXRoIGNsYXNzPSJDb2xvclNjaGVtZS1UZXh0IiBkPSJNIDQuNjM2NywxLjYzNjcgMTEsOCA0LjYzNjcsMTQuMzYzMyAzLjkyOTY3LDEzLjY1NjI3IDkuNTg1ODcsOC4wMDAwNyAzLjkyOTY3LDIuMzQzODcgNC42MzY3LDEuNjM2ODQgWiIgZmlsbD0iY3VycmVudENvbG9yIi8+Cjwvc3ZnPgo=' ,
@@ -27,13 +27,14 @@ ico		=		{
 								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im0xMi4yMzggMS0wLjM1MyAwLjM2LTguOTY5IDkuMDk1LTAuMDMgMC4wNDVjLTAuMDYxIDAuMDk5LTAuMjcgMC40NS0wLjU4MyAxLjA4OC0wLjMxNCAwLjYzOC0wLjcgMS41MS0xLjAxMiAyLjQ5MmwtMC4yOTEgMC45MiAwLjkyLTAuMjkxYTE4LjE2MyAxOC4xNjMgMCAwIDAgMi40OTItMS4wMTJjMC42MzgtMC4zMTQgMC45ODctMC41MiAxLjA4OC0wLjU4NGwwLjA0NS0wLjAyOSA5LjQ1NS05LjMyMnptLTguMzQ3IDkuODkgMS4yMTggMS4yMi0wLjE3NyAwLjE3NWM3ZS0zIC01ZS0zIC0wLjM3OSAwLjIyNy0wLjk2MSAwLjUxNC0wLjIxNCAwLjEwNS0wLjUzNiAwLjIyMi0wLjgzNCAwLjMzOGwtMC4yNzQtMC4yNzRjMC4xMTYtMC4yOTggMC4yMzMtMC42MiAwLjMzOC0wLjgzNCAwLjI4Ny0wLjU4MiAwLjUxOC0wLjk2NiAwLjUxNC0wLjk2eiIgZmlsbD0iI2RlZGVkZSIgZm9udC1zaXplPSIxNSIgbGV0dGVyLXNwYWNpbmc9IjAiIHdvcmQtc3BhY2luZz0iMCIvPgo8L3N2Zz4K'],
 	'Copy'    : [ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiMzNjM2MzYiLz4KPC9zdmc+Cg==',
 								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiNkZWRlZGUiLz4KPC9zdmc+Cg=='],
-}
-lays	=		{
-						'H' :	QtWidgets.QHBoxLayout,
-						'V' : QtWidgets.QVBoxLayout,
-						'G' :	QtWidgets.QGridLayout,
-						'F' :	QtWidgets.QFormLayout,
+	}
+lays				=		{
+	'H' 			:	QtWidgets.QHBoxLayout,
+	'V' 			: QtWidgets.QVBoxLayout,
+	'G' 			:	QtWidgets.QGridLayout,
+	'F' 			:	QtWidgets.QFormLayout,
 					}
+
 def QtBlocks():
 	def Elements():
 		def Wgt(**k):
@@ -48,24 +49,22 @@ def QtBlocks():
 				lay.setObjectName(f'lay{Name}')
 				lay.setContentsMargins(*margin)
 				lay.setSpacing(0)
-				return lay
+				wgt.lay=lay
+				return wgt
 			Name		=	k.get('n')
 			Layout	=	k.get('t')
 			margin	=	k.get('mrg') or [0,0,0,0]
 			wgt			=	widget()
-			lay			=	layout() if Layout else None
-			return wgt,lay
-		def SpcEx(w=0, h=0):
-			wgt,lay=Wgt(t='h')
-			wgt.SpcEx = QtWidgets.QSpacerItem(w, h, sPols['E'], sPols['m'])
-			lay.addItem(wgt.SpcEx)
-			wgt= blk.Layouts.sPol(wgt,h='E',v='m')
+			wgt			=	layout() if Layout else wgt
 			return wgt
-		def SpcFix(w=1, h=1):
-			wgt,lay=Wgt(t='h')
-			wgt.SpcFix = QtWidgets.QSpacerItem(w, h, sPols['F'], sPols['m'])
-			lay.addItem(wgt.SpcFix)
+
+		def Spcr(**k):
+			w=k.get('w')
+			h=k.get('h')
+			hpol,vpol=k.get('t')
+			wgt=QtWidgets.QSpacerItem(w, h, sPols[hpol], sPols[vpol])
 			return wgt
+
 		def iBtn(n,bi=False, h=20, w=20):
 			def make_icon(n=None):
 				with open('iconl.svg','wb') as l:
@@ -134,8 +133,7 @@ def QtBlocks():
 
 		Elmt = types.SimpleNamespace()
 		Elmt.Wgt			= Wgt
-		Elmt.SpcEx		=	SpcEx
-		Elmt.SpcFix		=	SpcFix
+		Elmt.Spcr			=	Spcr
 		Elmt.iBtn			=	iBtn
 		Elmt.tBtn			=	tBtn
 		Elmt.lbl			=	lbl
@@ -170,9 +168,31 @@ def QtBlocks():
 		Lay.center		= center
 		return Lay
 	def Widgets():
+		def SpcFix(**k):
+			wgt,lay=Wgt(t='h')
+			w			=	k.get('w')	or 0
+			h			=	k.get('h')	or 0
+			hPol 	= 'F' if k.get('w') else 'P'
+			vPol	=	'F'	if k.get('h') else 'P'
+			wgt.SpcFix = blk.Elements.Spcr(	w=w, h=h, t=[hPol,vPol])
+			lay.addItem(wgt.SpcFix)
+			wgt.setContentsMargins(0,0,0,0)
+			lay.setContentsMargins(0,0,0,0)
+			return wgt
+		def SpcEx(**k):
+			w=k.get('w')
+			h=k.get('h')
+			t=k.get('t') or 'h'
+			wgt,lay=Wgt(t=t)
+			pol= ['F','P'] * (t == 'h') + ['P','F'] *  (t == 'v')
+			width= 0 * (t == 'v') + w *(t == 'h')
+			wgt.SpcFix = blk.Elements.Spcr(w=w, h=h, t=pol)
+			wgt.setContentsMargins(0,0,0,0)
+			lay.setContentsMargins(0,0,0,0)
+			lay.addItem(wgt.SpcFix)
 		def Tree(*a,**k):
 			def create(wgt):
-				wgt.Tree 		= Elmt.Tree(n='Tree',mrg=margin)
+				wgt.Tree 		= blk.Elements.Tree(n='Tree',mrg=margin)
 				return wgt
 			def layout(wgt):
 				wgt =blk.Layouts.sPol(wgt, h='E', v='mE')
@@ -213,10 +233,9 @@ def QtBlocks():
 				wgt.Selected=wgt.Tree.itemClicked.connect
 				wgt.FoundSel	=	wgt.Tree.itemSelectionChanged.connect
 				return wgt
-			Elmt=Elements()
 			name=k.get('n') or 'wgtTree'
 			margin=k.get('mrg') or  [0,0,0,0]
-			wgt,lay =	Elmt.Wgt(n=name,t='h')
+			wgt,lay =	blk.Elements.Wgt(n=name,t='h')
 			wgt=create(wgt)
 			wgt=layout(wgt)
 			lay=add(wgt,lay)
@@ -607,24 +626,24 @@ def construct_Qt5Ui(data):
 
 		def Modules():
 			Module					= types.SimpleNamespace()
-			Module.wgtCtl		=	App.Blocks.Layouts.siblings([App.Main.Element.ExpCol,App.Main.Element.Search],t='h')
+			Module.TreeCtl		=	App.Blocks.Layouts.siblings([Main.Element.ExpCol,Main.Element.Search],t='h')
 
-			Module.WrpPath	=	App.Blocks.Layouts.center(App.Main.Element.Path,w=5,margin=[0,0,0,5])
-			Module.Edit			=	App.Blocks.Layouts.siblings([App.Main.Element.Key,App.Main.Element.Val],'v',margin=[25,0,25,5])
+			Module.WrpPath	=	App.Blocks.Layouts.center(Main.Element.Path,w=5,margin=[0,0,0,5])
+			Module.Edit			=	App.Blocks.Layouts.siblings([Main.Element.Key,Main.Element.Val],'v',margin=[25,0,25,5])
 			# Module.wrpEdit	=	App.Blocks.Layouts.center(App.Main.Edit,w=25)
-			Module.TrDisp		=	App.Blocks.Layouts.siblings([App.Main.Element.Tree,Module.wgtCtl],t='v')
+			Module.TrDisp		=	App.Blocks.Layouts.siblings([Main.Element.Tree,Module.wgtCtl],t='v')
 			Module.Tools		=	App.Blocks.Layouts.siblings([Module.WrpPath,Module.Edit],'v',margin=[0,0,0,5])
 			return Module
 
 		def add():
-			Main.lay.addWidget(Main.Element.TrDisp)
-			Main.lay.addWidget(Main.Element.Tools)
-			Main.lay.addWidget(Main.Element..AppCtl)
-			return App
+			Main.lay.addWidget(Main.Module.TrDisp)
+			Main.lay.addWidget(Main.Module.Tools)
+			Main.lay.addWidget(Main.Module.AppCtl)
+			return Main.lay
 		Main=MainWgt()
 		Main.Element	=	Elements()
 		Main.Module 	=	Modules()
-		App=add(App)
+		Main.Layout		=	add()
 		return App.Main
 
 	def conn(App):
