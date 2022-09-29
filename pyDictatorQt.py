@@ -146,20 +146,20 @@ def QtBlocks():
 			wgt.setSizePolicy(Pol)
 			return wgt
 		def siblings(wgts, t, margin=[0,0,0,0]):
-			wgt,lay=	 blk.Elements.Wgt(t=t)
+			wgt=	 blk.Elements.Wgt(t=t)
 			wgt.setContentsMargins(*margin)
 			for item in wgts:
-				lay.addWidget(item)
+				wgt.lay.addWidget(item)
 			return wgt
 		def center(child,	**k):
 			w = k.get('w') or 0
 			mrg = k.get('mrg') or [w,0,w,0]
-			lSpcFix= blk.Elements.SpcFix(w=w)
-			rSpcFix= blk.Elements.SpcFix(w=w)
-			wgt,lay= blk.Elements.Wgt(t='h')
-			lay.addWidget(lSpcFix)
-			lay.addWidget(child)
-			lay.addWidget(rSpcFix)
+			lSpcFix= blk.Widgets.SpcFix(w=w)
+			rSpcFix= blk.Widgets.SpcFix(w=w)
+			wgt= blk.Elements.Wgt(t='h')
+			wgt.lay.addWidget(lSpcFix)
+			wgt.lay.addWidget(child)
+			wgt.lay.addWidget(rSpcFix)
 			wgt.setContentsMargins(*mrg)
 			return wgt
 		Lay 					= types.SimpleNamespace()
@@ -169,27 +169,26 @@ def QtBlocks():
 		return Lay
 	def Widgets():
 		def SpcFix(**k):
-			wgt,lay=Wgt(t='h')
+			wgt=blk.Elements.Wgt(t='h')
 			w			=	k.get('w')	or 0
 			h			=	k.get('h')	or 0
 			hPol 	= 'F' if k.get('w') else 'P'
 			vPol	=	'F'	if k.get('h') else 'P'
 			wgt.SpcFix = blk.Elements.Spcr(	w=w, h=h, t=[hPol,vPol])
-			lay.addItem(wgt.SpcFix)
+			wgt.lay.addItem(wgt.SpcFix)
 			wgt.setContentsMargins(0,0,0,0)
-			lay.setContentsMargins(0,0,0,0)
+			wgt.lay.setContentsMargins(0,0,0,0)
 			return wgt
 		def SpcEx(**k):
-			w=k.get('w')
-			h=k.get('h')
-			t=k.get('t') or 'h'
-			wgt,lay=Wgt(t=t)
-			pol= ['F','P'] * (t == 'h') + ['P','F'] *  (t == 'v')
-			width= 0 * (t == 'v') + w *(t == 'h')
-			wgt.SpcFix = blk.Elements.Spcr(w=w, h=h, t=pol)
+			wgt=blk.Elements.Wgt(t='h')
+			w			=	k.get('w')	or 0
+			h			=	k.get('h')	or 0
+			hPol 	= 'E' if k.get('w') else 'P'
+			vPol	=	'E'	if k.get('h') else 'P'
+			wgt.SpcFix = blk.Elements.Spcr(	w=w, h=h, t=[hPol,vPol])
+			wgt.lay.addItem(wgt.SpcFix)
 			wgt.setContentsMargins(0,0,0,0)
-			lay.setContentsMargins(0,0,0,0)
-			lay.addItem(wgt.SpcFix)
+			wgt.lay.setContentsMargins(0,0,0,0)
 		def Tree(*a,**k):
 			def create(wgt):
 				wgt.Tree 		= blk.Elements.Tree(n='Tree',mrg=margin)
@@ -235,10 +234,10 @@ def QtBlocks():
 				return wgt
 			name=k.get('n') or 'wgtTree'
 			margin=k.get('mrg') or  [0,0,0,0]
-			wgt,lay =	blk.Elements.Wgt(n=name,t='h')
+			wgt =	blk.Elements.Wgt(n=name,t='h')
 			wgt=create(wgt)
 			wgt=layout(wgt)
-			lay=add(wgt,lay)
+			wgt.lay=add(wgt,wgt.lay)
 			wgt=fnx(wgt)
 			wgt=conn(wgt)
 			return wgt
@@ -261,9 +260,9 @@ def QtBlocks():
 				return wgt
 
 			margin=k.get('mrg') or [5,0,5,0]
-			wgt,lay =	 blk.Elements.Wgt(n='wgtIncDec',t='h')
+			wgt =	 blk.Elements.Wgt(n='wgtIncDec',t='h')
 			wgt=create(wgt)
-			lay=add(wgt,lay)
+			wgt.lay=add(wgt,wgt.lay)
 			wgt=layout(wgt)
 			wgt=conn(wgt)
 			wgt.setContentsMargins(*margin)
@@ -315,9 +314,9 @@ def QtBlocks():
 				wgt.Prev		=	wgt.btnPrev.clicked.connect
 				return wgt
 			Elmt=Elements()
-			wgt,lay = Elmt.Wgt(n='Search',t='h')
+			wgt = Elmt.Wgt(n='Search',t='h')
 			wgt = createElements(wgt)
-			lay = addElements(wgt,lay)
+			wgt.lay = addElements(wgt,wgt.lay)
 			wgt = init(wgt)
 			wgt =	fnx(wgt)
 			wgt	= conn(wgt)
@@ -335,9 +334,9 @@ def QtBlocks():
 				wgt.Copy=wgt.btnCopy.clicked.connect
 				return wgt
 			Elmt = Elements()
-			wgt,lay = Elmt.Wgt(n='Path',t='h')
+			wgt = Elmt.Wgt(n='Path',t='h')
 			wgt = create(wgt)
-			lay = add(wgt,lay)
+			wgt.lay = add(wgt,wgt.lay)
 			wgt = conn(wgt)
 			return wgt
 		def EditProp(n,fnSet):
@@ -393,16 +392,16 @@ def QtBlocks():
 				wgt.txt.returnPressed.connect(wgt.setText)
 				return wgt
 			QtElmt=Elements()
-			wgt,lay =	QtElmt.Wgt(n=n,t='h')
+			wgt =	QtElmt.Wgt(n=n,t='h')
 			wgt 		= createElements(wgt)
-			lay 		= addElements(wgt,lay)
+			wgt.lay 		= addElements(wgt,wgt.lay)
 			wgt			=	init(wgt)
 			wgt 		= fnx(wgt)
 			wgt			=	conn(wgt)
 			return wgt
 		def AppCtl(**k):
 			def createElements(wgt):
-				wgt.hSpc			=	QtElmt.SpcEx()
+				wgt.hSpc			=	Wgt.SpcEx()
 				wgt.btnExit		=	QtElmt.tBtn('Exit')
 				wgt.btnSave		=	QtElmt.tBtn('Save As')
 				wgt.btnPrint	=	QtElmt.tBtn('Print')
@@ -425,14 +424,16 @@ def QtBlocks():
 				wgt.fnSave=wgt.btnSave.clicked.connect
 				return wgt
 			QtElmt = Elements()
-			wgt,lay = QtElmt.Wgt(n='wgtAppCtl',t='h')
+			wgt = QtElmt.Wgt(n='wgtAppCtl',t='h')
 			wgt=createElements(wgt)
-			lay=addElements(wgt,lay)
+			wgt.lay=addElements(wgt,wgt.lay)
 			wgt=fnx(wgt)
 			wgt=init(wgt)
 			wgt=conn(wgt)
 			return wgt
 		Wgt = types.SimpleNamespace()
+		Wgt.SpcFix		= SpcFix
+		Wgt.SpcEx			=	SpcEx
 		Wgt.Tree			=	Tree
 		Wgt.Search		= Search
 		Wgt.Path			=	Path
@@ -596,22 +597,20 @@ def construct_Qt5Ui(data):
 		fnx.makeTree		=	make_tree
 		fnx.stdf				=	stdf
 		fnx.stdw				= stdw
-		fnx.OnSelect		= select(Key=App.Main.Key,Val=App.Main.Val,Path=App.Main.Path)
-		fnx.PathToClip	=	copytoclip(App.Main.Path.txt)
+		fnx.OnSelect		= select(Key=App.Main.Element.Key,Val=App.Main.Element.Val,Path=App.Main.Element.Path)
+		fnx.PathToClip	=	copytoclip(App.Main.Element.Path.txt)
 		fnx.Searched		=	search(App)
 		fnx.Found				=	searchSel(App)
 		fnx.stdf 				=	stdf(dct,file='test.txt',name='Test')
 		fnx.stdo				=	stdw(dct,name='Test')
-		fnx.selNext			= App.Main.Search.selNext(App.Main.Tree.Tree)
-		fnx.selPrev			= App.Main.Search.selPrev(App.Main.Tree.Tree)
+		fnx.selNext			= App.Main.Element.Search.selNext(App.Main.Element.Tree.Tree)
+		fnx.selPrev			= App.Main.Element.Search.selPrev(App.Main.Element.Tree.Tree)
 		return fnx
 
 	def create(App):
 		def MainWgt():
-			wgt,lay = App.Blocks.Elements.Wgt(n='Qt5',t='v')
-			Main=wgt
-			Main.lay=lay
-			return Main
+			wgt = App.Blocks.Elements.Wgt(n='Qt5',t='v')
+			return wgt
 
 		def Elements():
 			Element				= types.SimpleNamespace()
@@ -631,20 +630,20 @@ def construct_Qt5Ui(data):
 			Module.WrpPath	=	App.Blocks.Layouts.center(Main.Element.Path,w=5,margin=[0,0,0,5])
 			Module.Edit			=	App.Blocks.Layouts.siblings([Main.Element.Key,Main.Element.Val],'v',margin=[25,0,25,5])
 			# Module.wrpEdit	=	App.Blocks.Layouts.center(App.Main.Edit,w=25)
-			Module.TrDisp		=	App.Blocks.Layouts.siblings([Main.Element.Tree,Module.wgtCtl],t='v')
+			Module.TrDisp		=	App.Blocks.Layouts.siblings([Main.Element.Tree,Module.TreeCtl],t='v')
 			Module.Tools		=	App.Blocks.Layouts.siblings([Module.WrpPath,Module.Edit],'v',margin=[0,0,0,5])
 			return Module
 
 		def add():
 			Main.lay.addWidget(Main.Module.TrDisp)
 			Main.lay.addWidget(Main.Module.Tools)
-			Main.lay.addWidget(Main.Module.AppCtl)
+			Main.lay.addWidget(Main.Element.AppCtl)
 			return Main.lay
 		Main=MainWgt()
 		Main.Element	=	Elements()
 		Main.Module 	=	Modules()
 		Main.Layout		=	add()
-		return App.Main
+		return Main
 
 	def conn(App):
 		App.Main.ExpCol.fnI(App.Main.Tree.Tree.expandAll)
