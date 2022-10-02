@@ -27,6 +27,8 @@ ico					=		{
 								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im0xMi4yMzggMS0wLjM1MyAwLjM2LTguOTY5IDkuMDk1LTAuMDMgMC4wNDVjLTAuMDYxIDAuMDk5LTAuMjcgMC40NS0wLjU4MyAxLjA4OC0wLjMxNCAwLjYzOC0wLjcgMS41MS0xLjAxMiAyLjQ5MmwtMC4yOTEgMC45MiAwLjkyLTAuMjkxYTE4LjE2MyAxOC4xNjMgMCAwIDAgMi40OTItMS4wMTJjMC42MzgtMC4zMTQgMC45ODctMC41MiAxLjA4OC0wLjU4NGwwLjA0NS0wLjAyOSA5LjQ1NS05LjMyMnptLTguMzQ3IDkuODkgMS4yMTggMS4yMi0wLjE3NyAwLjE3NWM3ZS0zIC01ZS0zIC0wLjM3OSAwLjIyNy0wLjk2MSAwLjUxNC0wLjIxNCAwLjEwNS0wLjUzNiAwLjIyMi0wLjgzNCAwLjMzOGwtMC4yNzQtMC4yNzRjMC4xMTYtMC4yOTggMC4yMzMtMC42MiAwLjMzOC0wLjgzNCAwLjI4Ny0wLjU4MiAwLjUxOC0wLjk2NiAwLjUxNC0wLjk2eiIgZmlsbD0iI2RlZGVkZSIgZm9udC1zaXplPSIxNSIgbGV0dGVyLXNwYWNpbmc9IjAiIHdvcmQtc3BhY2luZz0iMCIvPgo8L3N2Zz4K'],
 	'Copy'    : [ b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiMzNjM2MzYiLz4KPC9zdmc+Cg==',
 								b'PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXciIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDxwYXRoIGQ9Im02IDBjLTEuMTA0NiAwLTIgMC44OTU0My0yIDJ2MTBjMCAxLjEwNDYgMC44OTU0MyAyIDIgMmg2YzEuMTA0NiAwIDItMC44OTU0IDItMnYtMTBjMC0xLjEwNDYtMC44OTU0LTItMi0yem0tMSAyYzAtMC41NTIyOCAwLjQ0NzcyLTEgMS0xaDZjMC41NTIzIDAgMSAwLjQ0NzcyIDEgMXYxMGMwIDAuNTUyMy0wLjQ0NzcgMS0xIDFoLTZjLTAuNTUyMjggMC0xLTAuNDQ3Ny0xLTF6bS0zIDJjMC0wLjc0MDI4IDAuNDAyMi0xLjM4NjYgMS0xLjczMjR2MTAuMjMyYzAgMS4zODA3IDEuMTE5MyAyLjUgMi41IDIuNWg2LjIzMjRjLTAuMzQ1OCAwLjU5NzgtMC45OTIxIDEtMS43MzI0IDFoLTQuNWMtMS45MzMgMC0zLjUtMS41NjctMy41LTMuNXoiIGZpbGw9IiNkZWRlZGUiLz4KPC9zdmc+Cg=='],
+	'RegEx'		:	[	b'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTEwLjUgMWMtLjI3NyAwLS41LjIyMy0uNS41djEuNzkzTDguNzMyIDIuMDI1YS40OTkuNDk5IDAgMSAwLS43MDcuNzA4TDkuMjkzIDRINy41YS40OTkuNDk5IDAgMSAwIDAgMWgxLjc5M0w4LjAyNSA2LjI2OGEuNDk5LjQ5OSAwIDEgMCAuNzA3LjcwN0wxMCA1LjcwN1Y3LjVhLjQ5OS40OTkgMCAxIDAgMSAwVjUuNzA3bDEuMjY4IDEuMjY4YS40OTkuNDk5IDAgMSAwIC43MDctLjcwN0wxMS43MDcgNUgxMy41YS40OTkuNDk5IDAgMSAwIDAtMWgtMS43OTNsMS4yNjgtMS4yNjhhLjUuNSAwIDAgMC0uNzA3LS43MDdMMTEgMy4yOTNWMS41YzAtLjI3Ny0uMjIzLS41LS41LS41em0tOCAxMWExLjUgMS41IDAgMSAwIDAgMyAxLjUgMS41IDAgMCAwIDAtM3oiIGZpbGw9IiMzNjM2MzYiLz48L3N2Zz4=',
+								b'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTEwLjUgMWMtLjI3NyAwLS41LjIyMy0uNS41djEuNzkzTDguNzMyIDIuMDI1YS40OTkuNDk5IDAgMSAwLS43MDcuNzA4TDkuMjkzIDRINy41YS40OTkuNDk5IDAgMSAwIDAgMWgxLjc5M0w4LjAyNSA2LjI2OGEuNDk5LjQ5OSAwIDEgMCAuNzA3LjcwN0wxMCA1LjcwN1Y3LjVhLjQ5OS40OTkgMCAxIDAgMSAwVjUuNzA3bDEuMjY4IDEuMjY4YS40OTkuNDk5IDAgMSAwIC43MDctLjcwN0wxMS43MDcgNUgxMy41YS40OTkuNDk5IDAgMSAwIDAtMWgtMS43OTNsMS4yNjgtMS4yNjhhLjUuNSAwIDAgMC0uNzA3LS43MDdMMTEgMy4yOTNWMS41YzAtLjI3Ny0uMjIzLS41LS41LS41em0tOCAxMWExLjUgMS41IDAgMSAwIDAgMyAxLjUgMS41IDAgMCAwIDAtM3oiIGZpbGw9IiNkZWRlZGUiLz48L3N2Zz4=']
 	}
 lays				=		{
 	'H' 			:	QtWidgets.QHBoxLayout,
@@ -66,19 +68,25 @@ def QtBlocks():
 			return wgt
 
 		def iBtn(n,bi=False, h=20, w=20):
-			def make_icon(n=None):
-				with open('iconl.svg','wb') as l:
-					l.write(base64.b64decode(ico[n][0]))
-				with open('icond.svg','wb') as d:
-					d.write(base64.b64decode(ico[n][1]))
 
+			def make_icon_dl(n=None):
+				icon_states={
+					0 : QtGui.QIcon.On,
+					1 :	QtGui.QIcon.Off,	}
 				icon = QtGui.QIcon()
-				icon.addPixmap(QtGui.QPixmap('iconl.svg'), QtGui.QIcon.Normal, QtGui.QIcon.On)
-				icon.addPixmap(QtGui.QPixmap('icond.svg'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+				def  make_icon(icon,state):
+					with open(f'icon{state}.svg','wb') as l:
+						l.write(base64.b64decode(ico[n][state]))
+					icon.addPixmap(QtGui.QPixmap(f'icon{state}.svg'), QtGui.QIcon.Normal, icon_states[state])
+					return icon
+				# with open('icond.svg','wb') as d:
+				# 	d.write(base64.b64decode(ico[n][1]))
+				icon = make_icon(icon,0)
+				icon = make_icon(icon,1)
 				return icon
 			btn = QtWidgets.QToolButton()
 			btn.setObjectName(f'iBtn{n}')
-			btn.setIcon(make_icon(n))
+			btn.setIcon(make_icon_dl(n))
 			btn.setIconSize(QtCore.QSize(32, 32))
 			btn.setMaximumSize(QtCore.QSize(w, h))
 			btn.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
@@ -185,8 +193,8 @@ def QtBlocks():
 			h			=	k.get('h')	or 0
 			hPol 	= 'E' if k.get('w') else 'P'
 			vPol	=	'E'	if k.get('h') else 'P'
-			wgt.SpcFix = blk.Elements.Spcr(	w=w, h=h, t=[hPol,vPol])
-			wgt.lay.addItem(wgt.SpcFix)
+			wgt.SpcEx = blk.Elements.Spcr(	w=w, h=h, t=[hPol,vPol])
+			wgt.lay.addItem(wgt.SpcEx)
 			wgt.setContentsMargins(0,0,0,0)
 			wgt.lay.setContentsMargins(0,0,0,0)
 		def Tree(*a,**k):
@@ -272,10 +280,12 @@ def QtBlocks():
 				wgt.btnNext 			= Elmt.iBtn('Next', w=12)
 				wgt.btnPrev 			= Elmt.iBtn('Prev', w=12)
 				wgt.btnSearch 		= Elmt.iBtn('Search')
+				wgt.btnRegEx			=	Elmt.iBtn('RegEx' ,bi=True,h=20,w=15)
 				wgt.txt 					=	Elmt.ledit('Search')
 				wgt.wgtPN 				= blk.Layouts.siblings([wgt.btnPrev,wgt.btnNext],t='h',margin=[0,0,0,0])
 				wgt.wgtCtl			 	= blk.Layouts.siblings([wgt.wgtPN,wgt.btnSearch],t='h',margin=[0,0,0,0])
-				wgt.wgtSearch			= blk.Layouts.siblings([wgt.txt,wgt.wgtCtl],t='h',margin=[0,0,5,0])
+
+				wgt.wgtSearch			= blk.Layouts.siblings([wgt.txt,wgt.btnRegEx,wgt.wgtCtl],t='h',margin=[0,0,5,0])
 				return wgt
 			def addElements(wgt,lay):
 				lay.addWidget(wgt.wgtSearch)
@@ -464,25 +474,25 @@ def construct_Qt5Ui(data):
 			# 	print(App.Main.Search.txt.text(),found,found2)
 			# return find
 			def  searchTree():
-				searchStr= App.Main.Search.txt.text()
+				searchStr= App.Main.Element.Search.txt.text()
 				Opts =  (QtCore.Qt.MatchRecursive|QtCore.Qt.MatchRegExp|QtCore.Qt.CaseInsensitive)
-				findkeys	=	App.Main.Tree.Tree.findItems(searchStr,Opts, 0)
-				findvals	=	App.Main.Tree.Tree.findItems(searchStr,Opts, 1)
+				findkeys	=	App.Main.Element.Tree.Tree.findItems(searchStr,Opts, 0)
+				findvals	=	App.Main.Element.Tree.Tree.findItems(searchStr,Opts, 1)
 				find			=	[*findkeys,*findvals]
 				if len(find) > 1 :
-					App.Main.Search.showPN(True)
-					App.Main.Tree.Tree.setCurrentItem(find[0])
+					App.Main.Element.Search.showPN(True)
+					App.Main.Element.Tree.Tree.setCurrentItem(find[0])
 				elif len(find) == 1 :
-					App.Main.Search.showPN(False)
-					App.Main.Tree.Tree.setCurrentItem(find[0])
+					App.Main.Element.Search.showPN(False)
+					App.Main.Element.Tree.Tree.setCurrentItem(find[0])
 				else:
-					App.Main.Search.showPN(False)
-				App.Main.Search.Found=find
+					App.Main.Element.Search.showPN(False)
+				App.Main.Element.Search.Found=find
 			return searchTree
 
 		def searchSel(App):
 			def searchSel():
-				App.Main.Tree.Tree.currentItemChanged.connect(App.Fnx.OnSelect)
+				App.Main.Element.Tree.Tree.currentItemChanged.connect(App.Fnx.OnSelect)
 			return searchSel
 
 		def select(*a,**k):
@@ -500,10 +510,10 @@ def construct_Qt5Ui(data):
 				App.Clip.setText(txt.text())
 			return toclip
 
-		def allign(gui):
-			maxwidth=max(gui.Main.Key.lbl.width(),gui.Main.Val.lbl.width())
-			gui.Main.Key.lbl.setMinimumWidth(maxwidth)
-			gui.Main.Val.lbl.setMinimumWidth(maxwidth)
+		def allign(App):
+			maxwidth=max(App.Main.Element.Key.lbl.width(),App.Main.Element.Val.lbl.width())
+			App.Main.Element.Key.lbl.setMinimumWidth(maxwidth)
+			App.Main.Element.Val.lbl.setMinimumWidth(maxwidth)
 			App.Allign 	=	allign
 			App.Select 	=	select
 			return App
@@ -523,9 +533,8 @@ def construct_Qt5Ui(data):
 					if isinstance(data, dict):
 						make_branch(branch, data, dictpath,keylist=keylist)
 					else:
-
 						data = str(data)
-						w = App.Main.Tree.Tree.columnWidth(1)
+						w = App.Main.Element.Tree.Tree.columnWidth(1)
 						data = repr(data) if callable(data) else data
 						dispdata = f'{data[0:w - 4]}...' if len(data) > w - 4 else data
 						branch.setText(1, dispdata)
@@ -625,9 +634,9 @@ def construct_Qt5Ui(data):
 
 		def Modules():
 			Module					= types.SimpleNamespace()
-			Module.TreeCtl		=	App.Blocks.Layouts.siblings([Main.Element.ExpCol,Main.Element.Search],t='h')
+			Module.TreeCtl		=	App.Blocks.Layouts.siblings([Main.Element.ExpCol,Main.Element.Path],t='h')
 
-			Module.WrpPath	=	App.Blocks.Layouts.center(Main.Element.Path,w=5,margin=[0,0,0,5])
+			Module.WrpPath	=	App.Blocks.Layouts.center(Main.Element.Search,w=5,margin=[0,0,0,5])
 			Module.Edit			=	App.Blocks.Layouts.siblings([Main.Element.Key,Main.Element.Val],'v',margin=[25,0,25,5])
 			# Module.wrpEdit	=	App.Blocks.Layouts.center(App.Main.Edit,w=25)
 			Module.TrDisp		=	App.Blocks.Layouts.siblings([Main.Element.Tree,Module.TreeCtl],t='v')
@@ -646,16 +655,18 @@ def construct_Qt5Ui(data):
 		return Main
 
 	def conn(App):
-		App.Main.ExpCol.fnI(App.Main.Tree.Tree.expandAll)
-		App.Main.ExpCol.fnD(App.Main.Tree.Tree.collapseAll)
-		App.Main.Tree.Selected(App.Fnx.OnSelect)
-		App.Main.Tree.FoundSel(App.Fnx.Found)
-		App.Main.AppCtl.fnSave(App.Fnx.stdf)
-		App.Main.AppCtl.fnPrint(App.Fnx.stdo)
-		App.Main.Path.Copy(App.Fnx.PathToClip)
-		App.Main.Search.Find(App.Fnx.Searched)
-		App.Main.Search.Next(App.Fnx.selNext)
-		App.Main.Search.Prev(App.Fnx.selPrev)
+		elmt=App.Main.Element
+		fnx=App.Fnx
+		elmt.ExpCol.fnI(elmt.Tree.Tree.expandAll)
+		elmt.ExpCol.fnD(elmt.Tree.Tree.collapseAll)
+		elmt.Tree.Selected(fnx.OnSelect)
+		elmt.Tree.FoundSel(fnx.Found)
+		elmt.AppCtl.fnSave(fnx.stdf)
+		elmt.AppCtl.fnPrint(fnx.stdo)
+		elmt.Path.Copy(fnx.PathToClip)
+		elmt.Search.Find(fnx.Searched)
+		elmt.Search.Next(fnx.selNext)
+		elmt.Search.Prev(fnx.selPrev)
 		return App
 
 	App = QtApp()
@@ -668,10 +679,10 @@ def browse(**k):
 	kv = k.popitem()
 	QtApp = construct_Qt5Ui(kv[1])
 	trunk = QtApp.Fnx.makeTree(QtApp, name=kv[0], data=kv[1])
-	QtApp.Main.Tree.Tree.addTopLevelItem(trunk)
+	QtApp.Main.Element.Tree.Tree.addTopLevelItem(trunk)
 	QtApp.Main.show()
 	QtApp.Fnx.allign(QtApp)
-	QtApp.Main.Tree.fittCols()
+	QtApp.Main.Element.Tree.fittCols()
 	sys.exit(QtApp.QtWin.exec())
 
 
