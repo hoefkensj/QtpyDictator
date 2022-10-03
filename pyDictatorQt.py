@@ -697,43 +697,53 @@ def construct_Qt5Ui(data,beta):
 
 \
 
-	def create(App):
+	def Constructors(App):
 		def MainWgt():
-			wgt = App.Blocks.Elements.Wgt(n='Qt5',t='v')
-			return wgt
+			MainWgt = types.SimpleNamespace()
+			MainWgt.Wgt = App.Blocks.Elements.Wgt(n='Qt5',t='v')
+			return MainWgt
 
 		def Elements():
 			Element				= types.SimpleNamespace()
-			Element.Tree			=	Assets.QtBlocks.Widgets.Tree()
-			Element.Search		= Assets.QtBlocks.Widgets.Search()
-			Element.ExpCol		=	Assets.QtBlocks.Widgets.IncDec()
-			Element.Path 			= Assets.QtBlocks.Widgets.Path()
-			Element.Key 			= Assets.QtBlocks.Widgets.EditProp('Key',ed=App.beta,fnset=print)
-			Element.Val 			= Assets.QtBlocks.Widgets.EditProp('Val',ed=App.beta,fnset=print)
-			Element.AppCtl		=	Assets.QtBlocks.Widgets.AppCtl()
+			Element.Tree			=	Assets.QtBlocks.Widgets.Tree
+			Element.Search		= Assets.QtBlocks.Widgets.Search
+			Element.ExpCol		=	Assets.QtBlocks.Widgets.IncDec
+			Element.Path 			= Assets.QtBlocks.Widgets.Path
+			Element.Key 			= Assets.QtBlocks.Widgets.EditProp
+			Element.Val 			= Assets.QtBlocks.Widgets.EditProp
+			Element.AppCtl		=	Assets.QtBlocks.Widgets.AppCtl
 			return Element
 
 		def Modules():
-			Module						= types.SimpleNamespace()
-			Module.TreeCtl		=	App.Blocks.Layouts.siblings([Main.Element.ExpCol,Main.Element.Path],t='h',margin=[5,0,5,5])
+			Modules						= {}
+			Modules						=	{1:{},2:{},3:{},4:{}}
+			Modules[1][(1,1)]	=	[Main.Tree,]
+			Modules[1][(1,2)]	=	[Main.ExpCol,Main.Path]
+			Modules[2][(2,1)]	=	[Main.Key,]
+			Modules[2][(2,2)]	=	[Main.Val,]
+			Modules[3][(3,1)]	=	[Main.Search]
+			Modules[3][(3,2)]	= [Main.Filter]
+			Modules[4][(4,1)]	=	[Main.AppCtl]
+			return Modules
 
-			Module.WrpSearch	=	App.Blocks.Layouts.center(Main.Element.Search,w=0,margin=[5,0,5,5])
-			Module.Edit				=	App.Blocks.Layouts.siblings([Main.Element.Key,Main.Element.Val],'v',margin=[25,0,25,5])
-			# Module.wrpEdit	=	App.Blocks.Layouts.center(App.Main.Edit,w=25)
-			Module.TrDisp			=	App.Blocks.Layouts.siblings([Main.Element.Tree,Module.TreeCtl],t='v')
+		        #([Main.Element.ExpCol,Main.Element.Path],t='h',margin=[5,0,5,5])
+		        #(Main.Element.Search,w=0,margin=[5,0,5,5])
+		           #([Main.Element.Key,Main.Element.Val],'v',margin=[25,0,25,5])
+		    #([Main.Element.Tree,Module.TreeCtl],t='v')
+						# Module.wrpEdit	=	App.Blocks.Layouts.center(App.Main.Edit,w=25)
 			# Module.Tools			=	App.Blocks.Layouts.siblings([Module.WrpSearch,Module.Edit],'v',margin=[0,0,0,5])
-			return Module
 
 		def add():
 			Main.lay.addWidget(Main.Module.TrDisp)
 			Main.lay.addWidget(Main.Module.Edit)
+
 			Main.lay.addWidget(Main.Module.WrpSearch)
 			Main.lay.addWidget(Main.Element.AppCtl)
 			return Main.lay
-		Main=MainWgt()
-		Main.Element	=	Elements()
-		Main.Module 	=	Modules()
-		Main.Layout		=	add()
+		Main						=	MainWgt()
+		Main.Element		=	Elements()
+		Main.Modules 		=	Modules()
+		Main.Layouts		=	add()
 		return Main
 
 	def conn(App):
@@ -760,6 +770,16 @@ def construct_Qt5Ui(data,beta):
 	App.Conn			=	conn(App)
 	App.Clip			= App.QtWin.clipboard()
 	return App
+
+def Design():
+	Main.Tree	 		=	 Main.Element.Tree()
+	Main.Search		=	 Main.Element.Search()
+	Main.ExpCol		=	 Main.Element.ExpCol()
+	Main.Path 		=	 Main.Element.Path()
+	Main.Key 	 		=	 Main.Element.Key('Key',ed=App.beta,fnset=print)
+	Main.Val 	 		=	 Main.Element.Val('Val',ed=App.beta,fnset=print)
+	Main.AppCtl		=	 Main.Element.AppCtl()
+
 
 def browse(beta=False,**k):
 	kv = k.popitem()
