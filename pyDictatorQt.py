@@ -163,6 +163,9 @@ def QtBlocks():
 		Elmt.lbl			=	lbl
 		Elmt.ledit		=	ledit
 		Elmt.Tree			= Tree
+
+
+
 		return Elmt
 	def Layouts():
 		def sPol(wgt, h=None, v=None):
