@@ -154,15 +154,16 @@ def QtBlocks():
 			wgt	= init(wgt)
 			return wgt
 
-		Elmt = types.SimpleNamespace()
-		Elmt.Wgt			= Wgt
-		Elmt.Spcr			=	Spcr
-		Elmt.chkBox		=	chkBox
-		Elmt.iBtn			=	iBtn
-		Elmt.tBtn			=	tBtn
-		Elmt.lbl			=	lbl
-		Elmt.ledit		=	ledit
-		Elmt.Tree			= Tree
+		Elmt = {}
+		Elmt['Wgt']			= Wgt
+		Elmt['Spcr']		=	Spcr
+		Elmt['chkBox']	=	chkBox
+		Elmt['iBtn']		=	iBtn
+		Elmt['tBtn']		=	tBtn
+		Elmt['lbl']			=	lbl
+		Elmt['ledit']		=	ledit
+		Elmt['Tree']		= Tree
+
 
 
 
