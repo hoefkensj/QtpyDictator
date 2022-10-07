@@ -43,23 +43,34 @@ def QtBlocks():
 	def Elements():
 		def Wgt(**k):
 			def widget():
-				wgt = QtWidgets.QWidget()
-				wgt.setObjectName(f'wgt{Name}')
-				wgt.setContentsMargins(*margin)
-				return wgt
+				e = {}
+				e['wgt']  						= QtWidgets.QWidget()
+				e['Name']						= f'wgt{Name}'
+				e['Data'] 					= {}
+				e['Data']['margin']	=	margin
+				e['wgt'].setObjectName(e['Name'])
+				e['wgt'].setContentsMargins(*e['Data']['margin'])
+				return e
 			def layout():
 				makelay = lays.get(Layout.upper())
-				lay	= makelay(wgt)
-				lay.setObjectName(f'lay{Name}')
-				lay.setContentsMargins(*margin)
-				lay.setSpacing(0)
-				wgt.lay=lay
-				return wgt
+				l={}
+				l['lay']	= makelay(wgt['wgt']['wgt'])
+				l['lay'].setObjectName(f'lay{Name}')
+				l['lay'].setContentsMargins(*margin)
+				l['lay'].setSpacing(0)
+				return l
 			Name		=	k.get('n')
 			Layout	=	k.get('t')
 			margin	= k.get('margin') or [0,0,0,0]
-			wgt			=	widget()
-			wgt			=	layout() if Layout else wgt
+			wgt	=	{
+							'wgt' 	: widget(),
+							'data'	:	{
+								'Name'		:	f'wgt{Name}',
+								'Margin'	:	margin,
+								'Layout'	:	lays.get(Layout.upper()),
+							},}
+			if Layout :
+				wgt['lay']	= layout()
 			return wgt
 		def icon_dl(n=None):
 			icon_states={
@@ -263,12 +274,12 @@ def QtBlocks():
 	def Widgets():
 		def Tree(*a,**k):
 			def create(wgt):
-				wgt.Tree 		= blk['Elements']['Tree'](n='Tree',margin=margin)
+				wgt['Tree'] 		= blk['Elements']['Tree'](n='Tree',margin=margin)
 				return wgt
 			def layout(wgt):
-				wgt =blk['Layouts']['sPol'](wgt, h='E', v='mE')
-				wgt.Tree.setContentsMargins(*margin)
-				wgt.setContentsMargins(*margin)
+				wgt['Tree'] =blk['Layouts']['sPol'](wgt['Tree'], h='E', v='mE')
+				wgt['Tree'].setContentsMargins(*margin)
+				wgt['wgt'].setContentsMargins(*margin)
 				return wgt
 			def add(wgt,lay):
 				lay.addWidget(wgt.Tree)
@@ -314,17 +325,18 @@ def QtBlocks():
 			wgt=conn(wgt)
 			return wgt
 		def IncDec(**k):
-			def create(wgt):
-				wgt.btnExp 		= blk['Elements']['iBtn']('Inc',h=15,w=15)
-				wgt.btnCol 		= blk['Elements']['iBtn']('Dec',h=15,w=15)
-				return wgt
+			def elements():
+				e={}
+				e['btnExp'] 		= blk['Elements']['iBtn']('Inc',h=15,w=15)
+				e['btnCol'] 		= blk['Elements']['iBtn']('Dec',h=15,w=15)
+				return e
 			def layout(wgt):
 				wgt = blk['Layouts']['sPol'](wgt, h='P', v='P')
 				wgt.setContentsMargins(*margin)
 				return wgt
-			def add(wgt,lay):
-				lay.addWidget(wgt.btnExp)
-				lay.addWidget(wgt.btnCol)
+			def add(e,l):
+				lay.addWidget(e['btnExp'])
+				lay.addWidget(e['btnCol'])
 				return lay
 			def conn(wgt):
 				wgt.fnI=wgt.btnExp.clicked.connect
@@ -332,9 +344,10 @@ def QtBlocks():
 				return wgt
 
 			margin=k.get('margin') or [5,0,5,0]
-			wgt =	 blk['Elements']['Wgt'](n='wgtIncDec',t='h')
-			wgt=create(wgt)
-			wgt.lay=add(wgt,wgt.lay)
+			wgt={}
+			wgt['wgt'] 			=	 blk['Elements']['Wgt'](n='wgtIncDec',t='h')
+			wgt['elements']	=	elements()
+			wgt['lay']			=	add(wgt,wgt.lay)
 			wgt=layout(wgt)
 			wgt=conn(wgt)
 			wgt.setContentsMargins(*margin)
