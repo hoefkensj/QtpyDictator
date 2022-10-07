@@ -480,44 +480,38 @@ def QtBlocks():
 
 			return wgt
 		def AppCtl(**k):
-			def create():
-				elements	= {}
-				elements['hSpc']				=	blk['Compounds']['SpcEx']()
-				elements['btnExit']		= blk['Elements']['tBtn']('Exit')
-				elements['btnSave']		=	blk['Elements']['tBtn']('Save As')
-				elements['btnPrint']		=	blk['Elements']['tBtn']('Print')
-				return elements
-			def add(wgt):
-				wgt.lay.addWidget(wgt.elements['btnPrint'])
-				wgt.lay.addWidget(wgt.elements['btnSave'])
-				wgt.lay.addWidget(wgt.elements['hSpc'])
-				wgt.lay.addWidget(wgt.elements['btnExit'])
+			def create(wgt):
+				wgt.hSpc			=	blk['Compounds']['SpcEx']()
+				wgt.btnExit		= blk['Elements']['tBtn']('Exit')
+				wgt.btnSave		=	blk['Elements']['tBtn']('Save As')
+				wgt.btnPrint	=	blk['Elements']['tBtn']('Print')
 				return wgt
+			def add(wgt,lay):
+				lay.addWidget(wgt.btnPrint)
+				lay.addWidget(wgt.btnSave)
+				lay.addWidget(wgt.hSpc)
+				lay.addWidget(wgt.btnExit)
+				return lay
 			def init(wgt):
-				wgt.setContentsMargins(*wgt.fnx['margin'])
+				wgt.setContentsMargins(*wgt.margin)
 				wgt= blk['Layouts']['sPol'](wgt,h='E',v='P')
 				return wgt
-			def fnx():
-				fnx={}
-				fnx['margin']=k.get('margin') or [0,0,0,0]
-				return fnx
+			def fnx(wgt):
+
+				wgt.margin=k.get('margin') or [0,0,0,0]
+				return wgt
 			def conn(wgt):
-				conn={}
-				conn['fnPrint']=wgt.elements['btnPrint'].clicked.connect
-				conn['fnSave']=wgt.elements['btnSave'].clicked.connect
-				return conn
-			AppCtl= {}
-			wgt 	= blk['Elements']['Wgt'](n='wgtAppCtl',t='h')
-			wgt.elements	= create()
-			wgt = add(wgt)
-			wgt.fnx = fnx()
+				wgt.fnPrint=wgt.btnPrint.clicked.connect
+				wgt.fnSave=wgt.btnSave.clicked.connect
+				return wgt
+
+			wgt = blk['Elements']['Wgt'](n='wgtAppCtl',t='h')
+			wgt=create(wgt)
+			wgt.lay = add(wgt, wgt.lay)
+			wgt = fnx(wgt)
 			wgt = init(wgt)
-			wgt.conn = conn(wgt)
-			AppCtl['wgt'] = wgt
-			AppCtl['elements']=wgt.elements
-			AppCtl['fnx']=wgt.fnx
-			AppCtl['conn']=wgt.conn
-			return AppCtl
+			wgt = conn(wgt)
+			return wgt
 		Wgt = {}
 
 		Wgt['Tree']				=	Tree
@@ -569,7 +563,7 @@ def construct_Qt5Ui(beta):
 
 		def searchSel(App):
 			def searchSel():
-				App['Main']['Element']['Tree'].Tree.currentItemChanged.connect(App['Fnx']['OnSelect'])
+				App['Main']['Element']['Tree'].Tree.currentItemChanged.connect(App.Fnx.OnSelect)
 			return searchSel
 
 		def select(*a,**k):
@@ -736,7 +730,7 @@ def construct_Qt5Ui(beta):
 			Main['Wgt'].lay.addWidget(Main['Module']['TrDisp'])
 			Main['Wgt'].lay.addWidget(Main['Module']['Edit'])
 			Main['Wgt'].lay.addWidget(Main['Module']['WrpSearch'])
-			Main['Wgt'].lay.addWidget(Main['Element']['AppCtl']['wgt'])
+			Main['Wgt'].lay.addWidget(Main['Element']['AppCtl'])
 			return Main['Wgt'].lay
 
 
@@ -750,7 +744,7 @@ def construct_Qt5Ui(beta):
 	def conn(App):
 		conn={}
 
-		conn['fnSave'] = App['Main']['Element']['AppCtl']['conn']['fnSave']
+		conn['fnSave'] = App['Main']['Element']['AppCtl'].fnSave
 		App['Main']['Element']['ExpCol'].fnI(App['Main']['Element']['Tree'].Tree.expandAll)
 		App['Main']['Element']['ExpCol'].fnD(App['Main']['Element']['Tree'].Tree.collapseAll)
 		App['Main']['Element']['Tree'].Selected(	App['Fnx']['OnSelect'])
