@@ -2,7 +2,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import QtUser
 import types ,sys
-import base64
 
 sPols 			= 	{
 	'P'				: QtWidgets.QSizePolicy.Preferred,
@@ -194,26 +193,32 @@ def QtBlocks():
 			return wgt
 		def EditProp(n,**k):
 			fnSet=k.get('fnset') or dummy
+			elements = {
+						'Lbl'			: blk['Elements']['Lbl'](f'{n}:'),
+						'txt'			: blk['Elements']['lEdit'](n,ro=True),
+						'txtdup'	: blk['Elements']['lEdit'](n,ro=True)  ,
+						'btnSet' 	:	blk['Elements']['tBtn']('Set')  ,
+						'btnEdit':	blk['Elements']['iBtn']('Edit', bi=True,icons=ico) ,
+			}
 			def create(wgt):
-				wgt.lbl 		= blk['Elements']['Lbl'](f'{n}:')
-				wgt.txt 		= blk['Elements']['lEdit'](n,ro=True)
-				wgt.txtdup	= blk['Elements']['lEdit'](n,ro=True)
-				wgt.btnSet 	= blk['Elements']['tBtn']('Set')
-				wgt.btnEdit =	blk['Elements']['iBtn']('Edit', bi=True,icons=ico)
+				wgt.lbl 		= w['elements']['Lbl']
+				wgt.txt 		= w['elements']['txt']
+				wgt.txtdup	= w['elements']['txtdup']
+				wgt.btnSet 	= w['elements']['btnSet']
+				wgt.btnEdit =	w['elements']['btnEdit']
 				return wgt
-			def add(wgt):
-				wgt.lay.addWidget(wgt.lbl)
-				wgt.lay.addWidget(wgt.txt)
-				wgt.lay.addWidget(wgt.txtdup)
-				wgt.lay.addWidget(wgt.btnSet)
-				wgt.lay.addWidget(wgt.btnEdit)
-				return wgt.lay
+			def add(w,lay):
+				lay.addWidget(w.lbl)
+				lay.addWidget(w.txt)
+				lay.addWidget(w.txtdup)
+				lay.addWidget(w.btnSet)
+				lay.addWidget(w.btnEdit)
+				return lay
 			def init(wgt):
 				wgt.btnSet.setHidden(True)
 				wgt.txt.setReadOnly(True)
 				wgt.txtdup.setHidden(True)
-				wgt.Editable(not k.get('ed'))
-				wgt	= blk['Elements']['sPol'](wgt, h='E', v='F')
+				w['fnx']['Editable'](not k.get('ed'))
 				return wgt
 			def fnx(wgt):
 				def txtText(wgt):
@@ -241,25 +246,35 @@ def QtBlocks():
 					def editable(state):
 						wgt.btnEdit.setHidden(state)
 					return editable
-				wgt.Edit 		= edit(wgt)
-				wgt.txtText = txtText(wgt)
-				wgt.setText	= setText(wgt)
-				wgt.Editable = editable(wgt)
-				return wgt
+				f = {}
+				f['Edit'] 		=	edit(wgt)
+				f['txtText'] 	=	txtText(wgt)
+				f['setText']	=	setText(wgt)
+				f['Editable'] =	editable(wgt)
+				return f
 			def conn(wgt):
-				wgt.btnEdit.clicked.connect(wgt.Edit)
-				wgt.btnSet.clicked.connect(wgt.setText)
-				wgt.txt.returnPressed.connect(wgt.setText)
-				return wgt
-			wgt 		=	blk['Elements']['Wgt'](n=n,t='h')
-			wgt 		= create(wgt)
-			wgt.lay = add(wgt)
+				c = {}
+				c['btnEdit']= wgt.btnEdit.clicked.connect
+				c['btnSet']= wgt.btnEdit.clicked.connect
+				c['txt']	= {}
+				c['txt']['returnPressed']= wgt.txt.returnPressed.connect
+				# wgt.btnEdit.clicked.connect(w['fnx']['Edit'])
+				# wgt.btnSet.clicked.connect(w['fnx']['txtText'])
+				# wgt.txt.returnPressed.connect(w['fnx']['txtText'])
+				return c
+			w ={}
+			w['elements']	= elements
+			w['Wgt']		=	blk['Elements']['Wgt'](n=n,t='h')
+			w['Wgt']    = blk['Elements']['sPol'](w['Wgt'], h='E', v='F')
+			w['Wgt'] 		= create(w['Wgt'])
+			w['layout']	=	w['Wgt'].lay
 
-			wgt 		= fnx(wgt)
-			wgt			=	conn(wgt)
-			wgt			=	init(wgt)
+			w['layout'] 	= add(w['Wgt'],w['layout'])
+			w['fnx'] 			= fnx(w['Wgt'])
+			w['conn']			=	conn(w['Wgt'])
+			w['Wgt']			=	init(w['Wgt'])
 
-			return wgt
+			return w
 		def AppCtl(**k):
 			def elements(w):
 				e={}
@@ -379,9 +394,9 @@ def construct_Qt5Ui(beta):
 			return toclip
 
 		def allign(App):
-			maxwidth=max(App['Main']['Element']['Key'].lbl.width(),App['Main']['Element']['Val'].lbl.width())
-			App['Main']['Element']['Key'].lbl.setMinimumWidth(maxwidth)
-			App['Main']['Element']['Val'].lbl.setMinimumWidth(maxwidth)
+			maxwidth=max(App['Main']['Element']['Key']['Wgt'].lbl.width(),App['Main']['Element']['Val']['Wgt'].lbl.width())
+			App['Main']['Element']['Key']['Wgt'].lbl.setMinimumWidth(maxwidth)
+			App['Main']['Element']['Val']['Wgt'].lbl.setMinimumWidth(maxwidth)
 			App['Allign'] 	=	allign
 			App['Select'] 	=	select
 			return App
@@ -488,7 +503,7 @@ def construct_Qt5Ui(beta):
 		fnx['saveDialog']		=	saveDialog
 		fnx['stdf']					=	stdf
 		fnx['stdw']					= stdw
-		fnx['OnSelect']			= select(Key=App['Main']['Element']['Key'],Val=App['Main']['Element']['Val'],Path=App['Main']['Element']['Path'])
+		fnx['OnSelect']			= select(Key=App['Main']['Element']['Key']['Wgt'],Val=App['Main']['Element']['Val']['Wgt'],Path=App['Main']['Element']['Path'])
 		fnx['PathToClip']		=	copytoclip(App['Main']['Element']['Path'].txt)
 		fnx['Searched']			=	search(App)
 		fnx['Found']				=	searchSel(App)
@@ -517,7 +532,7 @@ def construct_Qt5Ui(beta):
 			Module['TreeCtl']			=	App['Blocks']['Layouts']['siblings']([Main['Element']['ExpCol'],Main['Element']['Path']],t='h',margin=[5,0,5,5])
 
 			Module['WrpSearch']		=	App['Blocks']['Layouts']['center'](Main['Element']['Search'],w=0,margin=[5,0,5,5])
-			Module['Edit']				=	App['Blocks']['Layouts']['siblings']([Main['Element']['Key'],Main['Element']['Val']],'v',margin=[25,0,25,5])
+			Module['Edit']				=	App['Blocks']['Layouts']['siblings']([Main['Element']['Key']['Wgt'],Main['Element']['Val']['Wgt']],'v',margin=[25,0,25,5])
 			# Module.wrpEdit	=	App['Blocks']['Layouts']['center'](App.Main.Edit,w=25)
 			Module['TrDisp']			=	App['Blocks']['Layouts']['siblings']([Main['Element']['Tree'],Module['TreeCtl']],t='v')
 			# Module.Tools			=	App['Blocks']['Layouts']['siblings']([Module.WrpSearch,Module.Edit],'v',margin=[0,0,0,5])
