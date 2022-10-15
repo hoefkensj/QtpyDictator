@@ -1,4 +1,17 @@
 #!/usr/bin/env python
+"""
+	use:
+		- import pyDictatorQT
+		- from pyDictatorQt import browse
+
+		pyDictatorQT.browse( [NAMEOFDICT] = [DICT]	)
+
+		ex:
+			from pyDictatorQt import browse
+			mydict= { 'a' : 'B'}
+			browse(mydict=mydict)
+"""
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 import QtUser
 import types ,sys
