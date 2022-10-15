@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from PyQt5 import QtCore, QtGui, QtWidgets
+import QtUser
 import types ,sys
 import base64
 
@@ -39,225 +40,6 @@ lays				=		{
 def dummy(*a,**k):	pass
 
 def QtBlocks():
-	def Elements():
-		def Wgt(**k):
-			def widget():
-				wgt = QtWidgets.QWidget()
-				wgt.setObjectName(f'wgt{Name}')
-				wgt.setContentsMargins(*margin)
-				return wgt
-			def layout():
-				makelay = lays.get(Layout.upper())
-				lay	= makelay(wgt)
-				lay.setObjectName(f'lay{Name}')
-				lay.setContentsMargins(*margin)
-				lay.setSpacing(0)
-				wgt.lay=lay
-				return wgt
-			Name		=	k.get('n')
-			Layout	=	k.get('t')
-			margin	= k.get('margin') or [0,0,0,0]
-			wgt			=	widget()
-			wgt			=	layout() if Layout else wgt
-			return wgt
-		def icon_dl(n=None):
-			icon_states={
-				0	: QtGui.QIcon.On,
-				1	:	QtGui.QIcon.Off,	}
-			icon = QtGui.QIcon()
-			def  make_icon(icon,state):
-				with open(f'icon{state}.svg','wb') as l:
-					l.write(base64.b64decode(ico[n][state]))
-				icon.addPixmap(QtGui.QPixmap(f'icon{state}.svg'), QtGui.QIcon.Normal, icon_states[state])
-				return icon
-			# with open('icond.svg','wb') as d:
-			# 	d.write(base64.b64decode(ico[n][1]))
-			icon = make_icon(icon,0)
-			icon = make_icon(icon,1)
-			return icon
-		def Spcr(**k):
-			w=k.get('w')
-			h=k.get('h')
-			hpol,vpol=k.get('t')
-			wgt=QtWidgets.QSpacerItem(w, h, sPols[hpol], sPols[vpol])
-			return wgt
-		def chkBox(n,**k):
-			h=k.get('h') or 20
-			w=k.get('w') or 20
-
-			cBox 	= QtWidgets.QCheckBox()
-			cBox.setObjectName(f'chk{n}')
-			cBox	=	blk['Layouts']['sPol'](cBox, h='P', v='P')
-			cBox.setIcon(icon_dl('RegEx'))
-			cBox.setIconSize(QtCore.QSize(w-5, h-5))
-			cBox.setMaximumSize(QtCore.QSize(w*3, h))
-
-			return cBox
-		def iBtn(n,**k):
-			bi=k.get('bi') or False
-			h=k.get('h') or 20
-			w=k.get('w') or 20
-			btn = QtWidgets.QToolButton()
-			btn.setObjectName(f'iBtn{n}')
-			btn.setIcon(icon_dl(n))
-			btn.setIconSize(QtCore.QSize(32, 32))
-			btn.setMaximumSize(QtCore.QSize(w, h))
-			btn.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-			btn.setCheckable(bi)
-			btn.setHidden(False)
-			return btn
-		def tBtn(n, bi=False):
-			btn = QtWidgets.QToolButton()
-			btn.setObjectName(f'tBtn{n}')
-			btn.setText(n)
-			btn.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
-			btn.setCheckable(bi)
-			btn.setMaximumHeight(20)
-			return btn
-		def lbl(n):
-			lbl = QtWidgets.QLabel()
-			lbl.setObjectName(f'lbl{n}')
-			lbl.setText(f'{n}')
-			lbl.setContentsMargins(0, 0, 5, 0)
-			lbl=  blk['Layouts']['sPol'](lbl, h='P', v='P')
-			return lbl
-		def ledit(n,ro=False):
-			txt = QtWidgets.QLineEdit()
-			txt.setObjectName(f'txt{n}')
-			txt.setReadOnly(ro)
-			txt=blk['Layouts']['sPol'](txt, h='E', v='P')
-			return txt
-		def Tree(**k):
-			def create():
-				wgt	=	QtWidgets.QTreeWidget()
-				wgt.setObjectName(name)
-				return wgt
-			def init(wgt):
-				wgt = blk['Layouts']['sPol'](wgt, h='E', v='mE')
-				# wgt.setFrameShape(QtWidgets.QFrame.NoFrame)
-				wgt.setAlternatingRowColors(True)
-				wgt.setAnimated(True)
-				wgt.setHeaderHidden(True)
-				wgt.setColumnCount(5)
-				wgt.hideColumn(2)
-				wgt.hideColumn(3)
-				wgt.hideColumn(4)
-				wgt.setMinimumHeight(10)
-				wgt.setAllColumnsShowFocus(True)
-				wgt.setMinimumHeight(50)
-				wgt.setContentsMargins(*margins)
-				return wgt
-			name=k.get('n') or 'Tree'
-			margins=k.get('margin') or [0,0,0,0]
-			wgt	= create()
-			wgt	= init(wgt)
-			return wgt
-
-		Elmt = {}
-		Elmt['Wgt']			= Wgt
-		Elmt['Spcr']		=	Spcr
-		Elmt['chkBox']	=	chkBox
-		Elmt['iBtn']		=	iBtn
-		Elmt['tBtn']		=	tBtn
-		Elmt['lbl']			=	lbl
-		Elmt['ledit']		=	ledit
-		Elmt['Tree']		= Tree
-		return Elmt
-
-	def Compounds():
-		def SpcFix(**k):
-			wgt=blk['Elements']['Wgt'](t='h')
-			w			= k.get('w')	or 0
-			h			= k.get('h')	or 0
-			hPol 	= 'F' if k.get('w') else 'P'
-			vPol	=	'F'	if k.get('h') else 'P'
-			wgt.SpcFix = blk['Elements']['Spcr']( w=w, h=h, t=[hPol,vPol])
-			wgt.lay.addItem(wgt.SpcFix)
-			wgt.setContentsMargins(0,0,0,0)
-			wgt.lay.setContentsMargins(0,0,0,0)
-			return wgt
-		def SpcEx(**k):
-			n 	= k.get('n')
-			w			= k.get('w')	or 0
-			h			= k.get('h')	or 0
-			hPol 	= 'E' if k.get('w') else 'P'
-			vPol	=	'E'	if k.get('h') else 'P'
-			def create(wgt):
-				wgt.SpcEx = blk['Elements']['Spcr'](w=w, h=h, t=[hPol,vPol])
-				return wgt
-			def layout(wgt):
-				wgt = blk['Layouts']['sPol'](wgt, h='P', v='P')
-				return wgt
-			def add(wgt):
-				wgt.lay.addItem(wgt.SpcEx)
-				return wgt.lay
-			def init(wgt):
-				wgt.setContentsMargins(0,0,0,0)
-				wgt.lay.setContentsMargins(0,0,0,0)
-				return wgt
-
-			wgt = blk['Elements']['Wgt'](n=f'wgtSpcEx{n}',t='h')
-			wgt=create(wgt)
-			wgt=layout(wgt)
-			wgt.lay=add(wgt)
-
-			return wgt
-		def chkRE(**k):
-			def create(wgt):
-				wgt.chkRE 		= blk['Elements']['chkBox']('RE',h=15,w=15)
-				return wgt
-			def layout(wgt):
-				wgt = blk['Layouts']['sPol'](wgt, h='P', v='P')
-				wgt.setContentsMargins(*margin)
-				return wgt
-			def add(wgt,lay):
-				lay.addWidget(wgt.chkRE)
-				return lay
-			def conn(wgt):
-				return wgt
-
-			margin=k.get('margin') or [0,0,0,0]
-			wgt =	 blk['Elements']['Wgt'](n='wgtRE',t='h')
-			wgt=create(wgt)
-			wgt.lay=add(wgt,wgt.lay)
-			wgt=layout(wgt)
-			wgt=conn(wgt)
-			wgt.setContentsMargins(*margin)
-			return wgt
-
-		Cmpds = {}
-		Cmpds['SpcFix']			= SpcFix
-		Cmpds['SpcEx']			=	SpcEx
-		Cmpds['chkRE']			= chkRE
-		return Cmpds
-
-	def Layouts():
-		def sPol(wgt, h=None, v=None):
-			Pol = QtWidgets.QSizePolicy(sPols[h], sPols[v])
-			wgt.setSizePolicy(Pol)
-			return wgt
-		def siblings(wgts, t, margin=[0,0,0,0]):
-			wgt=	 blk['Elements']['Wgt'](t=t)
-			wgt.setContentsMargins(*margin)
-			for item in wgts:
-				wgt.lay.addWidget(item)
-			return wgt
-		def center(child,	**k):
-			w = k.get('w') or 0
-			margin = k.get('margin') or [w,0,w,0]
-			lSpcFix= blk['Compounds']['SpcFix'](w=w)
-			rSpcFix= blk['Compounds']['SpcFix'](w=w)
-			wgt= blk['Elements']['Wgt'](t='h')
-			wgt.lay.addWidget(lSpcFix)
-			wgt.lay.addWidget(child)
-			wgt.lay.addWidget(rSpcFix)
-			wgt.setContentsMargins(*margin)
-			return wgt
-		Lay = {}
-		Lay['sPol'] 			= sPol
-		Lay['siblings'] 	= siblings
-		Lay['center']			= center
-		return Lay
 
 	def Widgets():
 		def Tree(*a,**k):
@@ -265,7 +47,7 @@ def QtBlocks():
 				wgt.Tree 		= blk['Elements']['Tree'](n='Tree',margin=margin)
 				return wgt
 			def layout(wgt):
-				wgt =blk['Layouts']['sPol'](wgt, h='E', v='mE')
+				wgt =blk['Elements']['sPol'](wgt, h='E', v='mE')
 				wgt.Tree.setContentsMargins(*margin)
 				wgt.setContentsMargins(*margin)
 				return wgt
@@ -314,11 +96,11 @@ def QtBlocks():
 			return wgt
 		def IncDec(**k):
 			def create(wgt):
-				wgt.btnExp 		= blk['Elements']['iBtn']('Inc',h=15,w=15)
-				wgt.btnCol 		= blk['Elements']['iBtn']('Dec',h=15,w=15)
+				wgt.btnExp 		= blk['Elements']['iBtn']('Inc',h=15,w=15,icons=ico)
+				wgt.btnCol 		= blk['Elements']['iBtn']('Dec',h=15,w=15,icons=ico)
 				return wgt
 			def layout(wgt):
-				wgt = blk['Layouts']['sPol'](wgt, h='P', v='P')
+				wgt = blk['Elements']['sPol'](wgt, h='P', v='P')
 				wgt.setContentsMargins(*margin)
 				return wgt
 			def add(wgt,lay):
@@ -340,11 +122,11 @@ def QtBlocks():
 			return wgt
 		def Search():
 			def create(wgt):
-				wgt.btnNext 			= blk['Elements']['iBtn']('Next', w=12)
-				wgt.btnPrev 			= blk['Elements']['iBtn']('Prev', w=12)
-				wgt.btnSearch 		= blk['Elements']['iBtn']('Search')
-				wgt.chkRegEx			=	blk['Compounds']['chkRE']()
-				wgt.txt 					=	blk['Elements']['ledit']('Search')
+				wgt.btnNext 			= blk['Elements']['iBtn']('Next', w=12,icons=ico)
+				wgt.btnPrev 			= blk['Elements']['iBtn']('Prev', w=12,icons=ico)
+				wgt.btnSearch 		= blk['Elements']['iBtn']('Search',icons=ico)
+				wgt.chkRegEx			=	blk['Elements']['chkBox']('RegEx',icons=ico)
+				wgt.txt 					=	blk['Elements']['lEdit']('Search')
 				wgt.wgtPN 				= blk['Layouts']['siblings']([wgt.btnPrev,wgt.btnNext],t='h',margin=[0,0,0,0])
 				wgt.wgtCtl			 	= blk['Layouts']['siblings']([wgt.wgtPN,wgt.btnSearch],t='h',margin=[0,0,0,0])
 				wgt.wgtSearch			= blk['Layouts']['siblings']([wgt.chkRegEx,wgt.txt,wgt.wgtCtl,],t='h',margin=[0,0,0,0])
@@ -354,7 +136,7 @@ def QtBlocks():
 			def init(wgt):
 				wgt.btnPrev.setHidden(True)
 				wgt.btnNext.setHidden(True)
-				wgt	= blk['Layouts']['sPol'](wgt, h='E', v='F')
+				wgt	= blk['Elements']['sPol'](wgt, h='E', v='F')
 				wgt.Found = None
 				return wgt
 			def fnx(wgt):
@@ -394,8 +176,8 @@ def QtBlocks():
 			return wgt
 		def Path():
 			def create(wgt):
-				wgt.txt 		= blk['Elements']['ledit'](n='Path',ro=True)
-				wgt.btnCopy = blk['Elements']['iBtn']('Copy')
+				wgt.txt 		= blk['Elements']['lEdit'](n='Path',ro=True)
+				wgt.btnCopy = blk['Elements']['iBtn']('Copy',icons=ico)
 				return wgt
 			def add(wgt,lay):
 				lay.addWidget(wgt.txt)
@@ -413,11 +195,11 @@ def QtBlocks():
 		def EditProp(n,**k):
 			fnSet=k.get('fnset') or dummy
 			def create(wgt):
-				wgt.lbl 		= blk['Elements']['lbl'](f'{n}:')
-				wgt.txt 		= blk['Elements']['ledit'](n,ro=True)
-				wgt.txtdup	= blk['Elements']['ledit'](n,ro=True)
+				wgt.lbl 		= blk['Elements']['Lbl'](f'{n}:')
+				wgt.txt 		= blk['Elements']['lEdit'](n,ro=True)
+				wgt.txtdup	= blk['Elements']['lEdit'](n,ro=True)
 				wgt.btnSet 	= blk['Elements']['tBtn']('Set')
-				wgt.btnEdit =	blk['Elements']['iBtn']('Edit', bi=True)
+				wgt.btnEdit =	blk['Elements']['iBtn']('Edit', bi=True,icons=ico)
 				return wgt
 			def add(wgt):
 				wgt.lay.addWidget(wgt.lbl)
@@ -431,7 +213,7 @@ def QtBlocks():
 				wgt.txt.setReadOnly(True)
 				wgt.txtdup.setHidden(True)
 				wgt.Editable(not k.get('ed'))
-				wgt	= blk['Layouts']['sPol'](wgt, h='E', v='F')
+				wgt	= blk['Elements']['sPol'](wgt, h='E', v='F')
 				return wgt
 			def fnx(wgt):
 				def txtText(wgt):
@@ -501,7 +283,7 @@ def QtBlocks():
 
 			def init(w,d):
 				w.setContentsMargins(*d['Margin'])
-				w	= blk['Layouts']['sPol'](w,h='E',v='P')
+				w	= blk['Elements']['sPol'](w,h='E',v='P')
 				return w
 
 			def data():
@@ -539,11 +321,8 @@ def QtBlocks():
 		Wgt['AppCtl']			=	AppCtl
 		return Wgt
 
-	blk = {}
-	blk['Elements']		=	Elements()
-	blk['Compounds']	=	Compounds()
-	blk['Layouts']		=	Layouts()
-	blk['Widgets']		=	Widgets()
+	blk = QtUser.Blocks()
+	blk['Widgets'] = Widgets()
 	return blk
 
 def construct_Qt5Ui(beta):
