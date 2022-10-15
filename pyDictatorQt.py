@@ -55,13 +55,22 @@ def QtBlocks():
 
 	def Widgets():
 		def Tree(*a,**k):
+			def data():
+				d = {}
+				d['Name']		=k.get('n') or 'wgtTree'
+				d['Margins']=k.get('margin') or  [0,0,0,0]
+				return d
+			def elements():
+				e = {
+						'Tree'	: 	blk['Elements']['Tree'](n=w['Data']['Name'],margin=w['Data']['Margins'])
+						}
+				return e
 			def create(wgt):
-				wgt.Tree 		= blk['Elements']['Tree'](n='Tree',margin=margin)
+				wgt.Tree 		= w['Elements']['Tree']
 				return wgt
-			def layout(wgt):
-				wgt =blk['Elements']['sPol'](wgt, h='E', v='mE')
-				wgt.Tree.setContentsMargins(*margin)
-				wgt.setContentsMargins(*margin)
+			def init(wgt):
+				wgt.Tree.setContentsMargins(*w['Data']['Margins'])
+				wgt.setContentsMargins(*w['Data']['Margins'])
 				return wgt
 			def add(wgt,lay):
 				lay.addWidget(wgt.Tree)
@@ -89,30 +98,34 @@ def QtBlocks():
 							w	=	tot
 						wgt.Tree.setColumnWidth(col,w)
 					return setColWidth
-				wgt.fittCols 		= resizeCols(wgt)
-				wgt.colWidth		=	colWidth(wgt)
-				wgt.setColWidth = setColWidth(wgt)
-				return wgt
+				f = {}
+				f['fittCols'] 		= resizeCols(wgt)
+				f['colWidth']			=	colWidth(wgt)
+				f['setColWidth'] 	= setColWidth(wgt)
+				return f
 			def conn(wgt):
 				wgt.Selected=wgt.Tree.itemClicked.connect
 				wgt.FoundSel	=	wgt.Tree.itemSelectionChanged.connect
 				return wgt
-			name=k.get('n') or 'wgtTree'
-			margin=k.get('margin') or  [0,0,0,0]
-			wgt =	blk['Elements']['Wgt'](n=name,t='h')
-			wgt=create(wgt)
-			wgt=layout(wgt)
-			wgt.lay=add(wgt,wgt.lay)
-			wgt=fnx(wgt)
-			wgt=conn(wgt)
-			return wgt
+			w = {}
+			w['Data'] = data()
+			w['Wgt'] 	=	blk['Base']['Wgt'](n=w['Data']['Name'],t='h')
+			w['Wgt'] 	=	blk['Base']['sPol'](w['Wgt'], h='E', v='mE')
+			w['Elements']	=	elements()
+			w['Wgt']			=	create(w['Wgt'])
+			w['layout']		=	w['Wgt'].lay
+			w['layout'] 	= add(w['Wgt'],w['layout'])
+			w['Fnx'] 			= fnx(w['Wgt'])
+			w['Conn']			=	conn(w['Wgt'])
+			w['Wgt']			=	init(w['Wgt'])
+			return w
 		def IncDec(**k):
 			def create(wgt):
 				wgt.btnExp 		= blk['Elements']['iBtn']('Inc',h=15,w=15,icons=ico)
 				wgt.btnCol 		= blk['Elements']['iBtn']('Dec',h=15,w=15,icons=ico)
 				return wgt
 			def layout(wgt):
-				wgt = blk['Elements']['sPol'](wgt, h='P', v='P')
+				wgt = blk['Base']['sPol'](wgt, h='P', v='P')
 				wgt.setContentsMargins(*margin)
 				return wgt
 			def add(wgt,lay):
@@ -125,7 +138,7 @@ def QtBlocks():
 				return wgt
 
 			margin=k.get('margin') or [5,0,5,0]
-			wgt =	 blk['Elements']['Wgt'](n='wgtIncDec',t='h')
+			wgt =	 blk['Base']['Wgt'](n='wgtIncDec',t='h')
 			wgt=create(wgt)
 			wgt.lay=add(wgt,wgt.lay)
 			wgt=layout(wgt)
@@ -148,7 +161,7 @@ def QtBlocks():
 			def init(wgt):
 				wgt.btnPrev.setHidden(True)
 				wgt.btnNext.setHidden(True)
-				wgt	= blk['Elements']['sPol'](wgt, h='E', v='F')
+				wgt	= blk['Base']['sPol'](wgt, h='E', v='F')
 				wgt.Found = None
 				return wgt
 			def fnx(wgt):
@@ -179,7 +192,7 @@ def QtBlocks():
 				wgt.Next		= wgt.btnNext.clicked.connect
 				wgt.Prev		=	wgt.btnPrev.clicked.connect
 				return wgt
-			wgt = blk['Elements']['Wgt'](n='Search',t='h')
+			wgt = blk['Base']['Wgt'](n='Search',t='h')
 			wgt = create(wgt)
 			wgt.lay = add(wgt,wgt.lay)
 			wgt = init(wgt)
@@ -199,38 +212,33 @@ def QtBlocks():
 				wgt.Copy=wgt.btnCopy.clicked.connect
 				return wgt
 			Elmt = blk['Elements']
-			wgt = blk['Elements']['Wgt'](n='Path',t='h')
+			wgt = blk['Base']['Wgt'](n='Path',t='h')
 			wgt = create(wgt)
 			wgt.lay = add(wgt,wgt.lay)
 			wgt = conn(wgt)
 			return wgt
 		def EditProp(n,**k):
 			fnSet=k.get('fnset') or dummy
-			elements = {
-						'Lbl'			: blk['Elements']['Lbl'](f'{n}:'),
-						'txt'			: blk['Elements']['lEdit'](n,ro=True),
-						'txtdup'	: blk['Elements']['lEdit'](n,ro=True)  ,
-						'btnSet' 	:	blk['Elements']['tBtn']('Set')  ,
-						'btnEdit':	blk['Elements']['iBtn']('Edit', bi=True,icons=ico) ,
-			}
-			def create(wgt):
-				wgt.lbl 		= w['elements']['Lbl']
-				wgt.txt 		= w['elements']['txt']
-				wgt.txtdup	= w['elements']['txtdup']
-				wgt.btnSet 	= w['elements']['btnSet']
-				wgt.btnEdit =	w['elements']['btnEdit']
-				return wgt
+			def elements():
+				e = {}
+				e['Lbl']		= blk['Elements']['Lbl'](f'{n}:')
+				e['txt']		= blk['Elements']['lEdit'](n,ro=True)
+				e['txtdup']	= blk['Elements']['lEdit'](n,ro=True)
+				e['btnSet']	=	blk['Elements']['tBtn']('Set')
+				e['btnEdit']=	blk['Elements']['iBtn']('Edit', bi=True,icons=ico)
+				return e
+
 			def add(w,lay):
-				lay.addWidget(w.lbl)
-				lay.addWidget(w.txt)
-				lay.addWidget(w.txtdup)
-				lay.addWidget(w.btnSet)
-				lay.addWidget(w.btnEdit)
+				lay.addWidget(w['elements']['Lbl'])
+				lay.addWidget(w['elements']['txt'])
+				lay.addWidget(w['elements']['txtdup'])
+				lay.addWidget(w['elements']['btnSet']['Wgt'] )
+				lay.addWidget(w['elements']['btnEdit'])
 				return lay
 			def init(wgt):
-				wgt.btnSet.setHidden(True)
-				wgt.txt.setReadOnly(True)
-				wgt.txtdup.setHidden(True)
+				w['elements']['btnSet']['Fnx']['setHidden'](True)
+				w['elements']['txt'].setReadOnly(True)
+				w['elements']['txtdup'].setHidden(True)
 				w['fnx']['Editable'](not k.get('ed'))
 				return wgt
 			def fnx(wgt):
@@ -257,7 +265,7 @@ def QtBlocks():
 					return edit
 				def editable(wgt):
 					def editable(state):
-						wgt.btnEdit.setHidden(state)
+						w['elements']['btnEdit'].setHidden(state)
 					return editable
 				f = {}
 				f['Edit'] 		=	edit(wgt)
@@ -267,22 +275,21 @@ def QtBlocks():
 				return f
 			def conn(wgt):
 				c = {}
-				c['btnEdit']= wgt.btnEdit.clicked.connect
-				c['btnSet']= wgt.btnEdit.clicked.connect
+				c['btnEdit']= w['elements']['btnEdit'].clicked.connect
+				c['btnSet']= w['elements']['btnSet']['Conn']['clicked']
 				c['txt']	= {}
-				c['txt']['returnPressed']= wgt.txt.returnPressed.connect
+				c['txt']['returnPressed']= w['elements']['txt'].returnPressed.connect
 				# wgt.btnEdit.clicked.connect(w['fnx']['Edit'])
 				# wgt.btnSet.clicked.connect(w['fnx']['txtText'])
 				# wgt.txt.returnPressed.connect(w['fnx']['txtText'])
 				return c
 			w ={}
-			w['elements']	= elements
-			w['Wgt']		=	blk['Elements']['Wgt'](n=n,t='h')
-			w['Wgt']    = blk['Elements']['sPol'](w['Wgt'], h='E', v='F')
-			w['Wgt'] 		= create(w['Wgt'])
+			w['elements']	= elements()
+			w['Wgt']		=	blk['Base']['Wgt'](n=n,t='h')
+			w['Wgt']    = blk['Base']['sPol'](w['Wgt'], h='E', v='F')
 			w['layout']	=	w['Wgt'].lay
 
-			w['layout'] 	= add(w['Wgt'],w['layout'])
+			w['layout'] 	= add(w,w['layout'])
 			w['fnx'] 			= fnx(w['Wgt'])
 			w['conn']			=	conn(w['Wgt'])
 			w['Wgt']			=	init(w['Wgt'])
@@ -291,27 +298,21 @@ def QtBlocks():
 		def AppCtl(**k):
 			def elements(w):
 				e={}
-				e['hSpc']			=   	w.hSpc
-				e['btnExit']	=   	w.btnExit
-				e['btnSave']	=	  	w.btnSave
-				e['btnPrint']	=	  	w.btnPrint
+				e['hSpc']			=   	blk['Elements']['SpcEx']()
+				e['btnExit']	=   	blk['Elements']['tBtn']('Exit')
+				e['btnSave']	=	  	blk['Elements']['tBtn']('Save As')
+				e['btnPrint']	=	  	blk['Elements']['tBtn']('Print')
 				return e
-			def create(w):
-				w.hSpc			= blk['Compounds']['SpcEx']()
-				w.btnExit		= blk['Elements']['tBtn']('Exit')
-				w.btnSave		= blk['Elements']['tBtn']('Save As')
-				w.btnPrint	= blk['Elements']['tBtn']('Print')
-				return w
 			def add(w,lay):
-				lay.addWidget(w.btnPrint)
-				lay.addWidget(w.btnSave)
-				lay.addWidget(w.hSpc)
-				lay.addWidget(w.btnExit)
+				lay.addWidget(wgt['elements']['btnPrint']['Wgt'])
+				lay.addWidget(wgt['elements']['btnSave']['Wgt'])
+				lay.addWidget(wgt['elements']['hSpc'])
+				lay.addWidget(wgt['elements']['btnExit']['Wgt'])
 				return lay
 
 			def init(w,d):
 				w.setContentsMargins(*d['Margin'])
-				w	= blk['Elements']['sPol'](w,h='E',v='P')
+				w	= blk['Base']['sPol'](w,h='E',v='P')
 				return w
 
 			def data():
@@ -323,15 +324,14 @@ def QtBlocks():
 
 			def conn(w):
 				c={}
-				c['fnPrint']	=	w.btnPrint.clicked.connect
-				c['fnSave']		=	w.btnSave.clicked.connect
-				c['fnExit']		=	w.btnExit.clicked.connect
+				c['Print']	=	wgt['elements']['btnPrint']['Conn']['clicked']
+				c['Save']		=	wgt['elements']['btnSave']['Conn']['clicked']
+				c['Exit']		=	wgt['elements']['btnExit']['Conn']['clicked']
 				return c
 
 			wgt = {}
-			wgt['wgt'] 			= blk['Elements']['Wgt'](n='wgtAppCtl',t='h')
+			wgt['wgt'] 			= blk['Base']['Wgt'](n='wgtAppCtl',t='h')
 			wgt['layout']		=	wgt['wgt'].lay
-			wgt['wgt'] 			= create(wgt['wgt'])
 			wgt['elements']	=	elements(wgt['wgt'])
 			wgt['layout'] 	= add(wgt['wgt'],wgt['layout'])
 			wgt['data']			= data()
@@ -349,7 +349,10 @@ def QtBlocks():
 		Wgt['AppCtl']			=	AppCtl
 		return Wgt
 
-	blk = QtUser.Blocks()
+	blk = {}
+	blk['Base'] 		= QtUser.Base()
+	blk['Elements'] = QtUser.Elements()
+	blk['Layouts']	= QtUser.Layouts()
 	blk['Widgets'] = Widgets()
 	return blk
 
@@ -395,7 +398,7 @@ def construct_Qt5Ui(beta):
 			Key=k.get('Key')
 			Val=k.get('Val')
 			Path=k.get('Path')
-			txtBox = [Key.txt, Val.txt, Path.txt ]
+			txtBox = [Key['elements']['txt'], Val['elements']['txt'], Path.txt ]
 			def select(data):
 				for idx, txtbox in zip([0, 3, 2], txtBox):
 					txtbox.setText(data.text(idx))
@@ -407,9 +410,9 @@ def construct_Qt5Ui(beta):
 			return toclip
 
 		def allign(App):
-			maxwidth=max(App['Main']['Element']['Key']['Wgt'].lbl.width(),App['Main']['Element']['Val']['Wgt'].lbl.width())
-			App['Main']['Element']['Key']['Wgt'].lbl.setMinimumWidth(maxwidth)
-			App['Main']['Element']['Val']['Wgt'].lbl.setMinimumWidth(maxwidth)
+			maxwidth=max(App['Main']['Element']['Key']['elements']['Lbl'].width(),App['Main']['Element']['Val']['elements']['Lbl'].width())
+			App['Main']['Element']['Key']['elements']['Lbl'].setMinimumWidth(maxwidth)
+			App['Main']['Element']['Val']['elements']['Lbl'].setMinimumWidth(maxwidth)
 			App['Allign'] 	=	allign
 			App['Select'] 	=	select
 			return App
@@ -430,7 +433,7 @@ def construct_Qt5Ui(beta):
 						make_branch(branch, data, dictpath,keylist=keylist)
 					else:
 						data = str(data)
-						w = App['Main']['Element']['Tree'].Tree.columnWidth(1)
+						w = App['Main']['Element']['Tree']['Wgt'].Tree.columnWidth(1)
 						data = repr(data) if callable(data) else data
 						dispdata = f'{data[0:w - 4]}...' if len(data) > w - 4 else data
 						branch.setText(1, dispdata)
@@ -516,17 +519,17 @@ def construct_Qt5Ui(beta):
 		fnx['saveDialog']		=	saveDialog
 		fnx['stdf']					=	stdf
 		fnx['stdw']					= stdw
-		fnx['OnSelect']			= select(Key=App['Main']['Element']['Key']['Wgt'],Val=App['Main']['Element']['Val']['Wgt'],Path=App['Main']['Element']['Path'])
+		fnx['OnSelect']			= select(Key=App['Main']['Element']['Key'],Val=App['Main']['Element']['Val'],Path=App['Main']['Element']['Path'])
 		fnx['PathToClip']		=	copytoclip(App['Main']['Element']['Path'].txt)
 		fnx['Searched']			=	search(App)
 		fnx['Found']				=	searchSel(App)
-		fnx['selNext']			= App['Main']['Element']['Search'].selNext(App['Main']['Element']['Tree'].Tree)
-		fnx['selPrev']			= App['Main']['Element']['Search'].selPrev(App['Main']['Element']['Tree'].Tree)
+		fnx['selNext']			= App['Main']['Element']['Search'].selNext(App['Main']['Element']['Tree']['Wgt'].Tree)
+		fnx['selPrev']			= App['Main']['Element']['Search'].selPrev(App['Main']['Element']['Tree']['Wgt'].Tree)
 		return fnx
 
 	def create(App):
 		def MainWgt():
-			wgt = App['Blocks']['Elements']['Wgt'](n='Qt5',t='v')
+			wgt = App['Blocks']['Base']['Wgt'](n='Qt5',t='v')
 			return wgt
 
 		def Elements():
@@ -547,7 +550,7 @@ def construct_Qt5Ui(beta):
 			Module['WrpSearch']		=	App['Blocks']['Layouts']['center'](Main['Element']['Search'],w=0,margin=[5,0,5,5])
 			Module['Edit']				=	App['Blocks']['Layouts']['siblings']([Main['Element']['Key']['Wgt'],Main['Element']['Val']['Wgt']],'v',margin=[25,0,25,5])
 			# Module.wrpEdit	=	App['Blocks']['Layouts']['center'](App.Main.Edit,w=25)
-			Module['TrDisp']			=	App['Blocks']['Layouts']['siblings']([Main['Element']['Tree'],Module['TreeCtl']],t='v')
+			Module['TrDisp']			=	App['Blocks']['Layouts']['siblings']([Main['Element']['Tree']['Wgt'],Module['TreeCtl']],t='v')
 			# Module.Tools			=	App['Blocks']['Layouts']['siblings']([Module.WrpSearch,Module.Edit],'v',margin=[0,0,0,5])
 			return Module
 
@@ -569,11 +572,11 @@ def construct_Qt5Ui(beta):
 	def conn(App):
 		conn={}
 
-		conn['fnSave'] = App['Main']['Element']['AppCtl']['conn']['fnSave']
-		App['Main']['Element']['ExpCol'].fnI(App['Main']['Element']['Tree'].Tree.expandAll)
-		App['Main']['Element']['ExpCol'].fnD(App['Main']['Element']['Tree'].Tree.collapseAll)
-		App['Main']['Element']['Tree'].Selected(	App['Fnx']['OnSelect'])
-		App['Main']['Element']['Tree'].FoundSel(App['Fnx']['Found'])
+		conn['fnSave'] = App['Main']['Element']['AppCtl']['conn']['Save']
+		App['Main']['Element']['ExpCol'].fnI(App['Main']['Element']['Tree']['Wgt'].Tree.expandAll)
+		App['Main']['Element']['ExpCol'].fnD(App['Main']['Element']['Tree']['Wgt'].Tree.collapseAll)
+		App['Main']['Element']['Tree']['Wgt'].Selected(	App['Fnx']['OnSelect'])
+		App['Main']['Element']['Tree']['Wgt'].FoundSel(App['Fnx']['Found'])
 		# elmt.AppCtl.fnSave(fnx.stdf)
 		# elmt.AppCtl.fnPrint(fnx.stdo)
 		App['Main']['Element']['Path'].Copy(App['Fnx']['PathToClip'])
@@ -592,17 +595,13 @@ def construct_Qt5Ui(beta):
 
 def browse(beta=False,**k):
 	QtApp = construct_Qt5Ui(beta)
-	if k:
-		kv= k.popitem()
-	else:
-		kv= 'QtApp', QtApp
-
+	kv = k.popitem() if k else ('QtApp', QtApp)
 	trunk = QtApp['Fnx']['makeTree'](QtApp, name=kv[0], data=kv[1])
-	QtApp['Main']['Element']['Tree'].Tree.addTopLevelItem(trunk)
+	QtApp['Main']['Element']['Tree']['Wgt'].Tree.addTopLevelItem(trunk)
 	QtApp['Conn']['fnSave'](QtApp['Fnx']['stdf'](dct=kv[1],name=kv[0]))
 	QtApp['Main']['Wgt'].show()
 	QtApp['Fnx']['allign'](QtApp)
-	QtApp['Main']['Element']['Tree'].fittCols()
+	QtApp['Main']['Element']['Tree']['Fnx']['fittCols']()
 	sys.exit(QtApp['QtWin'].exec())
 
 if __name__ == '__main__' :

@@ -23,7 +23,7 @@ def wLays(t):
 						}
 	return l[t]
 
-def Elements():
+def Base():
 	def sPol(wgt, h=None, v=None):
 		Pol = QtWidgets.QSizePolicy(sPols(h), sPols(v))
 		wgt.setSizePolicy(Pol)
@@ -67,11 +67,61 @@ def Elements():
 		icon = make_icon(icon,1)
 		return icon
 
+	b= {}
+	b['sPol']			=	sPol
+	b['Wgt']			= Wgt
+	b['icon_dl']	=	icon_dl
+	return b
+
+def Elements():
+	B=Base()
+	sPol=B['sPol']
+	icon_dl	=	B['icon_dl']
+
 	def Spcr(**k):
 		w=k.get('w')
 		h=k.get('h')
 		hpol,vpol=k.get('t')
 		wgt=QtWidgets.QSpacerItem(w, h, sPols(hpol), sPols(vpol))
+		return wgt
+
+	def SpcFix(**k):
+		wgt=	B['Wgt'](t='h')
+		w			= k.get('w')	or 0
+		h			= k.get('h')	or 0
+		hPol 	= 'F' if k.get('w') else 'P'
+		vPol	=	'F'	if k.get('h') else 'P'
+		wgt.SpcFix = 	Spcr( w=w, h=h, t=[hPol,vPol])
+		wgt.lay.addItem(wgt.SpcFix)
+		wgt.setContentsMargins(0,0,0,0)
+		wgt.lay.setContentsMargins(0,0,0,0)
+		return wgt
+
+	def SpcEx(**k):
+		n 	= k.get('n')
+		w			= k.get('w')	or 0
+		h			= k.get('h')	or 0
+		hPol 	= 'E' if k.get('w') else 'P'
+		vPol	=	'E'	if k.get('h') else 'P'
+		def create(wgt):
+			wgt.SpcEx = Spcr(w=w, h=h, t=[hPol,vPol])
+			return wgt
+		def layout(wgt):
+			wgt = B['sPol'](wgt, h='P', v='P')
+			return wgt
+		def add(wgt):
+			wgt.lay.addItem(wgt.SpcEx)
+			return wgt.lay
+		def init(wgt):
+			wgt.setContentsMargins(0,0,0,0)
+			wgt.lay.setContentsMargins(0,0,0,0)
+			return wgt
+
+		wgt = B['Wgt'](n=f'wgtSpcEx{n}',t='h')
+		wgt=create(wgt)
+		wgt=layout(wgt)
+		wgt.lay=add(wgt)
+
 		return wgt
 
 	def chkBox(n,**k):
@@ -102,12 +152,38 @@ def Elements():
 		return btn
 
 	def tBtn(n, bi=False):
-		btn = QtWidgets.QToolButton()
-		btn.setObjectName(f'tBtn{n}')
-		btn.setText(n)
-		btn.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
-		btn.setCheckable(bi)
-		btn.setMaximumHeight(20)
+		def fnx():
+			f= {}
+			f['setName']	= btn['Wgt'].setObjectName
+			f['Name']			=	btn['Wgt'].objectName
+			f['setText']	=	btn['Wgt'].setText
+			f['Text']			=	btn['Wgt'].text
+			f['checkable']	=	btn['Wgt'].setCheckable
+			f['setHidden']	=	btn['Wgt'].setHidden
+			f['Hidden']		= btn['Wgt'].isHidden
+			return f
+
+		def init():
+			btn['Fnx']['setName'](f'tBtn{n}')
+			btn['Fnx']['setText'](n)
+			btn['Fnx']['checkable'](bi)
+			btn['Wgt'].setMaximumHeight(20)
+			btn['Wgt'].setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
+		def conn():
+			c={}
+			c['clicked'] = btn['Wgt'].clicked.connect
+			return c
+		def data():
+			d={}
+			d['Name'] = btn['Fnx']['Name']()
+			d['Text']	=	btn['Fnx']['Text']()
+			d['Visible'] = not btn['Fnx']['Hidden']()
+		btn={}
+		btn['Wgt'] = QtWidgets.QToolButton()
+		btn['Fnx']	= fnx()
+		btn['Conn']	=	conn()
+		btn['Data']=	data()
+		init()
 		return btn
 
 	def Lbl(n):
@@ -152,9 +228,10 @@ def Elements():
 		return wgt
 
 	e = {}
-	e['sPol']			=	sPol
-	e['Wgt']			= Wgt
+
 	e['Spcr']			=	Spcr
+	e['SpcFix']		= SpcFix
+	e['SpcEx']		=	SpcEx
 	e['chkBox']		=	chkBox
 	e['iBtn']			=	iBtn
 	e['tBtn']			=	tBtn
@@ -163,22 +240,24 @@ def Elements():
 	e['Tree']			= Tree
 	return e
 
-def Layouts(blk):
-	E=blk['Elements']
-	C=blk['Compounds']
+def Layouts():
+	B=Base()
+
+	E=Elements()
 
 	def siblings(wgts, t, margin=[0,0,0,0]):
-		wgt=	 E['Wgt'](t=t)
+		wgt=	 B['Wgt'](t=t)
 		wgt.setContentsMargins(*margin)
 		for item in wgts:
 			wgt.lay.addWidget(item)
 		return wgt
+
 	def center(child,	**k):
 		w = k.get('w') or 0
 		margin = k.get('margin') or [w,0,w,0]
-		lSpcFix= C['SpcFix'](w=w)
-		rSpcFix= C['SpcFix'](w=w)
-		wgt= E['Wgt'](t='h')
+		lSpcFix= E['SpcFix'](w=w)
+		rSpcFix= E['SpcFix'](w=w)
+		wgt= B['Wgt'](t='h')
 		wgt.lay.addWidget(lSpcFix)
 		wgt.lay.addWidget(child)
 		wgt.lay.addWidget(rSpcFix)
@@ -189,59 +268,3 @@ def Layouts(blk):
 	l['siblings'] 	= siblings
 	l['center']			= center
 	return l
-
-def Compounds(blk):
-	E=blk['Elements']
-	def SpcFix(**k):
-		wgt=E['Wgt'](t='h')
-		w			= k.get('w')	or 0
-		h			= k.get('h')	or 0
-		hPol 	= 'F' if k.get('w') else 'P'
-		vPol	=	'F'	if k.get('h') else 'P'
-		wgt.SpcFix = E['Spcr']( w=w, h=h, t=[hPol,vPol])
-		wgt.lay.addItem(wgt.SpcFix)
-		wgt.setContentsMargins(0,0,0,0)
-		wgt.lay.setContentsMargins(0,0,0,0)
-		return wgt
-	def SpcEx(**k):
-		n 	= k.get('n')
-		w			= k.get('w')	or 0
-		h			= k.get('h')	or 0
-		hPol 	= 'E' if k.get('w') else 'P'
-		vPol	=	'E'	if k.get('h') else 'P'
-		def create(wgt):
-			wgt.SpcEx = E['Spcr'](w=w, h=h, t=[hPol,vPol])
-			return wgt
-		def layout(wgt):
-			wgt = E['sPol'](wgt, h='P', v='P')
-			return wgt
-		def add(wgt):
-			wgt.lay.addItem(wgt.SpcEx)
-			return wgt.lay
-		def init(wgt):
-			wgt.setContentsMargins(0,0,0,0)
-			wgt.lay.setContentsMargins(0,0,0,0)
-			return wgt
-
-		wgt = E['Wgt'](n=f'wgtSpcEx{n}',t='h')
-		wgt=create(wgt)
-		wgt=layout(wgt)
-		wgt.lay=add(wgt)
-
-		return wgt
-	c = {}
-	c['SpcFix']			= SpcFix
-	c['SpcEx']			=	SpcEx
-	return c
-
-def	Blocks():
-	blk = {}
-	blk['sPols']			=	sPols
-	blk['Elements']		=	Elements()
-	blk['Compounds']	=	Compounds(blk)
-	blk['Layouts']		=	Layouts(blk)
-
-	return blk
-
-
-	#
