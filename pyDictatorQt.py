@@ -146,24 +146,25 @@ def QtBlocks():
 			wgt.setContentsMargins(*margin)
 			return wgt
 		def Search():
-			def create(wgt):
-				wgt.btnNext 			= blk['Elements']['iBtn']('Next', w=12,icons=ico)
-				wgt.btnPrev 			= blk['Elements']['iBtn']('Prev', w=12,icons=ico)
-				wgt.btnSearch 		= blk['Elements']['iBtn']('Search',icons=ico)
-				wgt.chkRegEx			=	blk['Elements']['chkBox']('RegEx',icons=ico)
-				wgt.txt 					=	blk['Elements']['lEdit']('Search')
-				wgt.wgtPN 				= blk['Layouts']['siblings']([wgt.btnPrev,wgt.btnNext],t='h',margin=[0,0,0,0])
-				wgt.wgtCtl			 	= blk['Layouts']['siblings']([wgt.wgtPN,wgt.btnSearch],t='h',margin=[0,0,0,0])
-				wgt.wgtSearch			= blk['Layouts']['siblings']([wgt.chkRegEx,wgt.txt,wgt.wgtCtl,],t='h',margin=[0,0,0,0])
-				return wgt
+			def elements():
+				e={}
+				e['btnNext'] 			= blk['Elements']['iBtn']('Next', w=12,icons=ico)
+				e['btnPrev'] 			= blk['Elements']['iBtn']('Prev', w=12,icons=ico)
+				e['btnSearch'] 		= blk['Elements']['iBtn']('Search',icons=ico)
+				e['chkRegEx']			=	blk['Elements']['chkBox']('RegEx',icons=ico)
+				e['txt'] 					=	blk['Elements']['lEdit']('Search')
+				e['wgtPN'] 				= blk['Layouts']['siblings']([e['btnPrev']['Wgt'],e['btnNext']['Wgt']],t='h',margin=[0,0,0,0])
+				e['wgtCtl'] 			= blk['Layouts']['siblings']([e['wgtPN'],e['btnSearch']['Wgt']],t='h',margin=[0,0,0,0])
+				e['wgtSearch']		= blk['Layouts']['siblings']([e['chkRegEx']['Wgt'],e['txt'],e['wgtCtl']],t='h',margin=[0,0,0,0])
+				return e
 			def add(wgt,lay):
-				lay.addWidget(wgt.wgtSearch)
+				lay.addWidget(w['elements']['wgtSearch'])
 			def init(wgt):
-				wgt.btnPrev.setHidden(True)
-				wgt.btnNext.setHidden(True)
-				wgt	= blk['Base']['sPol'](wgt, h='E', v='F')
-				wgt.Found = None
-				return wgt
+				w['elements']['btnPrev'].setHidden(True)
+				w['elements']['btnNext'].setHidden(True)
+				w['Wgt']	= blk['Base']['sPol'](wgt, h='E', v='F')
+				w['Found'] = None
+
 			def fnx(wgt):
 				def dispPN(wgt):
 					def dispPN(show):
@@ -192,13 +193,14 @@ def QtBlocks():
 				wgt.Next		= wgt.btnNext.clicked.connect
 				wgt.Prev		=	wgt.btnPrev.clicked.connect
 				return wgt
-			wgt = blk['Base']['Wgt'](n='Search',t='h')
-			wgt = create(wgt)
-			wgt.lay = add(wgt,wgt.lay)
-			wgt = init(wgt)
-			wgt =	fnx(wgt)
-			wgt	= conn(wgt)
-			return wgt
+			w={}
+			w['Wgt'] = blk['Base']['Wgt'](n='Search',t='h')
+			w['Fnx']	= fnx()
+			w['Conn']	=	conn()
+			w['elements']	=	elements()
+			w['layout'] 	= add(w['wgt'],w['layout'])
+			init()
+			return w
 		def Path():
 			def create(wgt):
 				wgt.txt 		= blk['Elements']['lEdit'](n='Path',ro=True)
@@ -296,7 +298,7 @@ def QtBlocks():
 
 			return w
 		def AppCtl(**k):
-			def elements(w):
+			def elements():
 				e={}
 				e['hSpc']			=   	blk['Elements']['SpcEx']()
 				e['btnExit']	=   	blk['Elements']['tBtn']('Exit')
@@ -332,7 +334,7 @@ def QtBlocks():
 			wgt = {}
 			wgt['wgt'] 			= blk['Base']['Wgt'](n='wgtAppCtl',t='h')
 			wgt['layout']		=	wgt['wgt'].lay
-			wgt['elements']	=	elements(wgt['wgt'])
+			wgt['elements']	=	elements()
 			wgt['layout'] 	= add(wgt['wgt'],wgt['layout'])
 			wgt['data']			= data()
 

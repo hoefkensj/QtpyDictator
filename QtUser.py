@@ -22,7 +22,8 @@ def wLays(t):
 		'F'				:	QtWidgets.QFormLayout,
 						}
 	return l[t]
-
+def Fnx(w):
+	return {n:getattr(w, n) for n in dir(w)	if callable(getattr(w, n) )}
 def Base():
 	def sPol(wgt, h=None, v=None):
 		Pol = QtWidgets.QSizePolicy(sPols(h), sPols(v))
@@ -109,6 +110,10 @@ def Elements():
 		def layout(wgt):
 			wgt = B['sPol'](wgt, h='P', v='P')
 			return wgt
+		def fnx():
+			F=Fnx(wgt['Wgt'])
+			f= {k:F[k] for k in F if not k.startswith('__')}
+			return f
 		def add(wgt):
 			wgt.lay.addItem(wgt.SpcEx)
 			return wgt.lay
@@ -116,8 +121,8 @@ def Elements():
 			wgt.setContentsMargins(0,0,0,0)
 			wgt.lay.setContentsMargins(0,0,0,0)
 			return wgt
-
-		wgt = B['Wgt'](n=f'wgtSpcEx{n}',t='h')
+		wgt = {}
+		wgt['Wgt'] = B['Wgt'](n=f'wgtSpcEx{n}',t='h')
 		wgt=create(wgt)
 		wgt=layout(wgt)
 		wgt.lay=add(wgt)
@@ -125,48 +130,89 @@ def Elements():
 		return wgt
 
 	def chkBox(n,**k):
+		def fnx():
+			def toggle():
+				state=F['isChecked']
+				F['setChecked'](not state)
+			F=Fnx(cBox['Wgt'])
+			f= {k:F[k] for k in F if not k.startswith('__')}
+			f['Toggle']= toggle
+			return f
+		def init():
+			F=cBox['Fnx']
+			F['setObjectName'](f'chk{n}')
+			F['setIcon'](icon_dl(n,ico=ico))
+			F['setIconSize'](QtCore.QSize(w-5, h-5))
+			F['setMaximumSize'](QtCore.QSize(w*3, h))
+		def conn():
+			c={}
+			c['clicked'] = cBox['Wgt'].clicked.connect
+			c['clicked'](cBox['Fnx']['toggle'])
+			return c
+		def data():
+			d={}
+			d['Name'] = cBox['Fnx']['objectName']
+			d['Text']	=	cBox['Fnx']['text']
+			d['Visible'] = not cBox['Fnx']['isHidden']
+
 		h=k.get('h') or 20
 		w=k.get('w') or 20
 		ico=k.get('icons')
-		cBox 	= QtWidgets.QCheckBox()
-		cBox.setObjectName(f'chk{n}')
-		cBox	=	sPol(cBox, h='P', v='P')
-		cBox.setIcon(icon_dl(n,ico=ico))
-		cBox.setIconSize(QtCore.QSize(w-5, h-5))
-		cBox.setMaximumSize(QtCore.QSize(w*3, h))
+		cBox={}
+		cBox['Wgt'] = QtWidgets.QCheckBox()
+		cBox['Fnx']	= fnx()
+		cBox['Conn']	=	conn()
+		cBox['Data']=	data()
+		init()
+
+		cBox['Wgt'] 	=	sPol(	cBox['Wgt'] , h='P', v='P')
 		return cBox
 
 	def iBtn(n,**k):
+		def fnx():
+			F=Fnx(btn['Wgt'])
+			f= {k:F[k] for k in F if not k.startswith('__')}
+			return f
+		def init():
+			F=btn['Fnx']
+			F['setObjectName'](f'iBtn{n}')
+			F['setIcon'](icon_dl(n,ico=ico))
+			F['setIconSize'](QtCore.QSize(32, 32))
+			F['setCheckable'](bi)
+			F['setMaximumSize'](QtCore.QSize(w, h))
+			F['setToolButtonStyle'](QtCore.Qt.ToolButtonIconOnly)
+			F['setMaximumHeight'](20)
+		def conn():
+			c={}
+			c['clicked'] = btn['Wgt'].clicked.connect
+			return c
+		def data():
+			d={}
+			d['Name'] = btn['Fnx']['objectName']
+			d['Text']	=	btn['Fnx']['text']
+			d['Visible'] = not btn['Fnx']['isHidden']
+
 		bi=k.get('bi') or False
 		h=k.get('h') or 20
 		w=k.get('w') or 20
 		ico=k.get('icons')
-		btn = QtWidgets.QToolButton()
-		btn.setObjectName(f'iBtn{n}')
-		btn.setIcon(icon_dl(n,ico=ico))
-		btn.setIconSize(QtCore.QSize(32, 32))
-		btn.setMaximumSize(QtCore.QSize(w, h))
-		btn.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-		btn.setCheckable(bi)
-		btn.setHidden(False)
+		btn={}
+		btn['Wgt'] = QtWidgets.QToolButton()
+		btn['Fnx']	= fnx()
+		btn['Conn']	=	conn()
+		btn['Data']=	data()
+		init()
 		return btn
 
 	def tBtn(n, bi=False):
 		def fnx():
-			f= {}
-			f['setName']	= btn['Wgt'].setObjectName
-			f['Name']			=	btn['Wgt'].objectName
-			f['setText']	=	btn['Wgt'].setText
-			f['Text']			=	btn['Wgt'].text
-			f['checkable']	=	btn['Wgt'].setCheckable
-			f['setHidden']	=	btn['Wgt'].setHidden
-			f['Hidden']		= btn['Wgt'].isHidden
+			F=Fnx(btn['Wgt'])
+			f= {k:F[k] for k in F if not k.startswith('__')}
 			return f
-
 		def init():
-			btn['Fnx']['setName'](f'tBtn{n}')
+			btn['Fnx']['setObjectName'](f'tBtn{n}')
 			btn['Fnx']['setText'](n)
-			btn['Fnx']['checkable'](bi)
+			btn['Fnx']['setCheckable'](bi)
 			btn['Wgt'].setMaximumHeight(20)
 			btn['Wgt'].setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
 		def conn():
@@ -175,9 +221,9 @@ def Elements():
 			return c
 		def data():
 			d={}
-			d['Name'] = btn['Fnx']['Name']()
-			d['Text']	=	btn['Fnx']['Text']()
-			d['Visible'] = not btn['Fnx']['Hidden']()
+			d['Name'] = btn['Fnx']['objectName']
+			d['Text']	=	btn['Fnx']['text']
+			d['Visible'] = not btn['Fnx']['isHidden']
 		btn={}
 		btn['Wgt'] = QtWidgets.QToolButton()
 		btn['Fnx']	= fnx()
