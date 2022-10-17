@@ -14,7 +14,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import QtUser
-import types ,sys
+import sys
 
 sPols 			= 	{
 	'P'				: QtWidgets.QSizePolicy.Preferred,

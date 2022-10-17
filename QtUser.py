@@ -23,7 +23,25 @@ def wLays(t):
 						}
 	return l[t]
 
+def QtApp():
+	from sys import argv
+	a 						= {}
+	a['QtApp'] 		= QtWidgets.QApplication(argv)
+	a['Clip']			= a['QtApp'].clipboard()
+	a['Mtd']			= Mtd(a)
+	return a
+
+def Mtd(w):
+	o=w.get('Wgt') or w.get('QtApp')
+	f = {}
+	for n in dir(o):
+		m = getattr(o, n)
+		if callable(m) and not str(m).startswith('__'):
+			f[n] = m
+	return f
+
 def Base():
+
 	def sPol(w, h=None, v=None):
 		Pol = QtWidgets.QSizePolicy(sPols(h), sPols(v))
 		w['Wgt'].setSizePolicy(Pol)
@@ -49,7 +67,7 @@ def Base():
 		w= {}
 		w['Wgt']			=	widget()
 		w							=	layout() if Layout else w
-		w['Fnx']			= Fnx(w)
+		w['Mtd']			= Mtd(w)
 		return w
 
 	def Icon(n=None,ico=None):
@@ -69,37 +87,27 @@ def Base():
 		icon = make_icon(icon,1)
 		return icon
 
-	def Fnx(w):
-		f = {}
-		for n in dir(w['Wgt']):
-			m = getattr(w['Wgt'], n)
-			if callable(m) and not str(m).startswith('__'):
-				f[n] = m
-		return f
-	
 	def Data(w):
 		d={}
-		d['Name'] = w['Fnx']['objectName']
-		d['Visible'] = not w['Fnx']['isHidden']
+		d['Name'] = w['Mtd']['objectName']
+		d['Visible'] = not w['Mtd']['isHidden']
 		return d
 
 	b= {}
+	b['QtApp']		= QtApp
 	b['sPol']			=	sPol
-	b['wgt']			= Wgt
-	b['icon']			=	Icon
-	b['fnx']			=	Fnx
-	b['data']			=	Data
+	b['Wgt']			= Wgt
+	b['Icon']			=	Icon
+	b['Mtd']			=	Mtd
+	b['Data']			=	Data
 	return b
 
 def Elements():
 	B					=	Base()
 	sPol			=	B['sPol']
-	Icon			=	B['icon']
-	Fnx				= B['fnx']
-	Data 			=	B['data']
+	Icon			=	B['Icon']
+	Data 			=	B['Data']
 
-
-		
 	def Spcr(**k):
 		p,n,w,h,vPol,hPol=[*[0]*6]
 		def arg():
@@ -123,18 +131,18 @@ def Elements():
 				'vPol'	:vPol,
 				}
 			return a
-		def init():
-			def init():
-				s['Fnx']['setObjectName'](f'spcEx{n}')
-				s['Fnx']['setContentsMargins'](0,0,0,0)
-			init()
-			return init
+		def Init():
+			def Init():
+				s['Mtd']['setObjectName'](f'spcEx{n}')
+				s['Mtd']['setContentsMargins'](0,0,0,0)
+			Init()
+			return Init
 		s={}
 		s['Arg']			=	arg()
 		s['Wgt'] 			= QtWidgets.QSpacerItem(w, h, sPols(hPol), sPols(vPol))
 		s['Data']			=	Data(s)
-		s['Fnx']			=	Fnx(s)
-		s['Init']			= init()
+		s['Mtd']			=	Mtd(s)
+		s['Init']			= Init()
 		return s
 
 	def SpcFix(**k):
@@ -155,103 +163,103 @@ def Elements():
 				'vPol'	:vPol,
 				}
 			return a
-		def init():
-			def init():
-				s['Fnx']['setObjectName'](f'spcEx{n}')
-				s['Fnx']['setContentsMargins'](0,0,0,0)
-			init()
-			return init
+		def Init():
+			def Init():
+				s['Mtd']['setObjectName'](f'spcEx{n}')
+				s['Mtd']['setContentsMargins'](0,0,0,0)
+			Init()
+			return Init
 		s={}
 		s['Arg']			=	arg()
 		s['Wgt'] 			= QtWidgets.QSpacerItem(w, h, sPols(hPol), sPols(vPol))
 		s['Data']			=	Data(s)
-		s['Fnx']			=	Fnx(s)
-		s['Init']			= init()
+		s['Mtd']			=	Mtd(s)
+		s['Init']			= Init()
 		return s
 
 	def SpcEx(**k):
 		n,w,h,vPol,hPol=[*[0]*5]
 		def arg():
 			nonlocal n,w,h,vPol,hPol
-			n				=	k.get("n")	or 'N'
-			w				=	k.get("w")	or 0
-			h				=	k.get("h")	or 0
-			hPol		=	'E' if k.get('w') else 'P'
-			vPol		=	'E'	if k.get('h') else 'P'
-
-			a = {
-				'n' 		:n	,
-				'w'			:w	,
-				'h'			:h	,
-				'hPol' 	:hPol,
-				'vPol'	:vPol,
-				}
-			return a
-		def init():
-			def init():
-				s['Fnx']['setObjectName'](f'spcEx{n}')
-				s['Fnx']['setContentsMargins'](0,0,0,0)
-			init()
-			return init
+			n			=	k['n']	=	k.get("n")
+			w			=	k['w']	=	k.get("w")	or 0
+			h			=	k['h']	=	k.get("h")	or 0
+			hPol	=	k['hPol']	=	'E' if k.get('w') else 'P'
+			vPol	=	k['vPol']	=	'E'	if k.get('h') else 'P'
+			return k
+		def Init():
+			def Init():
+				s['Mtd']['setObjectName'](f'spcEx{n}')
+				s['Mtd']['setContentsMargins'](0,0,0,0)
+			Init()
+			return Init
 		s={}
 		s['Arg']			=	arg()
 		s['Wgt'] 			= QtWidgets.QSpacerItem(w, h, sPols(hPol), sPols(vPol))
 		s['Data']			=	Data(s)
-		s['Fnx']			=	Fnx(s)
-		s['Init']			= init()
+		s['Mtd']			=	Mtd(s)
+		s['Init']			= Init()
 		return s
 
-	def chkBox(n,**k):
-		n,w,h,ico=[*[0]*5]
-		def arg():
-			nonlocal n,w,h,ico
-			n				=	k.get("n")	or 'N'
-			w				=	k.get("w")	or 20
-			h				=	k.get("h")	or 20
-			ico			=	k.get('icons')
-			a = {
-				'n' 		:n	,
-				'w'			:w	,
-				'h'			:h	,
-				'ico'		:ico,
-				}
-			return a
-		def fnx():
+	def chkBox(**k):
+		n,w,h,ico,lbl=[*[0]*5]
+		def Arg():
+			nonlocal n,w,h,ico,lbl
+			n		=	k['n']				=	k.get("n")
+			w		=	k['w']				=	k.get("w")	or 20
+			h		=	k['h']				=	k.get("h")	or 20
+			ico	=	k['ico']			=	k.get('ico')
+			lbl	=	k['lbl']			= k.get('lbl')
+			return k
+		def Fnx():
 			def toggle():
-				state=b['Fnx']['isChecked']
-				b['Fnx']['setChecked'](not state)
+				state=b['Mtd']['isChecked']
+				b['Mtd']['setChecked'](not state)
 			f 					= {}
 			f['Toggle']	= toggle
 			return f
-		def init():
-			F=b['Fnx']
+		def Init():
 			b['Wgt'] 	=	sPol( b['Wgt'] , h='P', v='P')
-			def init():
-				F['setObjectName'](f'chk{n}')
-				F['setIcon'](Icon(n,ico=ico))
-				F['setIconSize'](QtCore.QSize(w-5, h-5))
-				F['setMaximumSize'](QtCore.QSize(w*3, h))
-			init()
-			return init
-		def conn():
+			def Init():
+				b['Mtd']['setObjectName'](f'chk{n}')
+				b['Mtd']['setIcon'](Icon(n,ico=ico))
+				b['Mtd']['setIconSize'](QtCore.QSize(w-5, h-5))
+				b['Mtd']['setMaximumSize'](QtCore.QSize(w*3, h))
+			Init()
+			return Init
+		def Conn():
 			c={}
 			c['clicked'] = b['Wgt'].clicked.connect
-			c['clicked'](b['Fnx']['toggle'])
+			c['clicked'](b['Mtd']['toggle'])
 			return c
 
 		b={}
 		b['Wgt'] 		= QtWidgets.QCheckBox()
-		b['Fnx']		= Fnx(b)
-		b['fnx']		= fnx()
-		b['Conn']		=	conn()
+		b['Arg']		=	Arg()
+		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
-		b['Init']		= init()
+		b['Fnx']		= Fnx()
+		b['Conn']		=	Conn()
+		b['Init']		= Init()
 		return b
 
-	def iBtn(n,**k):
-		def init():
-			F=b['Fnx']
-			def init():
+	def iBtn(**k):
+		n,w,h,bi,ico,lbl=[*[0]*6]
+		def Arg():
+			nonlocal n,w,h,bi,ico,lbl
+			n		=	k['n']				=	k.get("n")
+			w		=	k['w']				=	k.get("w")	or 20
+			h		=	k['h']				=	k.get("h")	or 20
+			bi	=	k['bi']				=	k.get('bi') or False
+			ico	=	k['ico']			=	k.get('ico')
+			lbl	=	k['lbl']			= k.get('lbl')
+			return k
+		def Fnx():
+			f 					= {}
+			return f
+		def Init():
+			F=b['Mtd']
+			def Init():
 				F['setObjectName'](f'iBtn{n}')
 				F['setIcon'](Icon(n,ico=ico))
 				F['setIconSize'](QtCore.QSize(32, 32))
@@ -259,75 +267,139 @@ def Elements():
 				F['setMaximumSize'](QtCore.QSize(w, h))
 				F['setToolButtonStyle'](QtCore.Qt.ToolButtonIconOnly)
 				F['setMaximumHeight'](20)
-			init()
-			return init
-
-
-		def conn():
+			Init()
+			return Init
+		def Conn():
 			c={}
-			c['clicked'] = btn['Wgt'].clicked.connect
+			c['clicked'] = b['Wgt'].clicked.connect
 			return c
-		bi=k.get('bi') or False
-		h=k.get('h') or 20
-		w=k.get('w') or 20
-		ico=k.get('icons')
+
 		b={}
 		b['Wgt'] 		= QtWidgets.QToolButton()
+		b['Arg']		=	Arg()
+		b['Mtd']		= Mtd(b)
+		b['Data']		=	Data(b)
 		b['Fnx']		= Fnx()
-		b['Conn']		=	conn()
-		b['Data']		=	Data()
-		b['Init']		= init()
+		b['conn']		=	Conn()
+		b['Init']		= Init()
 		return b
 
-	def tBtn(n, bi=False):
-		def fnx():
-			F=Fnx(btn['Wgt'])
-			f= {k:F[k] for k in F if not k.startswith('__')}
+	def tBtn(**k):
+		n,w,h,ico,lbl,bi=[*[0]*6]
+		def Arg():
+			nonlocal n,w,h,ico,lbl
+			n		=	k['n']				=	k.get("n")
+			w		=	k['w']				=	k.get("w")	or 20
+			h		=	k['h']				=	k.get("h")	or 20
+			bi	=	k['bi']				=	k.get('bi') or False
+			ico	=	k['ico']			=	k.get('ico')
+			lbl	=	k['lbl']			= k.get('lbl') or k.get("n")
+			return k
+		def Fnx():
+			f 					= {}
 			return f
-		def init():
-			btn['Fnx']['setObjectName'](f'tBtn{n}')
-			btn['Fnx']['setText'](n)
-			btn['Fnx']['setCheckable'](bi)
-			btn['Wgt'].setMaximumHeight(20)
-			btn['Wgt'].setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
-		def conn():
+		def Init():
+			F=b['Mtd']
+			def Init():
+				F['setObjectName'](f'tBtn{n}')
+				F['setText'](lbl)
+				F['setCheckable'](bi)
+				F['setMaximumSize'](QtCore.QSize(w, h))
+				F['setToolButtonStyle'](QtCore.Qt.ToolButtonTextOnly)
+				F['setMaximumHeight'](20)
+			Init()
+			return Init
+		def Conn():
 			c={}
-			c['clicked'] = btn['Wgt'].clicked.connect
+			c['clicked'] = b['Wgt'].clicked.connect
 			return c
-		def data():
-			d={}
-			d['Name'] = btn['Fnx']['objectName']
-			d['Text']	=	btn['Fnx']['text']
-			d['Visible'] = not btn['Fnx']['isHidden']
-		btn={}
-		btn['Wgt'] = QtWidgets.QToolButton()
-		btn['Fnx']	= fnx()
-		btn['Conn']	=	conn()
-		btn['Data']=	data()
-		init()
-		return btn
 
-	def Lbl(n):
-		lbl = QtWidgets.QLabel()
-		lbl.setObjectName(f'lbl{n}')
-		lbl.setText(f'{n}')
-		lbl.setContentsMargins(0, 0, 5, 0)
-		lbl=  sPol(lbl, h='P', v='P')
-		return lbl
+		b={}
+		b['Wgt'] 		= QtWidgets.QToolButton()
+		b['Arg']		=	Arg()
+		b['Mtd']		= Mtd(b)
+		b['Data']		=	Data(b)
+		b['Fnx']		= Fnx()
+		b['Conn']		=	Conn()
+		b['Init']		= Init()
+		return b
 
-	def lEdit(n,ro=False):
-		txt = QtWidgets.QLineEdit()
-		txt.setObjectName(f'txt{n}')
-		txt.setReadOnly(ro)
-		txt=sPol(txt, h='E', v='P')
-		return txt
+	def Lbl(**k):
+		n,w,h,m,ico,lbl=[*[0]*5]
+		def Arg():
+			nonlocal n,w,h,ico,lbl
+			n		=	k['n']				=	k.get('n')
+			w		=	k['w']				=	k.get('w')	or 20
+			h		=	k['h']				=	k.get('h')	or 20
+			m		=	k['m']				=	k.get('m')	or [0,0,0,0]
+			ico	=	k['ico']			=	k.get('ico')
+			lbl	=	k['lbl']			= k.get('lbl') or n
+			return k
+		def Fnx():
+			f 					= {}
+			return f
+		def Init():
+			l['Wgt'] 	=sPol(l['Wgt'] , h='P', v='P')
+			def Init():
+				l['Mtd']['setObjectName'](f'lbl{n}')
+				l['Mtd']['setText'](f'{lbl}')
+				l['Mtd']['setContentsMargins'](*m)
+			Init()
+			return Init
+		def Conn():
+			c={}
+			return c
+
+		l={}
+		l['Wgt'] 		= QtWidgets.QLabel()
+		l['Arg']		=	Arg()
+		l['Mtd']		= Mtd(l)
+		l['Data']		=	Data(l)
+		l['Fnx']		= Fnx()
+		l['Conn']		=	Conn()
+		l['Init']		= Init()
+		return l
+
+	def lEdit(**k):
+		n,w,h,ro=[*[0]*4]
+		def Arg():
+			nonlocal n,w,h,ro
+			n		=	k['n']				=	k.get('n')
+			w		=	k['w']				=	k.get('w')	or 20
+			h		=	k['h']				=	k.get('h')	or 20
+			ro	=	k['ro']				=	k.get('ro')	or False
+
+			return k
+		def Fnx():
+			f 					= {}
+			return f
+		def Init():
+			# l['Wgt'] 	=	sPol( l['Wgt'] , h='E', v='P')
+			def Init():
+				l['Mtd']['setObjectName'](f'txt{n}')
+				l['Mtd']['setReadOnly'](ro)
+			Init()
+			return Init
+		def Conn():
+			c={}
+			return c
+
+		l={}
+		l['Wgt'] 		=  QtWidgets.QLineEdit()
+		l['Arg']		=	Arg()
+		l['Mtd']		= Mtd(l)
+		l['Data']		=	Data(l)
+		l['Fnx']		= Fnx()
+		l['Conn']		=	Conn()
+		l['Init']		= Init()
+		return l
 
 	def Tree(**k):
 		def create():
 			wgt	=	QtWidgets.QTreeWidget()
 			wgt.setObjectName(name)
 			return wgt
-		def init(wgt):
+		def Init(wgt):
 			wgt = sPol(wgt, h='E', v='mE')
 			# wgt.setFrameShape(QtWidgets.QFrame.NoFrame)
 			wgt.setAlternatingRowColors(True)
@@ -345,7 +417,7 @@ def Elements():
 		name=k.get('n') or 'Tree'
 		margins=k.get('margin') or [0,0,0,0]
 		wgt	= create()
-		wgt	= init(wgt)
+		wgt	= Init(wgt)
 		return wgt
 
 	e = {}
