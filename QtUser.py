@@ -22,13 +22,12 @@ def wLays(t):
 		'F'				:	QtWidgets.QFormLayout,
 						}
 	return l[t]
-def Fnx(w):
-	return {n:getattr(w, n) for n in dir(w)	if callable(getattr(w, n) )}
+
 def Base():
-	def sPol(wgt, h=None, v=None):
+	def sPol(w, h=None, v=None):
 		Pol = QtWidgets.QSizePolicy(sPols(h), sPols(v))
-		wgt.setSizePolicy(Pol)
-		return wgt
+		w['Wgt'].setSizePolicy(Pol)
+		return w
 
 	def Wgt(**k):
 		def widget():
@@ -38,20 +37,22 @@ def Base():
 			return wgt
 		def layout():
 			makelay = wLays(Layout.upper())
-			lay	= makelay(wgt)
+			lay	= makelay(w['Wgt'])
 			lay.setObjectName(f'lay{Name}')
 			lay.setContentsMargins(*margin)
 			lay.setSpacing(0)
-			wgt.lay=lay
-			return wgt
+			w['Lay'] = lay
+			return w
 		Name		=	k.get('n')
 		Layout	=	k.get('t')
 		margin	= k.get('margin') or [0,0,0,0]
-		wgt			=	widget()
-		wgt			=	layout() if Layout else wgt
-		return wgt
+		w= {}
+		w['Wgt']			=	widget()
+		w							=	layout() if Layout else w
+		w['Fnx']			= Fnx(w)
+		return w
 
-	def icon_dl(n=None,ico=None):
+	def Icon(n=None,ico=None):
 		import base64
 		icon_states={
 			0	: QtGui.QIcon.On,
@@ -68,141 +69,215 @@ def Base():
 		icon = make_icon(icon,1)
 		return icon
 
+	def Fnx(w):
+		f = {}
+		for n in dir(w['Wgt']):
+			m = getattr(w['Wgt'], n)
+			if callable(m) and not str(m).startswith('__'):
+				f[n] = m
+		return f
+	
+	def Data(w):
+		d={}
+		d['Name'] = w['Fnx']['objectName']
+		d['Visible'] = not w['Fnx']['isHidden']
+		return d
+
 	b= {}
 	b['sPol']			=	sPol
-	b['Wgt']			= Wgt
-	b['icon_dl']	=	icon_dl
+	b['wgt']			= Wgt
+	b['icon']			=	Icon
+	b['fnx']			=	Fnx
+	b['data']			=	Data
 	return b
 
 def Elements():
-	B=Base()
-	sPol=B['sPol']
-	icon_dl	=	B['icon_dl']
+	B					=	Base()
+	sPol			=	B['sPol']
+	Icon			=	B['icon']
+	Fnx				= B['fnx']
+	Data 			=	B['data']
 
+
+		
 	def Spcr(**k):
-		w=k.get('w')
-		h=k.get('h')
-		hpol,vpol=k.get('t')
-		wgt=QtWidgets.QSpacerItem(w, h, sPols(hpol), sPols(vpol))
-		return wgt
+		p,n,w,h,vPol,hPol=[*[0]*6]
+		def arg():
+			nonlocal n,w,h,vPol,hPol
+			n				=	k.get("n")	or 'N'
+			w				= k.get('w')	or 0
+			h				= k.get('h')	or 0
+			p				=	k.get('p')	or 'E'
+			if p == 'F' :
+				hPol 		= 'F' if k.get('w') else 'P'
+				vPol		=	'F'	if k.get('h') else 'P'
+			else:
+				hPol		=	'E' if k.get('w') else 'P'
+				vPol		=	'E'	if k.get('h') else 'P'
+
+			a = {
+				'n' 		:n	,
+				'w'			:w	,
+				'h'			:h	,
+				'hPol' 	:hPol,
+				'vPol'	:vPol,
+				}
+			return a
+		def init():
+			def init():
+				s['Fnx']['setObjectName'](f'spcEx{n}')
+				s['Fnx']['setContentsMargins'](0,0,0,0)
+			init()
+			return init
+		s={}
+		s['Arg']			=	arg()
+		s['Wgt'] 			= QtWidgets.QSpacerItem(w, h, sPols(hPol), sPols(vPol))
+		s['Data']			=	Data(s)
+		s['Fnx']			=	Fnx(s)
+		s['Init']			= init()
+		return s
 
 	def SpcFix(**k):
-		wgt=	B['Wgt'](t='h')
-		w			= k.get('w')	or 0
-		h			= k.get('h')	or 0
-		hPol 	= 'F' if k.get('w') else 'P'
-		vPol	=	'F'	if k.get('h') else 'P'
-		wgt.SpcFix = 	Spcr( w=w, h=h, t=[hPol,vPol])
-		wgt.lay.addItem(wgt.SpcFix)
-		wgt.setContentsMargins(0,0,0,0)
-		wgt.lay.setContentsMargins(0,0,0,0)
-		return wgt
+		n,w,h,vPol,hPol=[*[0]*5]
+		def arg():
+			nonlocal n,w,h,vPol,hPol
+			n				=	k.get("n")	or 'N'
+			w				= k.get('w')	or 0
+			h				= k.get('h')	or 0
+			hPol 		= 'F' if k.get('w') else 'P'
+			vPol		=	'F'	if k.get('h') else 'P'
+
+			a = {
+				'n' 		:n	,
+				'w'			:w	,
+				'h'			:h	,
+				'hPol' 	:hPol,
+				'vPol'	:vPol,
+				}
+			return a
+		def init():
+			def init():
+				s['Fnx']['setObjectName'](f'spcEx{n}')
+				s['Fnx']['setContentsMargins'](0,0,0,0)
+			init()
+			return init
+		s={}
+		s['Arg']			=	arg()
+		s['Wgt'] 			= QtWidgets.QSpacerItem(w, h, sPols(hPol), sPols(vPol))
+		s['Data']			=	Data(s)
+		s['Fnx']			=	Fnx(s)
+		s['Init']			= init()
+		return s
 
 	def SpcEx(**k):
-		n 	= k.get('n')
-		w			= k.get('w')	or 0
-		h			= k.get('h')	or 0
-		hPol 	= 'E' if k.get('w') else 'P'
-		vPol	=	'E'	if k.get('h') else 'P'
-		def create(wgt):
-			wgt.SpcEx = Spcr(w=w, h=h, t=[hPol,vPol])
-			return wgt
-		def layout(wgt):
-			wgt = B['sPol'](wgt, h='P', v='P')
-			return wgt
-		def fnx():
-			F=Fnx(wgt['Wgt'])
-			f= {k:F[k] for k in F if not k.startswith('__')}
-			return f
-		def add(wgt):
-			wgt.lay.addItem(wgt.SpcEx)
-			return wgt.lay
-		def init(wgt):
-			wgt.setContentsMargins(0,0,0,0)
-			wgt.lay.setContentsMargins(0,0,0,0)
-			return wgt
-		wgt = {}
-		wgt['Wgt'] = B['Wgt'](n=f'wgtSpcEx{n}',t='h')
-		wgt=create(wgt)
-		wgt=layout(wgt)
-		wgt.lay=add(wgt)
+		n,w,h,vPol,hPol=[*[0]*5]
+		def arg():
+			nonlocal n,w,h,vPol,hPol
+			n				=	k.get("n")	or 'N'
+			w				=	k.get("w")	or 0
+			h				=	k.get("h")	or 0
+			hPol		=	'E' if k.get('w') else 'P'
+			vPol		=	'E'	if k.get('h') else 'P'
 
-		return wgt
+			a = {
+				'n' 		:n	,
+				'w'			:w	,
+				'h'			:h	,
+				'hPol' 	:hPol,
+				'vPol'	:vPol,
+				}
+			return a
+		def init():
+			def init():
+				s['Fnx']['setObjectName'](f'spcEx{n}')
+				s['Fnx']['setContentsMargins'](0,0,0,0)
+			init()
+			return init
+		s={}
+		s['Arg']			=	arg()
+		s['Wgt'] 			= QtWidgets.QSpacerItem(w, h, sPols(hPol), sPols(vPol))
+		s['Data']			=	Data(s)
+		s['Fnx']			=	Fnx(s)
+		s['Init']			= init()
+		return s
 
 	def chkBox(n,**k):
+		n,w,h,ico=[*[0]*5]
+		def arg():
+			nonlocal n,w,h,ico
+			n				=	k.get("n")	or 'N'
+			w				=	k.get("w")	or 20
+			h				=	k.get("h")	or 20
+			ico			=	k.get('icons')
+			a = {
+				'n' 		:n	,
+				'w'			:w	,
+				'h'			:h	,
+				'ico'		:ico,
+				}
+			return a
 		def fnx():
 			def toggle():
-				state=F['isChecked']
-				F['setChecked'](not state)
-			F=Fnx(cBox['Wgt'])
-			f= {k:F[k] for k in F if not k.startswith('__')}
-			f['Toggle']= toggle
+				state=b['Fnx']['isChecked']
+				b['Fnx']['setChecked'](not state)
+			f 					= {}
+			f['Toggle']	= toggle
 			return f
 		def init():
-			F=cBox['Fnx']
-			F['setObjectName'](f'chk{n}')
-			F['setIcon'](icon_dl(n,ico=ico))
-			F['setIconSize'](QtCore.QSize(w-5, h-5))
-			F['setMaximumSize'](QtCore.QSize(w*3, h))
+			F=b['Fnx']
+			b['Wgt'] 	=	sPol( b['Wgt'] , h='P', v='P')
+			def init():
+				F['setObjectName'](f'chk{n}')
+				F['setIcon'](Icon(n,ico=ico))
+				F['setIconSize'](QtCore.QSize(w-5, h-5))
+				F['setMaximumSize'](QtCore.QSize(w*3, h))
+			init()
+			return init
 		def conn():
 			c={}
-			c['clicked'] = cBox['Wgt'].clicked.connect
-			c['clicked'](cBox['Fnx']['toggle'])
+			c['clicked'] = b['Wgt'].clicked.connect
+			c['clicked'](b['Fnx']['toggle'])
 			return c
-		def data():
-			d={}
-			d['Name'] = cBox['Fnx']['objectName']
-			d['Text']	=	cBox['Fnx']['text']
-			d['Visible'] = not cBox['Fnx']['isHidden']
 
-		h=k.get('h') or 20
-		w=k.get('w') or 20
-		ico=k.get('icons')
-		cBox={}
-		cBox['Wgt'] = QtWidgets.QCheckBox()
-		cBox['Fnx']	= fnx()
-		cBox['Conn']	=	conn()
-		cBox['Data']=	data()
-		init()
-
-		cBox['Wgt'] 	=	sPol(	cBox['Wgt'] , h='P', v='P')
-		return cBox
+		b={}
+		b['Wgt'] 		= QtWidgets.QCheckBox()
+		b['Fnx']		= Fnx(b)
+		b['fnx']		= fnx()
+		b['Conn']		=	conn()
+		b['Data']		=	Data(b)
+		b['Init']		= init()
+		return b
 
 	def iBtn(n,**k):
-		def fnx():
-			F=Fnx(btn['Wgt'])
-			f= {k:F[k] for k in F if not k.startswith('__')}
-			return f
 		def init():
-			F=btn['Fnx']
-			F['setObjectName'](f'iBtn{n}')
-			F['setIcon'](icon_dl(n,ico=ico))
-			F['setIconSize'](QtCore.QSize(32, 32))
-			F['setCheckable'](bi)
-			F['setMaximumSize'](QtCore.QSize(w, h))
-			F['setToolButtonStyle'](QtCore.Qt.ToolButtonIconOnly)
-			F['setMaximumHeight'](20)
+			F=b['Fnx']
+			def init():
+				F['setObjectName'](f'iBtn{n}')
+				F['setIcon'](Icon(n,ico=ico))
+				F['setIconSize'](QtCore.QSize(32, 32))
+				F['setCheckable'](bi)
+				F['setMaximumSize'](QtCore.QSize(w, h))
+				F['setToolButtonStyle'](QtCore.Qt.ToolButtonIconOnly)
+				F['setMaximumHeight'](20)
+			init()
+			return init
+
+
 		def conn():
 			c={}
 			c['clicked'] = btn['Wgt'].clicked.connect
 			return c
-		def data():
-			d={}
-			d['Name'] = btn['Fnx']['objectName']
-			d['Text']	=	btn['Fnx']['text']
-			d['Visible'] = not btn['Fnx']['isHidden']
-
 		bi=k.get('bi') or False
 		h=k.get('h') or 20
 		w=k.get('w') or 20
 		ico=k.get('icons')
-		btn={}
-		btn['Wgt'] = QtWidgets.QToolButton()
-		btn['Fnx']	= fnx()
-		btn['Conn']	=	conn()
-		btn['Data']=	data()
-		init()
-		return btn
+		b={}
+		b['Wgt'] 		= QtWidgets.QToolButton()
+		b['Fnx']		= Fnx()
+		b['Conn']		=	conn()
+		b['Data']		=	Data()
+		b['Init']		= init()
+		return b
 
 	def tBtn(n, bi=False):
 		def fnx():

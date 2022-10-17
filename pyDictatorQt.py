@@ -62,7 +62,7 @@ def QtBlocks():
 				return d
 			def elements():
 				e = {
-						'Tree'	: 	blk['Elements']['Tree'](n=w['Data']['Name'],margin=w['Data']['Margins'])
+						'Tree'	: 	blk['Elements']['Tree']['Wgt'](n=w['Data']['Name'],margin=w['Data']['Margins'])
 						}
 				return e
 			def create(wgt):
@@ -109,7 +109,7 @@ def QtBlocks():
 				return wgt
 			w = {}
 			w['Data'] = data()
-			w['Wgt'] 	=	blk['Base']['Wgt'](n=w['Data']['Name'],t='h')
+			w['Wgt'] 	=	blk['Base']['wgt'](n=w['Data']['Name'],t='h')
 			w['Wgt'] 	=	blk['Base']['sPol'](w['Wgt'], h='E', v='mE')
 			w['Elements']	=	elements()
 			w['Wgt']			=	create(w['Wgt'])
@@ -144,7 +144,7 @@ def QtBlocks():
 			wgt=layout(wgt)
 			wgt=conn(wgt)
 			wgt.setContentsMargins(*margin)
-			return wgt
+			return wgtcleeear
 		def Search():
 			def elements():
 				e={}
@@ -352,8 +352,8 @@ def QtBlocks():
 		return Wgt
 
 	blk = {}
-	blk['Base'] 		= QtUser.Base()
 	blk['Elements'] = QtUser.Elements()
+	blk['Base'] 		= QtUser.Base()
 	blk['Layouts']	= QtUser.Layouts()
 	blk['Widgets'] = Widgets()
 	return blk
@@ -531,7 +531,7 @@ def construct_Qt5Ui(beta):
 
 	def create(App):
 		def MainWgt():
-			wgt = App['Blocks']['Base']['Wgt'](n='Qt5',t='v')
+			wgt = App['Blocks']['Base']['wgt'](n='Qt5',t='v')
 			return wgt
 
 		def Elements():
