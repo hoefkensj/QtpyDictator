@@ -37,6 +37,83 @@ lays				=		{
 	'F'				:	QtWidgets.QFormLayout,
 					}
 
+def EditProp(n,**k):
+			fnSet=k.get('fnset')
+			def elements():
+				e = {}
+				e['Lbl']		= GUI['Elements']['Lbl'](n=f'{n}:')
+				e['txt']		= GUI['Elements']['lEdit'](n=n,ro=True)
+				e['txtdup']	= GUI['Elements']['lEdit'](n=n,ro=True)
+				e['btnSet']	=	GUI['Elements']['tBtn'](n='Set')
+				e['btnEdit']=	GUI['Elements']['iBtn'](n='Edit', bi=True,ico=ico)
+				return e
+
+			def add():
+				w['Lay'].addWidget(w['elements']['Lbl']['Wgt'])
+				w['Lay'].addWidget(w['elements']['txt']['Wgt'])
+				w['Lay'].addWidget(w['elements']['txtdup']['Wgt'])
+				w['Lay'].addWidget(w['elements']['btnSet']['Wgt'] )
+				w['Lay'].addWidget(w['elements']['btnEdit']['Wgt'])
+				return w['Lay']
+			def init(wgt):
+				w['elements']['btnSet']['Mtd']['setHidden'](True)
+				w['elements']['txt']['Mtd']['setReadOnly'](True)
+				w['elements']['txtdup']['Mtd']['setHidden'](True)
+				w['fnx']['Editable'](not k.get('ed'))
+				return wgt
+			def fnx(wgt):
+				def txtText(wgt):
+					def txtText(text):
+						wgt.txt.setText(text)
+						wgt.txtdup.setText(text)
+					return txtText
+				def setText(wgt):
+					def setText():
+						nText=  wgt.txt.text()
+						wgt.txtdup.setText(nText)
+						wgt.btnEdit.setChecked(False)
+						wgt.btnSet.setHidden(True)
+						fnSet(nText)
+					return setText
+				def edit(wgt):
+					def edit(state):
+						wgt.btnEdit.setChecked(state)
+						wgt.txt.setReadOnly(not state)
+						wgt.btnSet.setHidden(not state)
+						if not state:
+							wgt.txt.setText(wgt.txtdup.text())
+					return edit
+				def editable(wgt):
+					def editable(state):
+						w['elements']['btnEdit']['Mtd']['setHidden'](state)
+					return editable
+				f = {}
+				f['Edit'] 		=	edit(wgt)
+				f['txtText'] 	=	txtText(wgt)
+				f['setText']	=	setText(wgt)
+				f['Editable'] =	editable(wgt)
+				return f
+			def conn(wgt):
+				c = {}
+				c['btnEdit']= w['elements']['btnEdit']['Wgt'].clicked.connect
+				c['btnSet']= w['elements']['btnSet']['Conn']['clicked']
+				c['txt']	= {}
+				c['txt']['returnPressed']= w['elements']['txt']['Wgt'].returnPressed.connect
+				# wgt.btnEdit.clicked.connect(w['fnx']['Edit'])
+				# wgt.btnSet.clicked.connect(w['fnx']['txtText'])
+				# wgt.txt.returnPressed.connect(w['fnx']['txtText'])
+				return c
+			w ={}
+
+			w		=	GUI['Base']['Wgt'](n=n,t='h')
+			w['elements']	= elements()
+			w['Wgt']    = GUI['Base']['sPol'](w, h='E', v='F')
+			w['layout'] 	= add()
+			w['fnx'] 			= fnx(w['Wgt'])
+			w['conn']			=	conn(w['Wgt'])
+			w['Wgt']			=	init(w['Wgt'])
+
+			return w
 
 GUI= {}
 GUI['Base']	= QtUser.Base()
@@ -46,7 +123,7 @@ GUI	|= GUI['Base']['QtApp']()
 
 
 GUI['Main']	=	GUI['Base']['Wgt'](n='Qt5',t='v')
-tmp=GUI['Elements']['lEdit'](n='txte',ro=False)
+tmp=EditProp('test',ed=True,fnset=print, m=[0,5,0,5])
 GUI['Main']['Lay'].addWidget(tmp['Wgt'])
 GUI['Main']['Mtd']['show']()
 sys.exit(GUI['QtApp'].exec())

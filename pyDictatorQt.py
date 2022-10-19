@@ -297,6 +297,8 @@ def QtBlocks():
 			w['Wgt']			=	init(w['Wgt'])
 
 			return w
+
+
 		def AppCtl(**k):
 			def elements():
 				e={}
@@ -341,6 +343,8 @@ def QtBlocks():
 			wgt['wgt'] = init(wgt['wgt'],wgt['data'])
 			wgt['conn'] = conn(wgt['wgt'])
 			return wgt
+
+
 		Wgt = {}
 
 		Wgt['Tree']				=	Tree

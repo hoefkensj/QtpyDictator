@@ -15,59 +15,108 @@ def sPols(t):
 	return s[t]
 
 def wLays(t):
+
 	l				=		{
 		'H'				:	QtWidgets.QHBoxLayout,
 		'V'				: QtWidgets.QVBoxLayout,
 		'G'				:	QtWidgets.QGridLayout,
 		'F'				:	QtWidgets.QFormLayout,
 						}
-	return l[t]
+	return l[t.upper()]
 
 def QtApp():
 	from sys import argv
+	mtd						=	Mtds('QtApp')
 	a 						= {}
 	a['QtApp'] 		= QtWidgets.QApplication(argv)
 	a['Clip']			= a['QtApp'].clipboard()
-	a['Mtd']			= Mtd(a)
+	a['Mtd']			= mtd(a)
 	return a
 
-def Mtd(w):
-	o=w.get('Wgt') or w.get('QtApp')
-	f = {}
-	for n in dir(o):
-		m = getattr(o, n)
-		if callable(m) and not str(m).startswith('__'):
-			f[n] = m
-	return f
+def Mtds(wt):
+	def M(o):
+		b={};f={}
+		for n in dir(o):
+			m=getattr(o, n)
+			if n.startswith('__') and callable(m):
+				b[n]=m
+			elif callable(m):
+				f[n]=m
+			else:
+				print(n,'\t:\n',m)
+		return f
+
+	def A(w):
+		o=w.get('QtApp')
+		return M(o)
+	def W(w):
+		o=w.get('Wgt')
+		return M(o)
+	def L(w):
+		o=w.get('Lay')
+		return M(o)
+
+	mtd={
+	'QtApp'	: A,
+	'Wgt'		:	W,
+	'Lay'		:	L,
+	}
+	return mtd[wt]
 
 def Base():
 
 	def sPol(w, h=None, v=None):
 		Pol = QtWidgets.QSizePolicy(sPols(h), sPols(v))
 		w['Wgt'].setSizePolicy(Pol)
-		return w
+		return w['Wgt']
 
 	def Wgt(**k):
-		def widget():
-			wgt = QtWidgets.QWidget()
-			wgt.setObjectName(f'wgt{Name}')
-			wgt.setContentsMargins(*margin)
-			return wgt
-		def layout():
-			makelay = wLays(Layout.upper())
-			lay	= makelay(w['Wgt'])
-			lay.setObjectName(f'lay{Name}')
-			lay.setContentsMargins(*margin)
-			lay.setSpacing(0)
-			w['Lay'] = lay
-			return w
-		Name		=	k.get('n')
-		Layout	=	k.get('t')
-		margin	= k.get('margin') or [0,0,0,0]
+		n,t,m,lay=[*[0]*4]
+
+		def arg(**k):
+			nonlocal n,t,m,lay
+			n			=	k.get("n") or None
+			t			=	k.get("t") or None
+			m			=	k['m']	=	k.get("m")	or [0,0,0,0]
+			k['n']= n
+			k['t']= t
+			k['m']= m
+			if t:
+				lay	= k['lay']	=wLays(t)
+			return k
+		def mtd():
+			Mtd=Mtds('Wgt')
+			f=Mtd(w)
+			return f
+		def lmtd():
+			Mtd=Mtds('Lay')
+			f=Mtd(w)
+			return f
+
+		def init():
+			def init():
+				w['Mtd']['setObjectName'](f'wgt{n}')
+				w['Mtd']['setContentsMargins'](*m)
+			init()
+			return init
+		def initl():
+			def init():
+				w['LMtd']['setObjectName'](f'lay{n}')
+				w['LMtd']['setContentsMargins'](*m)
+				w['LMtd']['setSpacing'](0)
+			init()
+			return init
+
+
 		w= {}
-		w['Wgt']			=	widget()
-		w							=	layout() if Layout else w
-		w['Mtd']			= Mtd(w)
+		w['Arg']			=	arg(**k)
+		w['Wgt']			=	QtWidgets.QWidget()
+		w['Mtd']			=	mtd()
+		w['Init']			=	init()
+		if t:
+			w['Lay']			= lay(w['Wgt'])
+			w['LMtd']			= lmtd()
+			w['Initl']		=	initl()
 		return w
 
 	def Icon(n=None,ico=None):
@@ -98,7 +147,6 @@ def Base():
 	b['sPol']			=	sPol
 	b['Wgt']			= Wgt
 	b['Icon']			=	Icon
-	b['Mtd']			=	Mtd
 	b['Data']			=	Data
 	return b
 
@@ -111,26 +159,18 @@ def Elements():
 	def Spcr(**k):
 		p,n,w,h,vPol,hPol=[*[0]*6]
 		def arg():
-			nonlocal n,w,h,vPol,hPol
-			n				=	k.get("n")	or 'N'
-			w				= k.get('w')	or 0
-			h				= k.get('h')	or 0
-			p				=	k.get('p')	or 'E'
+			nonlocal p,n,w,h,vPol,hPol
+			n		=	k['n']	=	k.get("n")	or 'N'
+			w		=	k['w']	= k.get('w')	or 0
+			h		=	k['h']	= k.get('h')	or 0
+			p		=	k['p']	=	k.get('p')	or 'E'
 			if p == 'F' :
-				hPol 		= 'F' if k.get('w') else 'P'
-				vPol		=	'F'	if k.get('h') else 'P'
+				hPol 	=	k['hPol']		= 'F' if k.get('w') else 'P'
+				vPol	=	k['vPol']		=	'F'	if k.get('h') else 'P'
 			else:
-				hPol		=	'E' if k.get('w') else 'P'
-				vPol		=	'E'	if k.get('h') else 'P'
-
-			a = {
-				'n' 		:n	,
-				'w'			:w	,
-				'h'			:h	,
-				'hPol' 	:hPol,
-				'vPol'	:vPol,
-				}
-			return a
+				hPol	=	k['hPol']		=	'E' if k.get('w') else 'P'
+				vPol	=	k['vPol']		=	'E'	if k.get('h') else 'P'
+			return k
 		def Init():
 			def Init():
 				s['Mtd']['setObjectName'](f'spcEx{n}')
@@ -149,20 +189,12 @@ def Elements():
 		n,w,h,vPol,hPol=[*[0]*5]
 		def arg():
 			nonlocal n,w,h,vPol,hPol
-			n				=	k.get("n")	or 'N'
-			w				= k.get('w')	or 0
-			h				= k.get('h')	or 0
-			hPol 		= 'F' if k.get('w') else 'P'
-			vPol		=	'F'	if k.get('h') else 'P'
-
-			a = {
-				'n' 		:n	,
-				'w'			:w	,
-				'h'			:h	,
-				'hPol' 	:hPol,
-				'vPol'	:vPol,
-				}
-			return a
+			n				=	k['n']	=	k.get("n")	or 'N'
+			w				=	k['w']	= k.get('w')	or 0
+			h				=	k['h']	= k.get('h')	or 0
+			hPol 		=	k['hPol']	= 'F' if k.get('w') else 'P'
+			vPol		=	k['vPol']	=	'F'	if k.get('h') else 'P'
+			return k
 		def Init():
 			def Init():
 				s['Mtd']['setObjectName'](f'spcEx{n}')
@@ -277,6 +309,7 @@ def Elements():
 		b={}
 		b['Wgt'] 		= QtWidgets.QToolButton()
 		b['Arg']		=	Arg()
+		Mtd=Mtds('Wgt')
 		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
 		b['Fnx']		= Fnx()
@@ -317,6 +350,7 @@ def Elements():
 		b={}
 		b['Wgt'] 		= QtWidgets.QToolButton()
 		b['Arg']		=	Arg()
+		Mtd=Mtds('Wgt')
 		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
 		b['Fnx']		= Fnx()
@@ -325,9 +359,10 @@ def Elements():
 		return b
 
 	def Lbl(**k):
-		n,w,h,m,ico,lbl=[*[0]*5]
+		n,w,h,m,ico,lbl=[*[0]*6]
+		Mtd=Mtds('Wgt')
 		def Arg():
-			nonlocal n,w,h,ico,lbl
+			nonlocal n,w,h,ico,lbl,m
 			n		=	k['n']				=	k.get('n')
 			w		=	k['w']				=	k.get('w')	or 20
 			h		=	k['h']				=	k.get('h')	or 20
@@ -339,7 +374,7 @@ def Elements():
 			f 					= {}
 			return f
 		def Init():
-			l['Wgt'] 	=sPol(l['Wgt'] , h='P', v='P')
+			# l['Wgt'] 	=sPol(l['Wgt'] , h='P', v='P')
 			def Init():
 				l['Mtd']['setObjectName'](f'lbl{n}')
 				l['Mtd']['setText'](f'{lbl}')
@@ -372,6 +407,10 @@ def Elements():
 			return k
 		def Fnx():
 			f 					= {}
+			f['Read']		=	l['Mtd']['text']
+			f['Write']	=	l['Mtd']['setText']
+			f['makeRO']			=	l['Mtd']['setReadOnly']
+			f['RO']					=	l['Mtd']['isReadOnly']
 			return f
 		def Init():
 			# l['Wgt'] 	=	sPol( l['Wgt'] , h='E', v='P')
@@ -382,11 +421,15 @@ def Elements():
 			return Init
 		def Conn():
 			c={}
+			c['Entered']=l['Mtd']['returnPressed'].connect
+			c['Changed']=l['Mtd']['textChanged'].connect
+			c['Edited']=l['Mtd']['textEdited'].connect
 			return c
 
 		l={}
 		l['Wgt'] 		=  QtWidgets.QLineEdit()
 		l['Arg']		=	Arg()
+		Mtd=Mtds('Wgt')
 		l['Mtd']		= Mtd(l)
 		l['Data']		=	Data(l)
 		l['Fnx']		= Fnx()
@@ -395,42 +438,63 @@ def Elements():
 		return l
 
 	def Tree(**k):
-		def create():
-			wgt	=	QtWidgets.QTreeWidget()
-			wgt.setObjectName(name)
-			return wgt
-		def Init(wgt):
-			wgt = sPol(wgt, h='E', v='mE')
-			# wgt.setFrameShape(QtWidgets.QFrame.NoFrame)
-			wgt.setAlternatingRowColors(True)
-			wgt.setAnimated(True)
-			wgt.setHeaderHidden(True)
-			wgt.setColumnCount(5)
-			wgt.hideColumn(2)
-			wgt.hideColumn(3)
-			wgt.hideColumn(4)
-			wgt.setMinimumHeight(10)
-			wgt.setAllColumnsShowFocus(True)
-			wgt.setMinimumHeight(50)
-			wgt.setContentsMargins(*margins)
-			return wgt
-		name=k.get('n') or 'Tree'
-		margins=k.get('margin') or [0,0,0,0]
-		wgt	= create()
-		wgt	= Init(wgt)
-		return wgt
+		n,m=[*[0]*2]
+		def Arg():
+			nonlocal n,m
+			n		=	k['n']				=	k.get('n') or 'Tree'
+			w		=	k['m']				=	k.get('m') or [0,0,0,0]
+			return k
+		def Fnx():
+			f 					= {}
+			f['setHeader']				= t['Mtd']['setHeader']
+			f['addTopLevelItem']	=	t['Mtd']['addTopLevelItem']
+			f['setColumnWidth']		=	t['Mtd']['setColumnWidth']
+			f['setCurrentItem']		=	t['Mtd']['setCurrentItem']
+			f['expandAll']				= t['Mtd']['expandAll']
+			f['collapseAll']			= t['Mtd']['collapseAll']
+			return f
+		def Init():
+			t['Wgt'] 	=	sPol(t['Wgt'], h='E', v='mE')
+			def Init():
+				t['Mtd']['setObjectName'](f'tree{n}')
+				t['Mtd']['setAlternatingRowColors'](True)
+				t['Mtd']['setAnimated'](True)
+				t['Mtd']['setHeaderHidden'](True)
+				t['Mtd']['setColumnCount'](5)
+				t['Mtd']['hideColumn'](2)
+				t['Mtd']['hideColumn'](3)
+				t['Mtd']['hideColumn'](4)
+				t['Mtd']['setMinimumHeight'](10)
+				t['Mtd']['setAllColumnsShowFocus'](True)
+				t['Mtd']['setMinimumHeight'](50)
+				t['Mtd']['setContentsMargins'](*m)
+				Init()
+			return Init
+		def Conn():
+			c={}
+			c['itemClicked']=t['Mtd']['itemClicked'].connect
+			return c
 
-	e = {}
+		t={}
+		t['Wgt'] 		=  	QtWidgets.QTreeWidget()
+		t['Arg']		=	Arg()
+		t['Mtd']		= Mtd(t)
+		t['Data']		=	Data(t)
+		t['Fnx']		= Fnx()
+		t['Conn']		=	Conn()
+		t['Init']		= Init()
+		return t
 
-	e['Spcr']			=	Spcr
-	e['SpcFix']		= SpcFix
-	e['SpcEx']		=	SpcEx
-	e['chkBox']		=	chkBox
-	e['iBtn']			=	iBtn
-	e['tBtn']			=	tBtn
-	e['Lbl']			=	Lbl
-	e['lEdit']		=	lEdit
-	e['Tree']			= Tree
+	e = { }
+	e['Spcr']      = Spcr
+	e['SpcFix']    = SpcFix
+	e['SpcEx']     = SpcEx
+	e['chkBox']    = chkBox
+	e['iBtn']      = iBtn
+	e['tBtn']      = tBtn
+	e['Lbl']       = Lbl
+	e['lEdit']     = lEdit
+	e['Tree']      = Tree
 	return e
 
 def Layouts():
@@ -461,3 +525,7 @@ def Layouts():
 	l['siblings'] 	= siblings
 	l['center']			= center
 	return l
+
+
+
+
