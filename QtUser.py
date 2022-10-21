@@ -2,69 +2,90 @@
 # Auth
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from inspect import isfunction
 def sPols(t):
 	s 			= 	{
-		'P'				: QtWidgets.QSizePolicy.Preferred,
-		'M'				: QtWidgets.QSizePolicy.Maximum,
-		'm'				: QtWidgets.QSizePolicy.Minimum,
-		'E'				:	QtWidgets.QSizePolicy.Expanding,
-		'mE'			:	QtWidgets.QSizePolicy.MinimumExpanding,
-		'F'				:	QtWidgets.QSizePolicy.Fixed,
+		'P'   : QtWidgets.QSizePolicy.Preferred,
+		'M'   : QtWidgets.QSizePolicy.Maximum,
+		'm'   : QtWidgets.QSizePolicy.Minimum,
+		'E'   :	QtWidgets.QSizePolicy.Expanding,
+		'mE'  :	QtWidgets.QSizePolicy.MinimumExpanding,
+		'F'   :	QtWidgets.QSizePolicy.Fixed,
 		}
 	return s[t]
+
+def sPls(t):
+	P	 = QtWidgets.QSizePolicy.Preferred
+	M	 = QtWidgets.QSizePolicy.Maximum
+	m	 = QtWidgets.QSizePolicy.Minimum
+	E	 =	QtWidgets.QSizePolicy.Expanding
+	mE	=QtWidgets.QSizePolicy.MinimumExpanding
+	F	 =	QtWidgets.QSizePolicy.Fixed
+	return locals()[t]
+
 
 def wLays(t):
 
 	l				=		{
-		'H'				:	QtWidgets.QHBoxLayout,
-		'V'				: QtWidgets.QVBoxLayout,
-		'G'				:	QtWidgets.QGridLayout,
-		'F'				:	QtWidgets.QFormLayout,
+		'H'   :	QtWidgets.QHBoxLayout,
+		'V'   : QtWidgets.QVBoxLayout,
+		'G'   :	QtWidgets.QGridLayout,
+		'F'   :	QtWidgets.QFormLayout,
 						}
 	return l[t.upper()]
 
-def QtApp():
+def App():
 	from sys import argv
-	mtd						=	Mtds('QtApp')
-	a 						= {}
+	mtd						=	dClass()['mtds']('QtApp')
+
+	a = {}
 	a['QtApp'] 		= QtWidgets.QApplication(argv)
 	a['Clip']			= a['QtApp'].clipboard()
 	a['Mtd']			= mtd(a)
 	return a
 
-def Mtds(wt):
-	def M(o):
-		b={};f={}
-		for n in dir(o):
-			m=getattr(o, n)
-			if n.startswith('__') and callable(m):
-				b[n]=m
-			elif callable(m):
-				f[n]=m
-			else:
-				print(n,'\t:\n',m)
-		return f
+# def dClass(**k):
+# 	from inspect import isfunction,ismethod,isclass
+# 	cls={}
+# 	for key in k:
+# 		cls[key]={}
+# 		cls[key]['Mtds']=Mtds
+# 		cls[key]['Attr']=Attr
 
-	def A(w):
-		o=w.get('QtApp')
-		return M(o)
-	def W(w):
-		o=w.get('Wgt')
-		return M(o)
-	def L(w):
-		o=w.get('Lay')
-		return M(o)
 
-	mtd={
-	'QtApp'	: A,
-	'Wgt'		:	W,
-	'Lay'		:	L,
-	}
-	return mtd[wt]
+def Mtds(o):
+	f={}
+	for n in dir(o):
+		m=getattr(o, n)
+		if callable(m):
+			f[n]=m
+	return f
 
-def Base():
+	# def A():
+	# 		print('-'*80)
+	# 		a={}
+	# 		for n in d:
+	# 			m=getattr(o, n)
+	# 			if isinstance(m,(str|int|float|dict|list|tuple|set)):
+	# 				d.pop(n)
+	# 				a[n]=m
+	# 		return a
 
+	def mtds():
+		def clj_mtds():
+			mts=M()
+			return mts
+		return clj_mtds
+	def attrs(t):
+		def clj_attrs():
+			ats=A()
+			return ats
+		return clj_attrs
+
+	f={k:v for k,v in locals().items() if isfunction(v)}
+	return f
+
+def Make():
 	def sPol(w, h=None, v=None):
 		Pol = QtWidgets.QSizePolicy(sPols(h), sPols(v))
 		w['Wgt'].setSizePolicy(Pol)
@@ -75,9 +96,9 @@ def Base():
 
 		def arg(**k):
 			nonlocal n,t,m,lay
-			n			=	k.get("n") or None
-			t			=	k.get("t") or None
-			m			=	k['m']	=	k.get("m")	or [0,0,0,0]
+			n			= k.get("n") or None
+			t			= k.get("t") or None
+			m			=	k['m']	= k.get("m")	or [0,0,0,0]
 			k['n']= n
 			k['t']= t
 			k['m']= m
@@ -85,11 +106,11 @@ def Base():
 				lay	= k['lay']	=wLays(t)
 			return k
 		def mtd():
-			Mtd=Mtds('Wgt')
+			dc = dClass(w)
 			f=Mtd(w)
 			return f
 		def lmtd():
-			Mtd=Mtds('Lay')
+			Mtd = dClass('Lay')
 			f=Mtd(w)
 			return f
 
@@ -122,8 +143,8 @@ def Base():
 	def Icon(n=None,ico=None):
 		import base64
 		icon_states={
-			0	: QtGui.QIcon.On,
-			1	:	QtGui.QIcon.Off,	}
+			0 : QtGui.QIcon.On,
+			1 :	QtGui.QIcon.Off,	}
 		icon = QtGui.QIcon()
 		def  make_icon(icon,state):
 			with open(f'icon{state}.svg','wb') as l:
@@ -142,28 +163,23 @@ def Base():
 		d['Visible'] = not w['Mtd']['isHidden']
 		return d
 
-	b= {}
-	b['QtApp']		= QtApp
-	b['sPol']			=	sPol
-	b['Wgt']			= Wgt
-	b['Icon']			=	Icon
-	b['Data']			=	Data
-	return b
+
+	make={ 'Make' :  {k:v for k,v in locals().items() if isfunction(v)}}
+	return make
 
 def Elements():
-	B					=	Base()
-	sPol			=	B['sPol']
-	Icon			=	B['Icon']
-	Data 			=	B['Data']
+	sPol = QtUi['Make']['sPol']
+	Icon			=	QtUi['Make']['Icon']
+	Data 			=	QtUi['Make']['Data']
 
 	def Spcr(**k):
 		p,n,w,h,vPol,hPol=[*[0]*6]
 		def arg():
 			nonlocal p,n,w,h,vPol,hPol
-			n		=	k['n']	=	k.get("n")	or 'N'
+			n		=	k['n']	= k.get("n")	or 'N'
 			w		=	k['w']	= k.get('w')	or 0
 			h		=	k['h']	= k.get('h')	or 0
-			p		=	k['p']	=	k.get('p')	or 'E'
+			p		=	k['p']	= k.get('p')	or 'E'
 			if p == 'F' :
 				hPol 	=	k['hPol']		= 'F' if k.get('w') else 'P'
 				vPol	=	k['vPol']		=	'F'	if k.get('h') else 'P'
@@ -189,7 +205,7 @@ def Elements():
 		n,w,h,vPol,hPol=[*[0]*5]
 		def arg():
 			nonlocal n,w,h,vPol,hPol
-			n				=	k['n']	=	k.get("n")	or 'N'
+			n				=	k['n']	= k.get("n")	or 'N'
 			w				=	k['w']	= k.get('w')	or 0
 			h				=	k['h']	= k.get('h')	or 0
 			hPol 		=	k['hPol']	= 'F' if k.get('w') else 'P'
@@ -214,8 +230,8 @@ def Elements():
 		def arg():
 			nonlocal n,w,h,vPol,hPol
 			n			=	k['n']	=	k.get("n")
-			w			=	k['w']	=	k.get("w")	or 0
-			h			=	k['h']	=	k.get("h")	or 0
+			w			=	k['w']	= k.get("w")	or 0
+			h			=	k['h']	= k.get("h")	or 0
 			hPol	=	k['hPol']	=	'E' if k.get('w') else 'P'
 			vPol	=	k['vPol']	=	'E'	if k.get('h') else 'P'
 			return k
@@ -235,14 +251,19 @@ def Elements():
 
 	def chkBox(**k):
 		n,w,h,ico,lbl=[*[0]*5]
+		wgt=None
+
 		def Arg():
 			nonlocal n,w,h,ico,lbl
 			n		=	k['n']				=	k.get("n")
-			w		=	k['w']				=	k.get("w")	or 20
-			h		=	k['h']				=	k.get("h")	or 20
+			w		=	k['w']				= k.get("w")	or 20
+			h		=	k['h']				= k.get("h")	or 20
 			ico	=	k['ico']			=	k.get('ico')
 			lbl	=	k['lbl']			= k.get('lbl')
 			return k
+		def Mtd():
+			Mtds(Wgt())
+
 		def Fnx():
 			def toggle():
 				state=b['Mtd']['isChecked']
@@ -266,7 +287,7 @@ def Elements():
 			return c
 
 		b={}
-		b['Wgt'] 		= QtWidgets.QCheckBox()
+		b['Wgt'] 		= Wgt()
 		b['Arg']		=	Arg()
 		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
@@ -280,9 +301,9 @@ def Elements():
 		def Arg():
 			nonlocal n,w,h,bi,ico,lbl
 			n		=	k['n']				=	k.get("n")
-			w		=	k['w']				=	k.get("w")	or 20
-			h		=	k['h']				=	k.get("h")	or 20
-			bi	=	k['bi']				=	k.get('bi') or False
+			w		=	k['w']				= k.get("w")	or 20
+			h		=	k['h']				= k.get("h")	or 20
+			bi	=	k['bi']				= k.get('bi') or False
 			ico	=	k['ico']			=	k.get('ico')
 			lbl	=	k['lbl']			= k.get('lbl')
 			return k
@@ -309,7 +330,7 @@ def Elements():
 		b={}
 		b['Wgt'] 		= QtWidgets.QToolButton()
 		b['Arg']		=	Arg()
-		Mtd=Mtds('Wgt')
+		Mtd=dClass('Wgt')
 		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
 		b['Fnx']		= Fnx()
@@ -322,9 +343,9 @@ def Elements():
 		def Arg():
 			nonlocal n,w,h,ico,lbl
 			n		=	k['n']				=	k.get("n")
-			w		=	k['w']				=	k.get("w")	or 20
-			h		=	k['h']				=	k.get("h")	or 20
-			bi	=	k['bi']				=	k.get('bi') or False
+			w		=	k['w']				= k.get("w")	or 20
+			h		=	k['h']				= k.get("h")	or 20
+			bi	=	k['bi']				= k.get('bi') or False
 			ico	=	k['ico']			=	k.get('ico')
 			lbl	=	k['lbl']			= k.get('lbl') or k.get("n")
 			return k
@@ -349,8 +370,8 @@ def Elements():
 
 		b={}
 		b['Wgt'] 		= QtWidgets.QToolButton()
-		b['Arg']		=	Arg()
-		Mtd=Mtds('Wgt')
+		b['Arg']		= Arg()
+		Mtd=dClass('Wgt')
 		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
 		b['Fnx']		= Fnx()
@@ -359,14 +380,14 @@ def Elements():
 		return b
 
 	def Lbl(**k):
-		n,w,h,m,ico,lbl=[*[0]*6]
-		Mtd=Mtds('Wgt')
+		n,w,h,m,ico,lbl= [*[0] * 6]
+		Mtd=dClass('Wgt')
 		def Arg():
 			nonlocal n,w,h,ico,lbl,m
 			n		=	k['n']				=	k.get('n')
-			w		=	k['w']				=	k.get('w')	or 20
-			h		=	k['h']				=	k.get('h')	or 20
-			m		=	k['m']				=	k.get('m')	or [0,0,0,0]
+			w		=	k['w']				= k.get('w')	or 20
+			h		=	k['h']				= k.get('h')	or 20
+			m		=	k['m']				= k.get('m')	or [0,0,0,0]
 			ico	=	k['ico']			=	k.get('ico')
 			lbl	=	k['lbl']			= k.get('lbl') or n
 			return k
@@ -400,9 +421,9 @@ def Elements():
 		def Arg():
 			nonlocal n,w,h,ro
 			n		=	k['n']				=	k.get('n')
-			w		=	k['w']				=	k.get('w')	or 20
-			h		=	k['h']				=	k.get('h')	or 20
-			ro	=	k['ro']				=	k.get('ro')	or False
+			w		=	k['w']				= k.get('w')	or 20
+			h		=	k['h']				= k.get('h')	or 20
+			ro	=	k['ro']				= k.get('ro')	or False
 
 			return k
 		def Fnx():
@@ -428,8 +449,8 @@ def Elements():
 
 		l={}
 		l['Wgt'] 		=  QtWidgets.QLineEdit()
-		l['Arg']		=	Arg()
-		Mtd=Mtds('Wgt')
+		l['Arg'] = Arg()
+		Mtd=dClass('Wgt')
 		l['Mtd']		= Mtd(l)
 		l['Data']		=	Data(l)
 		l['Fnx']		= Fnx()
@@ -441,8 +462,8 @@ def Elements():
 		n,m=[*[0]*2]
 		def Arg():
 			nonlocal n,m
-			n		=	k['n']				=	k.get('n') or 'Tree'
-			w		=	k['m']				=	k.get('m') or [0,0,0,0]
+			n		=	k['n']				= k.get('n') or 'Tree'
+			w		=	k['m']				= k.get('m') or [0,0,0,0]
 			return k
 		def Fnx():
 			f 					= {}
@@ -485,21 +506,11 @@ def Elements():
 		t['Init']		= Init()
 		return t
 
-	e = { }
-	e['Spcr']      = Spcr
-	e['SpcFix']    = SpcFix
-	e['SpcEx']     = SpcEx
-	e['chkBox']    = chkBox
-	e['iBtn']      = iBtn
-	e['tBtn']      = tBtn
-	e['Lbl']       = Lbl
-	e['lEdit']     = lEdit
-	e['Tree']      = Tree
-	return e
+	sFnx={k:v for k,v in locals().items() if isfunction(v)}
+	return sFnx
 
 def Layouts():
-	B=Base()
-
+	B=Make()
 	E=Elements()
 
 	def siblings(wgts, t, margin=[0,0,0,0]):
@@ -520,12 +531,17 @@ def Layouts():
 		wgt.lay.addWidget(rSpcFix)
 		wgt.setContentsMargins(*margin)
 		return wgt
-	l = {}
 
-	l['siblings'] 	= siblings
-	l['center']			= center
-	return l
 
+	sFnx={k:v for k,v in locals().items() if isfunction(v)}
+	return sFnx
+
+def Gui():
+	g={}
+
+	
+QtUi={}
+QtUi |= Make()
 
 
 
