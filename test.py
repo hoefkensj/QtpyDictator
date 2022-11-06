@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Auth
 from PyQt5 import QtCore, QtGui, QtWidgets
+from myPyQt.lib.wgt import Wgt
 import QtUser
 import sys
 
@@ -49,11 +50,11 @@ def EditProp(n,**k):
 				return e
 
 			def add():
-				w['Lay'].addWidget(w['elements']['Lbl']['Wgt'])
-				w['Lay'].addWidget(w['elements']['txt']['Wgt'])
-				w['Lay'].addWidget(w['elements']['txtdup']['Wgt'])
-				w['Lay'].addWidget(w['elements']['btnSet']['Wgt'] )
-				w['Lay'].addWidget(w['elements']['btnEdit']['Wgt'])
+				w['Wgt']['Lay']['Wgt'].addWidget(w['elements']['Lbl']['Wgt'])
+				w['Wgt']['Lay']['Wgt'].addWidget(w['elements']['txt']['Wgt'])
+				w['Wgt']['Lay']['Wgt'].addWidget(w['elements']['txtdup']['Wgt'])
+				w['Wgt']['Lay']['Wgt'].addWidget(w['elements']['btnSet']['Wgt'] )
+				w['Wgt']['Lay']['Wgt'].addWidget(w['elements']['btnEdit']['Wgt'])
 				return w['Lay']
 			def init(wgt):
 				w['elements']['btnSet']['Mtd']['setHidden'](True)
@@ -105,9 +106,10 @@ def EditProp(n,**k):
 				return c
 			w ={}
 
-			w		=	GUI['Make']['Wgt'](n=n,t='h')
+			w['Wgt']		=Wgt(n=n,t='H')
+			print(w)
 			w['elements']	= elements()
-			w['Wgt']    = GUI['Make']['sPol'](w, h='E', v='F')
+			# w['Wgt']    = GUI['Make']['sPol'](w, h='E', v='F')
 			w['layout'] 	= add()
 			w['fnx'] 			= fnx(w['Wgt'])
 			w['conn'] = conn(w['Wgt'])
@@ -121,7 +123,7 @@ GUI['Elements']	= QtUser.Elements()
 GUI|=	QtUser.App()
 
 
-GUI['Main']	=	GUI['Make']['Wgt'](n='Qt5',t='v')
+GUI['Main']	=	Wgt(n='Qt5',t='v')
 tmp=EditProp('test',ed=True,fnset=print, m=[0,5,0,5])
 GUI['Main']['Lay'].addWidget(tmp['Wgt'])
 GUI['Main']['Mtd']['show']()

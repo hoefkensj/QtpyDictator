@@ -109,8 +109,8 @@ def QtBlocks():
 				return wgt
 			w = {}
 			w['Data'] = data()
-			w['Wgt'] 	=	blk['Base']['wgt'](n=w['Data']['Name'],t='h')
-			w['Wgt'] 	=	blk['Base']['sPol'](w['Wgt'], h='E', v='mE')
+			w['Wgt'] 	=	blk['Base']['Make']['wgt'](n=w['Data']['Name'],t='h')
+			w['Wgt'] 	=	blk['Base']['Make']['sPol'](w['Wgt'], h='E', v='mE')
 			w['Elements']	=	elements()
 			w['Wgt']			=	create(w['Wgt'])
 			w['layout']		=	w['Wgt'].lay
@@ -144,7 +144,7 @@ def QtBlocks():
 			wgt=layout(wgt)
 			wgt=conn(wgt)
 			wgt.setContentsMargins(*margin)
-			return wgtcleeear
+			return wgt
 		def Search():
 			def elements():
 				e={}
@@ -456,7 +456,7 @@ def construct_Qt5Ui(beta):
 
 		def saveDialog():
 			def saveDialog():
-        Path, Type =QtWidgets.QFileDialog.getSaveFileName(QtWidgets.QWidget(),"Save As","","All Files (*)")
+				Path, Type =QtWidgets.QFileDialog.getSaveFileName(QtWidgets.QWidget(),"Save As","","All Files (*)")
 				return Path
 			return saveDialog()
 
@@ -535,7 +535,7 @@ def construct_Qt5Ui(beta):
 
 	def create(App):
 		def MainWgt():
-			wgt = App['Blocks']['Base']['wgt'](n='Qt5',t='v')
+			wgt = App['Blocks']['Base']['Make']['wgt'](n='Qt5',t='v')
 			return wgt
 
 		def Elements():

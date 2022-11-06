@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Auth
-
-from PyQt5 import QtCore, QtGui, QtWidgets
+from myPyQt.lib.wgt import Wgt
+from PyQt5 import QtWidgets,QtCore,QtGui
 from inspect import isfunction
 def sPols(t):
 	s 			= 	{
@@ -36,12 +36,10 @@ def wLays(t):
 
 def App():
 	from sys import argv
-	mtd						=	dClass()['mtds']('QtApp')
-
 	a = {}
 	a['QtApp'] 		= QtWidgets.QApplication(argv)
 	a['Clip']			= a['QtApp'].clipboard()
-	a['Mtd']			= mtd(a)
+
 	return a
 
 # def dClass(**k):
@@ -52,14 +50,14 @@ def App():
 # 		cls[key]['Mtds']=Mtds
 # 		cls[key]['Attr']=Attr
 
-
-def Mtds(o):
-	f={}
-	for n in dir(o):
-		m=getattr(o, n)
-		if callable(m):
-			f[n]=m
-	return f
+def Mtds():
+	def Mtds(o):
+		f={}
+		for n in dir(o):
+			m=getattr(o, n)
+			if callable(m) and '__' not in n:
+				f[n]=m
+		return f
 
 	# def A():
 	# 		print('-'*80)
@@ -76,6 +74,7 @@ def Mtds(o):
 			mts=M()
 			return mts
 		return clj_mtds
+
 	def attrs(t):
 		def clj_attrs():
 			ats=A()
@@ -91,54 +90,54 @@ def Make():
 		w['Wgt'].setSizePolicy(Pol)
 		return w['Wgt']
 
-	def Wgt(**k):
-		n,t,m,lay=[*[0]*4]
-
-		def arg(**k):
-			nonlocal n,t,m,lay
-			n			= k.get("n") or None
-			t			= k.get("t") or None
-			m			=	k['m']	= k.get("m")	or [0,0,0,0]
-			k['n']= n
-			k['t']= t
-			k['m']= m
-			if t:
-				lay	= k['lay']	=wLays(t)
-			return k
-		def mtd():
-			dc = dClass(w)
-			f=Mtd(w)
-			return f
-		def lmtd():
-			Mtd = dClass('Lay')
-			f=Mtd(w)
-			return f
-
-		def init():
-			def init():
-				w['Mtd']['setObjectName'](f'wgt{n}')
-				w['Mtd']['setContentsMargins'](*m)
-			init()
-			return init
-		def initl():
-			def init():
-				w['LMtd']['setObjectName'](f'lay{n}')
-				w['LMtd']['setContentsMargins'](*m)
-				w['LMtd']['setSpacing'](0)
-			init()
-			return init
-
-
-		w= {}
-		w['Arg']			=	arg(**k)
-		w['Wgt']			=	QtWidgets.QWidget()
-		w['Mtd']			=	mtd()
-		w['Init']			=	init()
-		if t:
-			w['Lay']			= lay(w['Wgt'])
-			w['LMtd']			= lmtd()
-			w['Initl']		=	initl()
-		return w
+	# def Wgt(**k):
+	# 	n,t,m,lay=[*[0]*4]
+	#
+	# 	def arg(**k):
+	# 		nonlocal n,t,m,lay
+	# 		n			= k.get("n") or None
+	# 		t			= k.get("t") or None
+	# 		m			=	k['m']	= k.get("m")	or [0,0,0,0]
+	# 		k['n']= n
+	# 		k['t']= t
+	# 		k['m']= m
+	# 		if t:
+	# 			lay	= k['lay']	=wLays(t)
+	# 		return k
+	# 	def mtd():
+	# 		dc = dClass(w)
+	# 		f=Mtd(w)
+	# 		return f
+	# 	def lmtd():
+	# 		Mtd = dClass('Lay')
+	# 		f=Mtd(w)
+	# 		return f
+	#
+	# 	def init():
+	# 		def init():
+	# 			w['Mtd']['setObjectName'](f'wgt{n}')
+	# 			w['Mtd']['setContentsMargins'](*m)
+	# 		init()
+	# 		return init
+	# 	def initl():
+	# 		def init():
+	# 			w['LMtd']['setObjectName'](f'lay{n}')
+	# 			w['LMtd']['setContentsMargins'](*m)
+	# 			w['LMtd']['setSpacing'](0)
+	# 		init()
+	# 		return init
+	#
+	#
+	# 	w= {}
+	# 	w['Arg']			=	arg(**k)
+	# 	w['Wgt']			=	QtWidgets.QWidget()
+	# 	w['Mtd']			=	mtd()
+	# 	w['Init']			=	init()
+	# 	if t:
+	# 		w['Lay']			= lay(w['Wgt'])
+	# 		w['LMtd']			= lmtd()
+	# 		w['Initl']		=	initl()
+	# 	return w
 
 	def Icon(n=None,ico=None):
 		import base64
@@ -163,6 +162,8 @@ def Make():
 		d['Visible'] = not w['Mtd']['isHidden']
 		return d
 
+	def wgt(**k):
+		return Wgt(**k)
 
 	make={ 'Make' :  {k:v for k,v in locals().items() if isfunction(v)}}
 	return make
@@ -330,7 +331,7 @@ def Elements():
 		b={}
 		b['Wgt'] 		= QtWidgets.QToolButton()
 		b['Arg']		=	Arg()
-		Mtd=dClass('Wgt')
+		Mtd=     dClass('Mtds')('Wgt')
 		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
 		b['Fnx']		= Fnx()
@@ -371,7 +372,7 @@ def Elements():
 		b={}
 		b['Wgt'] 		= QtWidgets.QToolButton()
 		b['Arg']		= Arg()
-		Mtd=dClass('Wgt')
+		Mtd=     dClass('Mtds')('Wgt')
 		b['Mtd']		= Mtd(b)
 		b['Data']		=	Data(b)
 		b['Fnx']		= Fnx()
@@ -381,7 +382,7 @@ def Elements():
 
 	def Lbl(**k):
 		n,w,h,m,ico,lbl= [*[0] * 6]
-		Mtd=dClass('Wgt')
+		Mtd=     dClass('Mtds')('Wgt')
 		def Arg():
 			nonlocal n,w,h,ico,lbl,m
 			n		=	k['n']				=	k.get('n')
@@ -397,7 +398,7 @@ def Elements():
 		def Init():
 			# l['Wgt'] 	=sPol(l['Wgt'] , h='P', v='P')
 			def Init():
-				l['Mtd']['setObjectName'](f'lbl{n}')
+				l['Mtd']['setObjectName'](f'lbl_{n}')
 				l['Mtd']['setText'](f'{lbl}')
 				l['Mtd']['setContentsMargins'](*m)
 			Init()
@@ -410,7 +411,7 @@ def Elements():
 		l['Wgt'] 		= QtWidgets.QLabel()
 		l['Arg']		=	Arg()
 		l['Mtd']		= Mtd(l)
-		l['Data']		=	Data(l)
+		l['Data']		= None
 		l['Fnx']		= Fnx()
 		l['Conn']		=	Conn()
 		l['Init']		= Init()
@@ -450,7 +451,7 @@ def Elements():
 		l={}
 		l['Wgt'] 		=  QtWidgets.QLineEdit()
 		l['Arg'] = Arg()
-		Mtd=dClass('Wgt')
+		Mtd=     dClass('Mtds')('Wgt')
 		l['Mtd']		= Mtd(l)
 		l['Data']		=	Data(l)
 		l['Fnx']		= Fnx()
