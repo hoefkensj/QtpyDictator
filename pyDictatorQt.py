@@ -19,7 +19,10 @@ import sys
 
 import types ,sys
 import base64
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of cc3cfca (Update pyDictatorQt.py)
 
 sPols 			= 	{
 	'P'       : QtWidgets.QSizePolicy.Preferred,
@@ -478,6 +481,7 @@ def QtBlocks():
 		def EditProp(n,**k):
 			fnSet=k.get('fnset') or dummy
 <<<<<<< HEAD
+<<<<<<< HEAD
 			def elements():
 				e = {}
 				e['Lbl']		= blk['Elements']['Lbl'](f'{n}:')
@@ -494,6 +498,22 @@ def QtBlocks():
 				lay.addWidget(w['elements']['btnSet']['Wgt'] )
 				lay.addWidget(w['elements']['btnEdit'])
 				return lay
+=======
+			def create(wgt):
+				wgt.lbl 		= blk['Elements']['Lbl'](f'{n}:')
+				wgt.txt 		= blk['Elements']['lEdit'](n,ro=True)
+				wgt.txtdup	= blk['Elements']['lEdit'](n,ro=True)
+				wgt.btnSet 	= blk['Elements']['tBtn']('Set')
+				wgt.btnEdit =	blk['Elements']['iBtn']('Edit', bi=True,icons=ico)
+				return wgt
+			def add(wgt):
+				wgt.lay.addWidget(wgt.lbl)
+				wgt.lay.addWidget(wgt.txt)
+				wgt.lay.addWidget(wgt.txtdup)
+				wgt.lay.addWidget(wgt.btnSet)
+				wgt.lay.addWidget(wgt.btnEdit)
+				return wgt.lay
+>>>>>>> parent of cc3cfca (Update pyDictatorQt.py)
 			def init(wgt):
 				w['elements']['btnSet']['Fnx']['setHidden'](True)
 				w['elements']['txt'].setReadOnly(True)
@@ -519,8 +539,12 @@ def QtBlocks():
 				wgt.txt.setReadOnly(True)
 				wgt.txtdup.setHidden(True)
 				wgt.Editable(not k.get('ed'))
+<<<<<<< HEAD
 				wgt	= blk['Layouts']['sPol'](wgt, h='E', v='F')
 >>>>>>> parent of 3e0f4e3 (Update QtUser.py, QtUser.cpython-310.pyc, and pyDictatorQt.py)
+=======
+				wgt	= blk['Elements']['sPol'](wgt, h='E', v='F')
+>>>>>>> parent of cc3cfca (Update pyDictatorQt.py)
 				return wgt
 			def fnx(wgt):
 				def txtText(wgt):
@@ -548,13 +572,13 @@ def QtBlocks():
 					def editable(state):
 						w['elements']['btnEdit'].setHidden(state)
 					return editable
-				f = {}
-				f['Edit'] 		=	edit(wgt)
-				f['txtText'] 	=	txtText(wgt)
-				f['setText']	=	setText(wgt)
-				f['Editable'] =	editable(wgt)
-				return f
+				wgt.Edit 		= edit(wgt)
+				wgt.txtText = txtText(wgt)
+				wgt.setText	= setText(wgt)
+				wgt.Editable = editable(wgt)
+				return wgt
 			def conn(wgt):
+<<<<<<< HEAD
 				c = {}
 				c['btnEdit']= w['elements']['btnEdit'].clicked.connect
 				c['btnSet']= w['elements']['btnSet']['Conn']['clicked']
@@ -578,6 +602,21 @@ def QtBlocks():
 			return w
 
 
+=======
+				wgt.btnEdit.clicked.connect(wgt.Edit)
+				wgt.btnSet.clicked.connect(wgt.setText)
+				wgt.txt.returnPressed.connect(wgt.setText)
+				return wgt
+			wgt 		=	blk['Elements']['Wgt'](n=n,t='h')
+			wgt 		= create(wgt)
+			wgt.lay = add(wgt)
+
+			wgt 		= fnx(wgt)
+			wgt			=	conn(wgt)
+			wgt			=	init(wgt)
+
+			return wgt
+>>>>>>> parent of cc3cfca (Update pyDictatorQt.py)
 		def AppCtl(**k):
 			def elements():
 				e={}
@@ -707,9 +746,15 @@ def construct_Qt5Ui(beta):
 			return toclip
 
 		def allign(App):
+<<<<<<< HEAD
 			maxwidth=max(App['Main']['Element']['Key']['elements']['Lbl'].width(),App['Main']['Element']['Val']['elements']['Lbl'].width())
 			App['Main']['Element']['Key']['elements']['Lbl'].setMinimumWidth(maxwidth)
 			App['Main']['Element']['Val']['elements']['Lbl'].setMinimumWidth(maxwidth)
+=======
+			maxwidth=max(App['Main']['Element']['Key'].lbl.width(),App['Main']['Element']['Val'].lbl.width())
+			App['Main']['Element']['Key'].lbl.setMinimumWidth(maxwidth)
+			App['Main']['Element']['Val'].lbl.setMinimumWidth(maxwidth)
+>>>>>>> parent of cc3cfca (Update pyDictatorQt.py)
 			App['Allign'] 	=	allign
 			App['Select'] 	=	select
 			return App
@@ -846,7 +891,7 @@ def construct_Qt5Ui(beta):
 			Module['TreeCtl']			=	App['Blocks']['Layouts']['siblings']([Main['Element']['ExpCol'],Main['Element']['Path']],t='h',margin=[5,0,5,5])
 
 			Module['WrpSearch']		=	App['Blocks']['Layouts']['center'](Main['Element']['Search'],w=0,margin=[5,0,5,5])
-			Module['Edit']				=	App['Blocks']['Layouts']['siblings']([Main['Element']['Key']['Wgt'],Main['Element']['Val']['Wgt']],'v',margin=[25,0,25,5])
+			Module['Edit']				=	App['Blocks']['Layouts']['siblings']([Main['Element']['Key'],Main['Element']['Val']],'v',margin=[25,0,25,5])
 			# Module.wrpEdit	=	App['Blocks']['Layouts']['center'](App.Main.Edit,w=25)
 			Module['TrDisp']			=	App['Blocks']['Layouts']['siblings']([Main['Element']['Tree']['Wgt'],Module['TreeCtl']],t='v')
 			# Module.Tools			=	App['Blocks']['Layouts']['siblings']([Module.WrpSearch,Module.Edit],'v',margin=[0,0,0,5])
