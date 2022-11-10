@@ -13,13 +13,13 @@
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-<<<<<<< HEAD
+
 import QtUser
 import sys
-=======
+
 import types ,sys
 import base64
->>>>>>> parent of 3e0f4e3 (Update QtUser.py, QtUser.cpython-310.pyc, and pyDictatorQt.py)
+
 
 sPols 			= 	{
 	'P'       : QtWidgets.QSizePolicy.Preferred,
