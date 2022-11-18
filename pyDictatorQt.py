@@ -14,8 +14,16 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import QtUser
+<<<<<<< HEAD
 
 import sys
+=======
+import sys
+
+import types ,sys
+import base64
+
+>>>>>>> parent of eb5e3c4... dszrfftg
 
 sPols 			= 	{
 	'P'       : QtWidgets.QSizePolicy.Preferred,
@@ -219,7 +227,12 @@ def QtBlocks():
 			wgt = conn(wgt)
 			return wgt
 		def EditProp(n,**k):
+<<<<<<< HEAD
 			fnSet=k.get('fnset') or None
+=======
+			fnSet=k.get('fnset') or dummy
+<<<<<<< HEAD
+>>>>>>> parent of eb5e3c4... dszrfftg
 			def elements():
 				e = {}
 				e['Lbl']		= blk['Elements']['Lbl'](f'{n}:')
@@ -241,6 +254,31 @@ def QtBlocks():
 				w['elements']['txt'].setReadOnly(True)
 				w['elements']['txtdup'].setHidden(True)
 				w['fnx']['Editable'](not k.get('ed'))
+<<<<<<< HEAD
+=======
+=======
+			def create(wgt):
+				wgt.lbl 		= blk['Elements']['lbl'](f'{n}:')
+				wgt.txt 		= blk['Elements']['ledit'](n,ro=True)
+				wgt.txtdup	= blk['Elements']['ledit'](n,ro=True)
+				wgt.btnSet 	= blk['Elements']['tBtn']('Set')
+				wgt.btnEdit =	blk['Elements']['iBtn']('Edit', bi=True)
+				return wgt
+			def add(wgt):
+				wgt.lay.addWidget(wgt.lbl)
+				wgt.lay.addWidget(wgt.txt)
+				wgt.lay.addWidget(wgt.txtdup)
+				wgt.lay.addWidget(wgt.btnSet)
+				wgt.lay.addWidget(wgt.btnEdit)
+				return wgt.lay
+			def init(wgt):
+				wgt.btnSet.setHidden(True)
+				wgt.txt.setReadOnly(True)
+				wgt.txtdup.setHidden(True)
+				wgt.Editable(not k.get('ed'))
+				wgt	= blk['Layouts']['sPol'](wgt, h='E', v='F')
+>>>>>>> parent of 3e0f4e3 (Update QtUser.py, QtUser.cpython-310.pyc, and pyDictatorQt.py)
+>>>>>>> parent of eb5e3c4... dszrfftg
 				return wgt
 			def fnx(wgt):
 				def txtText(wgt):
